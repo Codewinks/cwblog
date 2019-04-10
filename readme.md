@@ -8,12 +8,13 @@
 #####Todo:
 - [ ] Project structure and plan
 - [ ] Documentation
+- [ ] DB Migrations
 - [x] Posts API
 - [ ] Users API
+- [ ] Auth0 Authentication
 - [ ] Webpack js/scss complier
 - [ ] API blog integration
-- [ ] Static file compiler/blog
-- [ ] Auth0 Authentication
+- [ ] Option to compile static blog
 
 #####Admin Todo:
 - [ ] Post CRUD
