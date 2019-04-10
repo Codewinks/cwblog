@@ -1,0 +1,9 @@
+/node_modules
+/vendor
+.env
+.history
+.phpunit.result.cache
+npm-debug.log
+package-lock.json
+.DS_Store
+gin-bin
