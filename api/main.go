@@ -1,13 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
+	"github.com/codewinks/godotenv"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
 
+	"github.com/codewinks/cwblog/api/auth"
 	"github.com/codewinks/cwblog/api/posts"
 	"github.com/codewinks/cworm"
 )
@@ -23,6 +27,7 @@ func Routes(db *cworm.DB) *chi.Mux {
 	)
 
 	router.Route("/v1", func(r chi.Router) {
+		auth.Routes(r, db)
 		posts.Routes(r, db)
 	})
 
@@ -30,9 +35,14 @@ func Routes(db *cworm.DB) *chi.Mux {
 }
 
 func main() {
-	db, err := cworm.Connect("root@tcp(127.0.0.1:3306)/winks")
+	err := godotenv.Load("../.env")
 	if err != nil {
-		panic("Failed to connect to database")
+		panic("Error loading .env file")
+	}
+
+	db, err := cworm.Connect(os.Getenv("DB_CONNECTION"), os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_DATABASE"))
+	if err != nil {
+		panic(fmt.Sprintf("Failed to connect to database: %s", err))
 	}
 
 	defer db.DB.Close()

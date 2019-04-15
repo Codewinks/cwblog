@@ -1,10 +1,11 @@
 package core
 
 import (
+	"net/http"
+
 	"github.com/codewinks/cworm"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
-	"net/http"
 )
 
 type Handler struct {

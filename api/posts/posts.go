@@ -12,6 +12,7 @@ import (
 	"errors"
 	"github.com/codewinks/cwblog/api/models"
 	"github.com/codewinks/cwblog/core"
+	"github.com/codewinks/cwblog/middleware"
 )
 
 type Handler core.Handler
@@ -20,14 +21,17 @@ func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	fmt.Println("posts routes loaded")
 	cw := &Handler{DB: db}
 	r.Route("/posts", func(r chi.Router) {
-		r.Get("/", cw.List)
-		r.Post("/", cw.Store)
+		r.Group(func(r chi.Router) {
+			r.Use(middleware.IsAuthenticated)
+			r.Get("/", cw.List)
+			r.Post("/", cw.Store)
 
-		r.Route("/{postId}", func(r chi.Router) {
-			r.Use(cw.PostCtx)
-			r.Get("/", cw.Get)
-			r.Put("/", cw.Update)
-			r.Delete("/", cw.Delete)
+			r.Route("/{postId}", func(r chi.Router) {
+				r.Use(cw.PostCtx)
+				r.Get("/", cw.Get)
+				r.Put("/", cw.Update)
+				r.Delete("/", cw.Delete)
+			})
 		})
 
 		r.With(cw.PostCtx).Get("/slug/{postSlug}", cw.Get)

@@ -1,5 +1,5 @@
 # CWBlog Platform
-### 3 main pieces of functionality
+### Features
 * [ ] API
 * [ ] Admin
 * [ ] Blog
@@ -8,16 +8,16 @@
 #####Todo:
 - [ ] Project structure and plan
 - [ ] Documentation
-- [ ] DB Migrations
+- [x] DB Migrations
 - [x] Posts API
 - [ ] Users API
-- [ ] Auth0 Authentication
-- [ ] Webpack js/scss complier
+- [x] Auth0 Authentication
 - [ ] API blog integration
-- [ ] Option to compile static blog
 
 #####Admin Todo:
 - [ ] Post CRUD
 - [ ] User CRUD
 - [ ] Blog settings
+- [ ] Webpack js/scss complier
+- [ ] Option to compile static blog
 
