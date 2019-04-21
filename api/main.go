@@ -13,6 +13,7 @@ import (
 
 	"github.com/codewinks/cwblog/api/auth"
 	"github.com/codewinks/cwblog/api/posts"
+	"github.com/codewinks/cwblog/api/users"
 	"github.com/codewinks/cworm"
 )
 
@@ -29,6 +30,7 @@ func Routes(db *cworm.DB) *chi.Mux {
 	router.Route("/v1", func(r chi.Router) {
 		auth.Routes(r, db)
 		posts.Routes(r, db)
+		users.Routes(r, db)
 	})
 
 	return router
