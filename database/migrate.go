@@ -20,7 +20,7 @@ import (
 var db *cworm.DB
 
 func RunMigrations() (err error) {
-	db, err = cworm.Connect(os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_DATABASE"))
+	db, err := cworm.Connect(os.Getenv("DB_CONNECTION"), os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_DATABASE"))
 	if err != nil {
 		return err
 	}

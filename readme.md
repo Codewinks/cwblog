@@ -10,14 +10,16 @@
 - [ ] Documentation
 - [x] DB Migrations
 - [x] Posts API
-- [ ] Users API
+- [x] Users API
 - [x] Auth0 Authentication
-- [ ] API blog integration
+- [ ] API Blog Integration
 
 #####Admin Todo:
+- [x] Auth0 Login Integration
 - [ ] Post CRUD
 - [ ] User CRUD
 - [ ] Blog settings
 - [ ] Webpack js/scss complier
-- [ ] Option to compile static blog
+- [ ] Add MDI to project
+- [ ] Compile static blog frontend
 

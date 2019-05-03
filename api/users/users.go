@@ -21,17 +21,16 @@ func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	fmt.Println("users routes loaded")
 	cw := &Handler{DB: db}
 	r.Route("/users", func(r chi.Router) {
-		r.Group(func(r chi.Router) {
-			r.Use(middleware.IsAuthenticated)
-			r.Get("/", cw.List)
-			r.Post("/", cw.Store)
+		r.Use(middleware.IsAuthenticated)
 
-			r.Route("/{userId}", func(r chi.Router) {
-				r.Use(cw.UserCtx)
-				r.Get("/", cw.Get)
-				r.Put("/", cw.Update)
-				r.Delete("/", cw.Delete)
-			})
+		r.Get("/", cw.List)
+		r.Post("/", cw.Store)
+
+		r.Route("/{userId}", func(r chi.Router) {
+			r.Use(cw.UserCtx)
+			r.Get("/", cw.Get)
+			r.Put("/", cw.Update)
+			r.Delete("/", cw.Delete)
 		})
 
 		r.With(cw.UserCtx).Get("/email/{userEmail}", cw.Get)
