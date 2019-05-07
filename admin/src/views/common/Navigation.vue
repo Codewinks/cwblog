@@ -36,7 +36,7 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar :clipped-left="$vuetify.breakpoint.lgAndUp" color="blue darken-3" dark app fixed>
+    <v-toolbar :clipped-left="$vuetify.breakpoint.lgAndUp" color="primary darken-1" dark app fixed>
       <v-toolbar-side-icon @click.stop="leftNav = !leftNav"></v-toolbar-side-icon>
       <v-toolbar-title class="pr-4 ml-1">
         <router-link to="/"><span class="hidden-sm-and-down">CWBlog Admin</span></router-link>

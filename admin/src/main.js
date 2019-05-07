@@ -5,10 +5,13 @@ import VueRouter from 'vue-router'
 import App from './App.vue'
 import AuthPlugin from './plugins/auth';
 import router from './router';
+import axios from 'axios';
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 Vue.use(AuthPlugin);
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
+
+Vue.prototype.$axios = axios;
 
 new Vue({
   router,

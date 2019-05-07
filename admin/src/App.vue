@@ -1,10 +1,9 @@
 <template>
   <v-app id="inspire" dark>
     <Navigation></Navigation>
-
     <v-content>
       <v-container fluid fill-height>
-        <v-layout justify-center>
+        <v-layout>
           <v-flex>
             <router-view></router-view>
           </v-flex>
