@@ -5,7 +5,7 @@
 * [ ] Blog
 
 
-#####Todo:
+#####Roadmap:
 - [ ] Project structure and plan
 - [ ] Documentation
 - [x] DB Migrations
