@@ -1,11 +1,11 @@
 # CWBlog Platform
 ### Features
-* [x] API
-* [ ] Admin
-* [ ] Blog
+* [x] API – Built with GoLang
+* [ ] Admin – Built with VueJS
+* [ ] Blog – Coming soon...
 
 
-#####Roadmap:
+###Roadmap:
 - [ ] Project structure and plan
 - [ ] Documentation
 - [x] DB Migrations
@@ -14,7 +14,7 @@
 - [x] Auth0 Authentication
 - [x] API Blog Integration
 
-#####Admin Todo:
+###Admin Todo:
 - [x] Auth0 Login Integration
 - [x] API/Auth0 Authentication
 - [ ] Post CRUD
