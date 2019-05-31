@@ -16,6 +16,7 @@
 
 #####Admin Todo:
 - [x] Auth0 Login Integration
+- [x] API/Auth0 Authentication
 - [ ] Post CRUD
 - [ ] User CRUD
 - [ ] Blog settings
