@@ -46,6 +46,11 @@ func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
+	// if posts == nil {
+	// 	render.Render(w, r, core.ErrNotFound)
+	// 	return
+	// }
+
 	render.JSON(w, r, posts)
 }
 

@@ -36,9 +36,12 @@ new Vue({
       this.$auth.logOut();
     },
     handleLoginEvent(data) {
-      console.log(data)
       this.isAuthenticated = data.loggedIn;
       this.profile = data.profile;
+      this.$axios.defaults.headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + data.token
+      }
     }
   }
 }).$mount('#app')

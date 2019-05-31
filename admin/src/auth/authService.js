@@ -43,16 +43,18 @@ class AuthService extends EventEmitter {
         this.idToken = authResult.idToken;
         this.profile = authResult.idTokenPayload;
         console.log(authResult)
+        console.log('zzzz')
 
         // Convert the JWT expiry time from seconds to milliseconds
         this.tokenExpiry = new Date(this.profile.exp * 1000);
 
         localStorage.setItem(localStorageKey, 'true');
-
+        
         this.emit(loginEvent, {
             loggedIn: true,
             profile: authResult.idTokenPayload,
-            state: authResult.appState || {}
+            state: authResult.appState || {},
+            token: authResult.accessToken
         });
     }
 

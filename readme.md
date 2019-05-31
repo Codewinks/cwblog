@@ -1,6 +1,6 @@
 # CWBlog Platform
 ### Features
-* [ ] API
+* [x] API
 * [ ] Admin
 * [ ] Blog
 
@@ -12,7 +12,7 @@
 - [x] Posts API
 - [x] Users API
 - [x] Auth0 Authentication
-- [ ] API Blog Integration
+- [x] API Blog Integration
 
 #####Admin Todo:
 - [x] Auth0 Login Integration
@@ -20,6 +20,6 @@
 - [ ] User CRUD
 - [ ] Blog settings
 - [ ] Webpack js/scss complier
-- [ ] Add MDI to project
+- [x] Add MDI to project
 - [ ] Compile static blog frontend
 
