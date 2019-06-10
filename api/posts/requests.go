@@ -24,10 +24,6 @@ func (p *PostRequest) Bind(r *http.Request) error {
 		return errors.New("Missing title")
 	}
 
-	if p.Post.SiteId == "" {
-		return errors.New("Missing site id")
-	}
-
 	if p.Post.UserId == "" {
 		return errors.New("Missing user id")
 	}

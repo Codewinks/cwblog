@@ -1,0 +1,1 @@
+INSERT INTO `sites` (`id`, `domain`) VALUES (1, 'localhost:8080');

@@ -10,7 +10,6 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
-	"github.com/codewinks/cwblog/api/models"
 	"github.com/codewinks/cwblog/core"
 	"github.com/codewinks/cworm"
 )
@@ -48,10 +47,5 @@ func (cw *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cw *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-	posts, err := cw.DB.Join(models.User{}, "user_id").Get(&models.Post{})
-	if err != nil {
-		panic(err)
-	}
-
-	render.JSON(w, r, posts)
+	render.JSON(w, r, nil)
 }

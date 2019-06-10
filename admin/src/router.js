@@ -8,6 +8,7 @@ import Callback from './views/auth/Callback';
 import Profile from "./views/Profile";
 
 import PostsList from "./views/posts/List";
+import PostsCreate from "./views/posts/Create";
 
 import Error404 from "./views/errors/404";
 
@@ -33,6 +34,11 @@ const routes = [
         path: "/posts",
         name: "posts",
         component: PostsList
+    },
+    {
+        path: "/posts/create",
+        name: "posts.create",
+        component: PostsCreate
     },
     { path: "*", component: Error404 }
 ];

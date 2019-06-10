@@ -2,7 +2,7 @@
   <v-container>
     <v-layout row>
       <h1>Posts</h1>
-      <v-btn small color="primary" class="ml-4">Add New</v-btn>
+      <v-btn small color="primary" class="ml-auto" :to="{name: 'posts.create'}">Add New</v-btn>
     </v-layout>
 
     <v-layout row align-center>

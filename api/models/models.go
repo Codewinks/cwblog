@@ -2,7 +2,6 @@ package models
 
 type Post struct {
 	Id            string `json:"id"`
-	SiteId        string `json:"site_id"`
 	UserId        string `json:"user_id"`
 	Title         string `json:"title" binding:"required"`
 	Content       string `json:"content"`

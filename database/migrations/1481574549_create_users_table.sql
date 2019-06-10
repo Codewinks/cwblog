@@ -1,5 +1,5 @@
 CREATE TABLE `users` (
-  `id` bigint(20)unsigned NOT NULL AUTO_INCREMENT,
+  `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `first_name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
   `last_name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,

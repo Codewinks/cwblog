@@ -1,7 +1,7 @@
 CREATE TABLE `posts` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` bigint(20) unsigned NOT NULL,
-  `user_id` bigint(20) unsigned NOT NULL,
+  `site_id` int(10) unsigned NOT NULL DEFAULT 1,
+  `user_id` char(36) NOT NULL,
   `title` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `content` longtext COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   `excerpt` text COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
@@ -23,9 +23,6 @@ CREATE TABLE `posts` (
   KEY `site_id` (`site_id`),
   KEY `user_id` (`user_id`),
   FOREIGN KEY (site_id) REFERENCES sites(id)
-       ON DELETE CASCADE
-       ON UPDATE CASCADE,
-  FOREIGN KEY (user_id) REFERENCES users(id)
        ON DELETE CASCADE
        ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
