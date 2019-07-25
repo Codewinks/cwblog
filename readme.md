@@ -9,7 +9,7 @@ Under development. CWBlog is a free and open-source content management system.
 
 ### Features
 * [x] API – Built with GoLang using [CWorm](https://github.com/codewinks/cworm)
-* [ ] Admin – Built on VuetifyJS
+* [ ] Admin – Built with React
 * [ ] Blog – TBD
 
 
@@ -32,13 +32,12 @@ Under development. CWBlog is a free and open-source content management system.
         - [ ] Register – Create user on API
         - [ ] Invite – Invite user/admin
     - [x] API/Auth0 Authentication
-    - [ ] API plugin to pass 
     - [ ] Post CRUD/API Integration
         – [ ] Error handler
         - [ ] JS Validation
     - [ ] User CRUD/API Integration
+        - [ ] Create user in database on successful login
     - [ ] Blog settings/configuration
-    - [ ] Webpack js/scss complier
     - [x] Add MDI to project
     - [ ] Compile static blog frontend
     - [ ] Compile to static pages    

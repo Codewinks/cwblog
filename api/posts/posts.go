@@ -12,17 +12,16 @@ import (
 	"errors"
 	"github.com/codewinks/cwblog/api/models"
 	"github.com/codewinks/cwblog/core"
-	"github.com/codewinks/cwblog/middleware"
+	// "github.com/codewinks/cwblog/middleware"
 )
 
 type Handler core.Handler
 
 func Routes(r chi.Router, db *cworm.DB) chi.Router {
-	fmt.Println("posts routes loaded")
 	cw := &Handler{DB: db}
 	r.Route("/posts", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
-			r.Use(middleware.IsAuthenticated)
+			// r.Use(middleware.IsAuthenticated)
 			r.Get("/", cw.List)
 			r.Post("/", cw.Store)
 
@@ -77,7 +76,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("%#v \n", post)
+	fmt.Printf("====%#v \n", post)
 
 	render.JSON(w, r, post)
 }
@@ -85,6 +84,11 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("-----")
 	post := r.Context().Value("post").(*models.Post)
+
+	if post == nil {
+		render.Render(w, r, core.ErrNotFound)
+		return
+	}
 
 	render.JSON(w, r, post)
 }
@@ -126,6 +130,7 @@ func (cw *Handler) PostCtx(next http.Handler) http.Handler {
 			render.Render(w, r, core.ErrNotFound)
 			return
 		}
+
 		if err != nil {
 			render.Render(w, r, core.ErrNotFound)
 			return

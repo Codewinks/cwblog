@@ -10,7 +10,7 @@ const webAuth = new auth0.WebAuth({
     clientID: authConfig.clientId,
     responseType: 'token id_token',
     scope: 'openid profile email',
-    audience: authConfig.apiId,
+    audience: authConfig.audience,
 });
 
 class AuthService extends EventEmitter {

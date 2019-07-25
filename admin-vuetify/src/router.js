@@ -8,7 +8,7 @@ import Callback from './views/auth/Callback';
 import Profile from "./views/Profile";
 
 import PostsList from "./views/posts/List";
-import PostsCreate from "./views/posts/Create";
+import PostForm from "./views/posts/Form";
 
 import Error404 from "./views/errors/404";
 
@@ -38,7 +38,12 @@ const routes = [
     {
         path: "/posts/create",
         name: "posts.create",
-        component: PostsCreate
+        component: PostForm
+    },
+    {
+        path: "/posts/:postId",
+        name: "posts.edit",
+        component: PostForm
     },
     { path: "*", component: Error404 }
 ];
@@ -49,8 +54,8 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
+    return next();
     if (to.path === "/" || to.path === "/callback" || auth.isAuthenticated()) {
-        return next();
     }
 
     // Specify the current path as the customState parameter, meaning it

@@ -1,0 +1,34 @@
+.auto-height{
+    height:auto!important;
+}
+
+
+.v-list[auto-height]{
+    .v-list__tile{
+        height: auto;
+        align-items: flex-start;
+        .v-input--selection-controls__input{
+            margin-top: 3px;
+        }
+    }
+    .v-list__tile__sub-title{
+        white-space: normal;
+    }
+}
+
+.list-condensed{    
+    .v-list__tile{
+        padding-top: 4px;
+        padding-bottom: 4px;
+    }
+    .v-list__tile__action{
+        min-width: 40px;
+    }
+    .v-list__tile__sub-title{
+        font-size: 12px;
+        line-height: 1.3;
+    }
+    .v-input__slot{
+        margin-bottom: 0!important;
+    }
+}

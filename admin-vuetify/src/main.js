@@ -1,6 +1,5 @@
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/src/stylus/app.styl'
-
 import Vue from 'vue'
 import Vuetify from 'vuetify'
 import VueRouter from 'vue-router'
@@ -9,6 +8,10 @@ import App from './App.vue'
 import AuthPlugin from './plugins/auth';
 import router from './router';
 import axios from 'axios';
+
+
+Vue.component('loader', require('./views/common/Loader').default);
+Vue.component('messages', require('./views/common/Messages').default);
 
 Vue.use(VueRouter);
 Vue.use(AuthPlugin);
@@ -59,7 +62,7 @@ new Vue({
 
 Vue.filter('slugify', function (value) {
   value = value.replace(/^\s+|\s+$/g, ''); // trim
-  value = value.toLowerCase();
+  value = value.toLowerCase();  
 
   // remove accents, swap ñ for n, etc
   var from = "ãàáäâẽèéëêìíïîõòóöôùúüûñç·/_,:;";

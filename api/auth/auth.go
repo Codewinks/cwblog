@@ -17,7 +17,6 @@ import (
 type Handler core.Handler
 
 func Routes(r chi.Router, db *cworm.DB) chi.Router {
-	fmt.Println("auth routes loaded")
 	cw := &Handler{DB: db}
 	r.Route("/auth", func(r chi.Router) {
 		r.Post("/login", cw.Login)

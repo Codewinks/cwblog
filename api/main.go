@@ -23,7 +23,7 @@ func Routes(db *cworm.DB) *chi.Mux {
 
 	cors := cors.New(cors.Options{
 		// AllowedOrigins: []string{"*"},
-		AllowOriginFunc: AllowOriginFunc,
+		AllowOriginFunc: AllowedOriginFunc,
 		AllowedMethods:  []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:  []string{"Accept", "Authorization", "Content-Type"},
 		// ExposedHeaders:   []string{"Link"},
@@ -49,8 +49,8 @@ func Routes(db *cworm.DB) *chi.Mux {
 	return router
 }
 
-func AllowOriginFunc(r *http.Request, origin string) bool {
-	if origin == "http://localhost:8080" {
+func AllowedOriginFunc(r *http.Request, origin string) bool {
+	if origin == "http://localhost:3000" {
 		return true
 	}
 

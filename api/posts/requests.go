@@ -36,7 +36,7 @@ func (p *PostRequest) Bind(r *http.Request) error {
 		p.Post.Slug = slugify(p.Post.Title) // as an example, we down-case
 	}
 
-	fmt.Println(p.Post)
+	fmt.Printf("--%#v\n", p.Post)
 
 	return nil
 }

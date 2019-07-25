@@ -7,11 +7,14 @@
 
     <v-layout row align-center>
       <v-flex grow>
-        <a href="#" class="font-weight-bolder text-body">All (2)</a> |
-        <a class href="#">
+
+        <v-chip small text-color="white">
+        <a href="#" class="white--text mr-1">All ({{ this.posts.length }})</a> |
+        <a href="#" class="white--text ml-1">
           Drafts
-          <span class="text-body">(2)</span>
+          <span class="white--text">({{ this.posts.filter(function(v){return v.status===0}).length }})</span>
         </a>
+          </v-chip>
       </v-flex>
       <v-flex d-flex shrink>
         <v-icon v-on:click="refresh" class="mr-3">refresh</v-icon>
@@ -69,14 +72,14 @@
       <template v-slot:items="props">
         <tr :active="props.selected" @click="props.selected = !props.selected">
           <td>
-            <v-checkbox
-              primary
-              hide-details
-              :input-value="props.selected"
-            ></v-checkbox>
+            <v-checkbox primary hide-details :input-value="props.selected"></v-checkbox>
           </td>
-          <td>{{ props.item.title }}</td>
-          <td>{{ props.item.author }}</td>
+          <td>
+            <router-link
+              :to="{ name: 'posts.edit', params: { postId: props.item.id }}" 
+            >{{ props.item.title }}</router-link>{{ props.item.status == 0 ? ' — Draft' : null }}
+          </td>
+          <td>{{ props.item.user.first_name }}</td>
           <td>{{ props.item.categories }}</td>
           <td class="text-xs-right">{{ props.item.tags }}</td>
           <td class="text-xs-right">{{ props.item.comments }}</td>
@@ -119,7 +122,7 @@ export default {
     this.getPosts();
   },
   methods: {
-    refresh(){
+    refresh() {
       this.getPosts();
     },
     getPosts() {
@@ -134,7 +137,7 @@ export default {
         .catch(function(error) {
           console.log(error);
         })
-        .then(()=>{
+        .then(() => {
           this.loading = false;
         });
     }

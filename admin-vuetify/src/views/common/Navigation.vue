@@ -2,7 +2,7 @@
   <div class="main-nav">
     <v-navigation-drawer v-model="leftNav" clipped fixed app :width="200">
       <v-list dense>
-        <v-list-tile :to="{path: '/'}">
+        <v-list-tile to="/">
           <v-list-tile-action>
             <v-icon>dashboard</v-icon>
           </v-list-tile-action>
@@ -10,7 +10,7 @@
             <v-list-tile-title>Dashboard</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile :to="{path: '/posts'}">
+        <v-list-tile to="/posts">
           <v-list-tile-action>
             <v-icon>apps</v-icon>
           </v-list-tile-action>
@@ -18,7 +18,7 @@
             <v-list-tile-title>Posts</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile :to="{path: '/users'}">
+        <v-list-tile to="/users">
           <v-list-tile-action>
             <v-icon>group</v-icon>
           </v-list-tile-action>
@@ -26,7 +26,7 @@
             <v-list-tile-title>Users</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile :to="{path: '/settings'}">
+        <v-list-tile to="/settings">
           <v-list-tile-action>
             <v-icon>settings</v-icon>
           </v-list-tile-action>
@@ -76,7 +76,7 @@
           </template>
           <v-list dense>
             <template v-if="$root.isAuthenticated">
-              <v-list-tile :to="{path: '/profile'}">
+              <v-list-tile to="profile">
                 <v-list-tile-action>
                   <v-icon>person</v-icon>
                 </v-list-tile-action>

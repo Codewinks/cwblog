@@ -10,7 +10,7 @@
         </v-layout>
       </v-container>
     </v-content>
-    <v-footer app fixed>
+    <v-footer app fixed class="pa-3">
       <span>&copy; 2019</span>
     </v-footer>
   </v-app>
@@ -27,7 +27,9 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
+@import 'src/assets/scss/app.scss';
+
 #app{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

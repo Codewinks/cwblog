@@ -1,22 +1,22 @@
 package models
 
 type Post struct {
-	Id            string `json:"id"`
+	Id            int    `json:"id"`
 	UserId        string `json:"user_id"`
 	Title         string `json:"title" binding:"required"`
 	Content       string `json:"content"`
 	Excerpt       string `json:"excerpt" binding:"max=255"`
 	Slug          string `json:"slug" binding:"required,max=200"`
 	Password      string `json:"password"`
-	Sort          string `json:"sort"`
 	Format        string `json:"format" binding:"exists"`
 	Visibility    string `json:"visibility" binding:"exists"`
-	CommentStatus string `json:"comment_status" binding:"exists"`
+	Sort          int    `json:"sort"`
+	CommentStatus int    `json:"comment_status" binding:"exists"`
 	Status        string `json:"status" binding:"exists"`
 	PublishedAt   string `json:"published_at"`
 	CreatedAt     string `json:"created_at"`
 	UpdatedAt     string `json:"updated_at"`
-	DeletedAt     string `json:"deleted_at"`
+	DeletedAt     string `json:"deleted_at,omitempty"`
 	User          User   `json:"user"`
 }
 
