@@ -1,10 +1,10 @@
 import React from "react";
-import { useAuth0 } from "../react-auth0-wrapper";
+import { useAuth0 } from "../context/Auth0";
 import Typography from '@material-ui/core/Typography';
 
 
 const Login = () => {
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
 
   return (
     <>
@@ -12,8 +12,19 @@ const Login = () => {
         Login
       </Typography>
       {!isAuthenticated && (
-        <button onClick={() => loginWithRedirect({})}>Log in</button>
+        <>
+          <button
+            onClick={() =>
+              loginWithRedirect({})
+            }
+          >
+            Log in
+          </button>
+          <button onClick={() => logout()}>Log out</button>
+        </>
       )}
+
+      {isAuthenticated && <button onClick={() => logout()}>Log out</button>}
     </>
   );
 };

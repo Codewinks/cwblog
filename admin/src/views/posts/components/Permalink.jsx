@@ -89,19 +89,19 @@ const useStyles = makeStyles(theme => {
 
 const baseUrl = window.location.origin + '/';
 
-const Permalink = props => {
+const Permalink = () => {
     const { post, handleUpdate } = usePost();
     const classes = useStyles();
     const [slug, setSlug] = React.useState('')
     const [toggleEdit, setToggleEdit] = React.useState(false)
 
     useEffect(() => {
-        if (!toggleEdit) {
+        if (!toggleEdit && post) {
             setSlug(slugify(post.title))
             handleUpdate('slug', slug)
         }
         // eslint-disable-next-line
-    }, [post.title]);
+    }, [post]);
 
     function handleToggleEdit() {
         setToggleEdit(toggle => !toggle);

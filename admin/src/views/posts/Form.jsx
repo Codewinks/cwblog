@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
-import { useApp } from '../../context/App'
+import React, { useState, useEffect } from 'react';
 import { usePost } from '../../context/Post'
-import { useAuth0 } from "../../react-auth0-wrapper";
 
 import Permalink from "./components/Permalink";
 import SettingsTab from "./components/SettingsTab"
@@ -22,8 +20,16 @@ import TextField from '@material-ui/core/TextField';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
+
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -59,20 +65,34 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const PostsCreate = () => {
-    const { user, getTokenSilently } = useAuth0();
-    const { showAlert } = useApp();
-    const { post, handleChange, handleUpdate }  = usePost();
+const PostsForm = ({ match }) => {
+    const { post, loading, setLoading, newPost, savePost, getPost, deletePost, handleChange, handleUpdate } = usePost();
     const classes = useStyles();
     const anchorRef = React.useRef(null);
 
     const [toggleDropdown, setToggleDropdown] = React.useState(false);
     const [toggleSettings, setToggleSettings] = React.useState(true);
     const [settingsDropdown, setSettingsDropdown] = React.useState(false);
+    const [confirmDelete, setConfirmDelete] = React.useState(false);
     const [config, setConfig] = useState({
         tab: 0
     })
 
+    useEffect(() => {
+        newPost();
+        if (!match.params.postId) {
+            setLoading(false);
+            return
+        }
+
+        async function fetchData() {
+            await getPost(match.params.postId)
+        }
+        fetchData();
+
+        // eslint-disable-next-line
+    }, [])
+    
     const handleToggleDropdown = () => {
         setToggleDropdown(toggle => !toggle);
     }
@@ -97,8 +117,9 @@ const PostsCreate = () => {
     }
 
     const handleSaveDraft = () => {
+        // TODO: Implement versioning so that you can have "drafts" on a public post
         handleUpdate('status', 'draft');
-        createPost();
+        savePost();
         setToggleDropdown(false);
     }
 
@@ -106,40 +127,47 @@ const PostsCreate = () => {
         setSettingsDropdown(false);
     }
 
-    const createPost = async () => {        
-        try{
-            const token = await getTokenSilently();
-            const response = await fetch("http://api.winks.localhost:8080/v1/posts", {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({...post, user_id: user.sub})
-            });
-
-            const data = await response.json();
-
-            if (!response.ok)
-                throw new Error(data.error);
-            
-            showAlert('success', 'Post created.', 5000)
-            
-        } catch (error) {
-            console.error(error);
-            showAlert('error', error.message)
-        }
+    if(loading){
+        return (
+            <>loading...</>
+        )
     }
 
     return (
         <>
             <div className={classes.actionBtn}>
-                <IconButton className={classes.settingsBtn} aria-label="Delete" onClick={handleToggleSettings}>
+                <IconButton className={classes.settingsBtn} aria-label="Delete" onClick={() => setConfirmDelete(true)}>
+                    <DeleteIcon />
+                </IconButton>
+                <Dialog
+                    open={confirmDelete}
+                    onClose={() => setConfirmDelete(false)}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete this post?"}</DialogTitle>
+                    <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        The post will no longer be published and marked for deletion.
+                    </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                    <Button onClick={() => setConfirmDelete(false)} color="primary" autoFocus>
+                        Cancel
+                    </Button>
+                    <Button onClick={deletePost} color="secondary">
+                        Delete
+                    </Button>
+                    </DialogActions>
+                </Dialog>
+                <IconButton className={classes.settingsBtn} aria-label="Settings" onClick={handleToggleSettings}>
                     <SettingsIcon />
                 </IconButton>
                 <Button variant="contained" className={classes.button}>Preview</Button>
                 <ButtonGroup variant="contained" color="primary" aria-label="Publish">
-                    <Button onClick={createPost}>Publish Now</Button>
+                    <Button onClick={savePost}>
+                        {post.id ? 'Update' : 'Publish Now' }
+                    </Button>
                     <Button
                         ref={anchorRef}
                         color="primary"
@@ -172,9 +200,9 @@ const PostsCreate = () => {
                 </Popper>
             </div>
             <Typography variant="h3" gutterBottom>
-                New Post
+                {post.id ? 'Edit' : 'Create' } Post
             </Typography>
-            <Permalink/>
+            <Permalink />
             <Grid container spacing={3} className={classes.wrapper}>
                 <Grid item className={classes.leftCol}>
                     <TextField
@@ -184,8 +212,9 @@ const PostsCreate = () => {
                         margin="normal"
                         fullWidth
                         variant="outlined"
-                        error={true}
-                        helperText="Post title is required."
+                        value={post.title ? post.title : ""}
+                        // error={true}
+                        // helperText="Post title is required."
                     />
                     <TextField
                         id="post-content"
@@ -196,6 +225,7 @@ const PostsCreate = () => {
                         margin="normal"
                         fullWidth
                         variant="outlined"
+                        value={post.content ? post.content : ""}
                     />
                 </Grid>
 
@@ -217,4 +247,4 @@ const PostsCreate = () => {
     )
 };
 
-export default PostsCreate;
+export default PostsForm;

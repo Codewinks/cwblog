@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from './context/App'
-import { useAuth0 } from "./react-auth0-wrapper";
+import { useAuth0 } from "./context/Auth0";
 import { makeStyles } from '@material-ui/core/styles';
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
@@ -13,7 +13,7 @@ import Dashboard from "./views/Dashboard";
 import NoMatch from "./views/errors/NoMatch";
 import Profile from "./views/Profile";
 import PostsList from "./views/posts/List";
-import PostsCreate from "./views/posts/Create";
+import PostsForm from "./views/posts/Form";
 import PrivateRoute from "./components/PrivateRoute";
 import Alert from "./components/Alert";
 
@@ -64,10 +64,11 @@ function App() {
         <main className={classes.content}>
           <div className={classes.toolbar} />
           <Switch>
-            <Route path="/" exact component={Dashboard} />            
-            <PrivateRoute path="/posts/create" render={routeProps => (<PostProvider><PostsCreate /></PostProvider>)} />
-            <PrivateRoute exact path="/posts" component={PostsList} />
-            <PrivateRoute path="/profile" component={Profile} />
+            <Route path="/" exact component={Dashboard} />
+            <PrivateRoute exact path="/posts/create" render={p => (<PostProvider {...p}><PostsForm {...p}/></PostProvider>)} />
+            <PrivateRoute exact path="/posts/:postId" render={p => (<PostProvider {...p}><PostsForm {...p}/></PostProvider>)} />
+            <PrivateRoute exact path="/posts" render={p => (<PostProvider {...p}><PostsList {...p}/></PostProvider>)} />
+            <PrivateRoute exact path="/profile" component={Profile} />
             <Route component={NoMatch} />
           </Switch>
         </main>

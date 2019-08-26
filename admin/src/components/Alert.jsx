@@ -48,8 +48,6 @@ const Alert = (props) => {
     const classes = useStyles();
     const { className, message, onClose, autoHideDuration, variant, ...other } = props;
     const variantType = variant ? variant : 'info';
-
-    console.log(autoHideDuration)
     const Icon = variantIcon[variantType];
 
     return (

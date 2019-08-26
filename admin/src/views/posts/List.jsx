@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useAuth0 } from "../../react-auth0-wrapper";
+import React, { useEffect } from "react";
+import { usePost } from '../../context/Post'
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 import Typography from '@material-ui/core/Typography';
@@ -28,32 +28,23 @@ const useStyles = makeStyles(theme => ({
         bottom: theme.spacing(2),
         right: theme.spacing(2),
     },
+    cursor: {
+        cursor: 'pointer'
+    }
 }));
 
-const PostsList = () => {
-    const { getTokenSilently } = useAuth0();
-    const [posts, setPosts] = useState(null);
-    const [loading, setLoading] = useState(true);
+const PostsList = ({history}) => {
+    const { posts, loading, listPosts } = usePost();
     const classes = useStyles();
 
     useEffect(() => {
-        const getPosts = async () => {
-            try {
-                const token = await getTokenSilently();
-                const response = await fetch("http://api.winks.localhost:8080/v1/posts", {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-
-                setPosts(await response.json());
-                setLoading(false);
-            } catch (error) {
-                console.error(error);
-            }
+        async function fetchData() {
+            await listPosts()
         }
-        getPosts();
-    }, [getTokenSilently]);
+
+        fetchData();
+        // eslint-disable-next-line
+    }, []);
 
     return (
         <>
@@ -93,9 +84,9 @@ const PostsList = () => {
                                     </TableRow>
                                 )}
                                 {posts && posts.length > 0 && posts.map(row => (
-                                    <TableRow key={row.id}>
+                                    <TableRow key={row.id} hover>
                                         <TableCell component="th" scope="row">
-                                            {row.title}
+                                            <Link to={`/posts/${row.id}`}>{row.title}</Link>
                                         </TableCell>
                                         <TableCell>{row.user.first_name}</TableCell>
                                         <TableCell align="right"></TableCell>

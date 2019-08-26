@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { Auth0Provider } from "./react-auth0-wrapper";
+import { Auth0Provider } from "./context/Auth0";
 import { AppProvider } from './context/App';
 import config from "./auth_config.json";
 

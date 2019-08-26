@@ -2,7 +2,7 @@ import React from "react";
 import clsx from 'clsx';
 
 import { fade, makeStyles, useTheme } from '@material-ui/core/styles';
-import { useAuth0 } from "../react-auth0-wrapper";
+import { useAuth0 } from "../context/Auth0";
 import { Link } from "react-router-dom";
 
 import AppBar from '@material-ui/core/AppBar';
@@ -88,9 +88,6 @@ const useStyles = makeStyles(theme => ({
         }),
         overflowX: 'hidden',
         width: theme.spacing(7) + 1,
-        [theme.breakpoints.up('sm')]: {
-            width: theme.spacing(9) + 1,
-        },
         [theme.breakpoints.down('sm')]: {
             width: 0,
             display: 'none',
@@ -210,8 +207,8 @@ const Navigation = (props) => {
                 <MenuItem onClick={handleMenuClose} component={Link} to="/profile" key="profile">Profile</MenuItem>,
                 <MenuItem onClick={() => logout()} key="logout">Logout</MenuItem>
             ] :  
-                <MenuItem onClick={() => loginWithRedirect()}>Login</MenuItem>
-             }
+                <MenuItem onClick={() => loginWithRedirect({})}>Login</MenuItem>
+            }
         </Menu>
     );
 
