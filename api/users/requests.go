@@ -3,8 +3,9 @@ package users
 import (
 	"errors"
 	"fmt"
-	"github.com/codewinks/cwblog/api/models"
 	"net/http"
+
+	"github.com/codewinks/cwblog/api/models"
 )
 
 type UserRequest struct {
@@ -15,15 +16,23 @@ func (u *UserRequest) Bind(r *http.Request) error {
 	// u.User is nil if no Post fields are sent in the request. Return an
 	// error to avoid a nil pointer dereference.
 	if u.User == nil {
-		return errors.New("Missing required Post fields.")
+		return errors.New("Missing required user fields.")
+	}
+
+	if u.User.Id == "" {
+		return errors.New("Missing user id.")
 	}
 
 	if u.User.FirstName == "" {
-		return errors.New("Missing title")
+		return errors.New("Missing first name.")
+	}
+
+	if u.User.LastName == "" {
+		return errors.New("Missing last name.")
 	}
 
 	if u.User.Email == "" {
-		return errors.New("Missing site id")
+		return errors.New("Missing email.")
 	}
 
 	// a.User is nil if no Userpayload fields are sent in the request. In this app

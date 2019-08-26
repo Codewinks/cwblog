@@ -2,17 +2,17 @@ package posts
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
 
-	"fmt"
 	"github.com/codewinks/cworm"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
-	"errors"
 	"github.com/codewinks/cwblog/api/models"
 	"github.com/codewinks/cwblog/core"
-	// "github.com/codewinks/cwblog/middleware"
+	"github.com/codewinks/cwblog/middleware"
 )
 
 type Handler core.Handler
@@ -21,7 +21,7 @@ func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	cw := &Handler{DB: db}
 	r.Route("/posts", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
-			// r.Use(middleware.IsAuthenticated)
+			r.Use(middleware.IsAuthenticated)
 			r.Get("/", cw.List)
 			r.Post("/", cw.Store)
 
@@ -45,11 +45,6 @@ func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	// if posts == nil {
-	// 	render.Render(w, r, core.ErrNotFound)
-	// 	return
-	// }
-
 	render.JSON(w, r, posts)
 }
 
@@ -65,6 +60,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
+
 	if exists {
 		render.Render(w, r, core.ErrConflict(errors.New("Post already exists with that slug.")))
 		return
@@ -111,7 +107,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
-	post := r.Context().Value("post").(models.Post)
+	post := r.Context().Value("post").(*models.Post)
 	cw.DB.Delete(post)
 
 	render.JSON(w, r, post)

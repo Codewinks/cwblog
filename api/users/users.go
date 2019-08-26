@@ -60,6 +60,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
+	
 	if exists {
 		render.Render(w, r, core.ErrConflict(errors.New("User already exists with that email.")))
 		return

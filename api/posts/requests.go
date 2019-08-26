@@ -3,10 +3,11 @@ package posts
 import (
 	"errors"
 	"fmt"
-	"github.com/codewinks/cwblog/api/models"
 	"net/http"
 	"regexp"
 	"strings"
+
+	"github.com/codewinks/cwblog/api/models"
 )
 
 type PostRequest struct {
@@ -14,29 +15,22 @@ type PostRequest struct {
 }
 
 func (p *PostRequest) Bind(r *http.Request) error {
-	// p.Post is nil if no Post fields are sent in the request. Return an
-	// error to avoid a nil pointer dereference.
+	fmt.Printf("====%#v \n", p.Post)
 	if p.Post == nil {
-		return errors.New("Missing required Post fields.")
+		return errors.New("Missing required Post fields")
 	}
 
 	if p.Post.Title == "" {
-		return errors.New("Missing title")
+		return errors.New("Missing post title")
 	}
 
 	if p.Post.UserId == "" {
-		return errors.New("Missing user id")
+		p.Post.UserId = r.Context().Value("userID").(string)
 	}
-
-	// a.User is nil if no Userpayload fields are sent in the request. In this app
-	// this won't cause a panic, but checks in this Bind method may be required if
-	// a.User or futher nested fields like a.User.Name are accessed elsewhere.
 
 	if p.Post.Slug == "" {
-		p.Post.Slug = slugify(p.Post.Title) // as an example, we down-case
+		p.Post.Slug = slugify(p.Post.Title)
 	}
-
-	fmt.Printf("--%#v\n", p.Post)
 
 	return nil
 }
