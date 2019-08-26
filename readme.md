@@ -16,8 +16,9 @@ Under development. CWBlog is a free and open-source content management system.
 ### Roadmap:
 - [ ] Project structure and plan
 - [ ] Documentation
-- [ ] CWB CMD Line
+- [x] CWB CMD Line
 - [ ] DB Migrations
+    - [x] Initial migrations
     - [ ] Port migrations so that it runs as its own package
     - [ ] Add migrate generate/rollback/reset/refresh
     - [ ] Update command line
@@ -29,16 +30,23 @@ Under development. CWBlog is a free and open-source content management system.
     - [x] Auth0 Integration
 - [ ] Admin
     - [x] Auth0 Login Integration
-        - [ ] Register – Create user on API
+        - [x] Register – Create user on API
+        - [ ] Solution for disabled registration/signup
+        - [ ] User roles admin, guest
         - [ ] Invite – Invite user/admin
     - [x] API/Auth0 Authentication
-    - [ ] Post CRUD/API Integration
-        – [ ] Error handler
+    - [ ] Dashboard with statistics
+    - [x] Post CRUD/API Integration
+        – [x] Error handler
         - [ ] JS Validation
+        - [ ] SEO block with preview
+        - [ ] Wysiwyg content
+    - [ ] Categories CRUD/API Integration
+    - [ ] Tags CRUD/API Integration
     - [ ] User CRUD/API Integration
-        - [ ] Create user in database on successful login
+        - [√] Create user in database on successful login
+        - [ ] Manage users
     - [ ] Blog settings/configuration
-    - [x] Add MDI to project
     - [ ] Compile static blog frontend
     - [ ] Compile to static pages    
 - [ ] Blog Frontend

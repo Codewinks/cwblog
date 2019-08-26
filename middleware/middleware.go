@@ -1,13 +1,14 @@
 package middleware
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"os"
 
-	"github.com/auth0/go-jwt-middleware"
+	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -62,13 +63,14 @@ func IsAuthenticated(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		err := jwtMiddleware.CheckJWT(w, r)
-
-		// If there was an error, do not continue.
 		if err != nil {
 			return
 		}
 
-		next.ServeHTTP(w, r)
+		// next.ServeHTTP(w, r)
+		userID := r.Context().Value("user").(*jwt.Token).Claims.(jwt.MapClaims)["sub"]
+		ctx := context.WithValue(r.Context(), "userID", userID)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
