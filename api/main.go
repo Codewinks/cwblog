@@ -13,7 +13,9 @@ import (
 	"github.com/go-chi/render"
 
 	"github.com/codewinks/cwblog/api/auth"
+	"github.com/codewinks/cwblog/api/categories"
 	"github.com/codewinks/cwblog/api/posts"
+	"github.com/codewinks/cwblog/api/tags"
 	"github.com/codewinks/cwblog/api/users"
 	"github.com/codewinks/cworm"
 )
@@ -44,6 +46,8 @@ func Routes(db *cworm.DB) *chi.Mux {
 		auth.Routes(r, db)
 		posts.Routes(r, db)
 		users.Routes(r, db)
+		categories.Routes(r, db)
+		tags.Routes(r, db)
 	})
 
 	return router

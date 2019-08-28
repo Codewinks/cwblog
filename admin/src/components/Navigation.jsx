@@ -36,9 +36,10 @@ import SearchIcon from '@material-ui/icons/Search';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import Collapse from '@material-ui/core/Collapse';
 
 
-const drawerWidth = 240;
+const drawerWidth = 180;
 
 const useStyles = makeStyles(theme => ({
     grow: {
@@ -50,14 +51,6 @@ const useStyles = makeStyles(theme => ({
     avatar: {
         padding: 0,
         margin: 10,
-    },
-    appBarShift: {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
@@ -73,6 +66,23 @@ const useStyles = makeStyles(theme => ({
         width: drawerWidth,
         flexShrink: 0,
         whiteSpace: 'nowrap',
+    },
+    drawerPaper: {
+        color: '#fff',
+        backgroundColor: '#111',
+    },
+    drawerBg: {
+        backgroundImage: 'url(/img/bg-sidebar.jpg)',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: -1,
+        opacity: 0.1,
+        position: 'absolute',
+        transition: 'all 200ms linear',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center',
     },
     drawerOpen: {
         width: drawerWidth,
@@ -153,6 +163,13 @@ const useStyles = makeStyles(theme => ({
             display: 'none',
         },
     },
+    navNested: {
+        backgroundColor: 'rgba(162,162,162,0.1)'
+    },
+    navIcon:{
+        color: 'inherit',
+        minWidth: '40px'
+    }
 }));
 
 const Navigation = (props) => {
@@ -162,13 +179,10 @@ const Navigation = (props) => {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
 
-    function openDrawer() {
-        setOpen(true);
+    function toggleDrawer() {        
+        setOpen(toggle => !toggle);
     }
 
-    function closeDrawer() {     
-        setOpen(false);
-    }
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -255,10 +269,10 @@ const Navigation = (props) => {
 
     return (
         <>
-            <AppBar position="fixed" className={clsx(classes.appBar, { [classes.appBarShift]: open })}>
+            <AppBar position="fixed" className={clsx(classes.appBar)}>
                 <Toolbar>
-                    <IconButton color="inherit" aria-label="Open drawer" onClick={openDrawer} edge="start" className={clsx(classes.menuButton, { [classes.hide]: open })}>
-                        <MenuIcon />
+                    <IconButton color="inherit" aria-label="Toggle Navigation" onClick={toggleDrawer} edge="start" className={clsx(classes.menuButton)}>
+                        { !open ? <MenuIcon /> : theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon /> }
                     </IconButton>
                     <Typography variant="h6" noWrap className={classes.title}>CWBlog</Typography>
                     <div className={classes.search}>
@@ -313,44 +327,56 @@ const Navigation = (props) => {
             </AppBar>
             {renderMobileMenu}
             {renderMenu}
-            <Drawer variant="permanent"
+            <Drawer variant="permanent" PaperProps={{ elevation: 8 }}
                 className={clsx(classes.drawer, {
                     [classes.drawerOpen]: open,
                     [classes.drawerClose]: !open,
                 })}
                 classes={{
-                    paper: clsx({
+                    paper: clsx(classes.drawerPaper, {
                         [classes.drawerOpen]: open,
                         [classes.drawerClose]: !open,
                     }),
                 }}
                 open={open}
             >
-                <div className={classes.toolbar}>
-                    <IconButton onClick={closeDrawer}>
-                        {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                    </IconButton>
-                </div>
-                <Divider />
+                <div className={classes.toolbar}></div>
                 <List>
                     <ListItem button to="/" component={Link}>
-                        <ListItemIcon><DashboardIcon /></ListItemIcon>
-                        <ListItemText primary="Dashboard" />
+                        <ListItemIcon className={classes.navIcon}><DashboardIcon /></ListItemIcon>
+                        <ListItemText primary="Dashboard"/>
                     </ListItem>
                     <ListItem button to="/posts" component={Link}>
-                        <ListItemIcon><LibraryBooksIcon /></ListItemIcon>
+                        <ListItemIcon className={classes.navIcon}><LibraryBooksIcon /></ListItemIcon>
                         <ListItemText primary="Posts" />
                     </ListItem>
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                        <List disablePadding className={classes.navNested}>
+                            <ListItem button to="/posts" component={Link}>
+                                <ListItemText primary="All Posts" />
+                            </ListItem>
+                            <ListItem button to="/posts/create" component={Link}>
+                                <ListItemText primary="Add New" />
+                            </ListItem>
+                            <ListItem button to="/categories" component={Link}>
+                                <ListItemText primary="Categories" />
+                            </ListItem>
+                            <ListItem button to="/tags" component={Link}>
+                                <ListItemText primary="Tags" />
+                            </ListItem>
+                        </List>
+                    </Collapse>
                     <ListItem button to="/users" component={Link}>
-                        <ListItemIcon><PeopleIcon /></ListItemIcon>
+                        <ListItemIcon className={classes.navIcon}><PeopleIcon /></ListItemIcon>
                         <ListItemText primary="Users" />
                     </ListItem>
                      <ListItem button to="/settings" component={Link}>
-                        <ListItemIcon><SettingsIcon /></ListItemIcon>
+                        <ListItemIcon className={classes.navIcon}><SettingsIcon /></ListItemIcon>
                         <ListItemText primary="Settings" />
                     </ListItem>
                 </List>
                 <Divider />
+                <div className={classes.drawerBg}></div>
             </Drawer>
         </>
     );

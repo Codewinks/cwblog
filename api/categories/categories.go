@@ -1,4 +1,4 @@
-package posts
+package categories
 
 import (
 	"context"
@@ -19,108 +19,108 @@ type Handler core.Handler
 
 func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	cw := &Handler{DB: db}
-	r.Route("/posts", func(r chi.Router) {
+	r.Route("/categories", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.IsAuthenticated)
 			r.Get("/", cw.List)
 			r.Post("/", cw.Store)
 
-			r.Route("/{postId}", func(r chi.Router) {
-				r.Use(cw.PostCtx)
+			r.Route("/{categoryId}", func(r chi.Router) {
+				r.Use(cw.CategoryCtx)
 				r.Get("/", cw.Get)
 				r.Put("/", cw.Update)
 				r.Delete("/", cw.Delete)
 			})
 		})
 
-		r.With(cw.PostCtx).Get("/slug/{postSlug}", cw.Get)
+		r.With(cw.CategoryCtx).Get("/slug/{categorySlug}", cw.Get)
 	})
 
 	return r
 }
 
 func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
-	posts, err := cw.DB.Join(models.User{}, "user_id").Get(&models.Post{})
+	categories, err := cw.DB.Get(&models.Category{})
 	if err != nil {
 		panic(err)
 	}
 
-	render.JSON(w, r, posts)
+	render.JSON(w, r, categories)
 }
 
 func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
-	data := &PostRequest{}
+	data := &CategoryRequest{}
 	if err := render.Bind(r, data); err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
-	exists, err := cw.DB.Where("slug", "=", data.Post.Slug).Exists(models.Post{})
+	exists, err := cw.DB.Where("slug", "=", data.Category.Slug).Exists(models.Category{})
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
 	if exists {
-		render.Render(w, r, core.ErrConflict(errors.New("Post already exists with that slug.")))
+		render.Render(w, r, core.ErrConflict(errors.New("Category already exists with that slug.")))
 		return
 	}
 
-	post, err := cw.DB.New(data.Post)
+	category, err := cw.DB.New(data.Category)
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
-	fmt.Printf("====%#v \n", post)
+	fmt.Printf("====%#v \n", category)
 
-	render.JSON(w, r, post)
+	render.JSON(w, r, category)
 }
 
 func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("-----")
-	post := r.Context().Value("post").(*models.Post)
+	category := r.Context().Value("category").(*models.Category)
 
-	if post == nil {
+	if category == nil {
 		render.Render(w, r, core.ErrNotFound)
 		return
 	}
 
-	render.JSON(w, r, post)
+	render.JSON(w, r, category)
 }
 
 func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
-	post := r.Context().Value("post").(*models.Post)
+	category := r.Context().Value("category").(*models.Category)
 
-	data := &PostRequest{Post: post}
+	data := &CategoryRequest{Category: category}
 	if err := render.Bind(r, data); err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
-	post = data.Post
+	category = data.Category
 
-	cw.DB.Save(post)
+	cw.DB.Save(category)
 
-	render.JSON(w, r, post)
+	render.JSON(w, r, category)
 }
 
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
-	post := r.Context().Value("post").(*models.Post)
-	cw.DB.Delete(post)
+	category := r.Context().Value("category").(*models.Category)
+	cw.DB.Delete(category)
 
-	render.JSON(w, r, post)
+	render.JSON(w, r, category)
 }
 
-func (cw *Handler) PostCtx(next http.Handler) http.Handler {
+func (cw *Handler) CategoryCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var post models.Post
+		var category models.Category
 		var err error
 
-		if postId := chi.URLParam(r, "postId"); postId != "" {
-			err = cw.DB.Join(models.User{}, "user_id").Where("id", "=", postId).First(&post)
-		} else if postSlug := chi.URLParam(r, "postSlug"); postSlug != "" {
-			err = cw.DB.Join(models.User{}, "user_id").Where("slug", "=", postSlug).First(&post)
+		if categoryId := chi.URLParam(r, "categoryId"); categoryId != "" {
+			err = cw.DB.Join(models.User{}, "user_id").Where("id", "=", categoryId).First(&category)
+		} else if categorySlug := chi.URLParam(r, "categorySlug"); categorySlug != "" {
+			err = cw.DB.Join(models.User{}, "user_id").Where("slug", "=", categorySlug).First(&category)
 		} else {
 			render.Render(w, r, core.ErrNotFound)
 			return
@@ -131,7 +131,7 @@ func (cw *Handler) PostCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "post", &post)
+		ctx := context.WithValue(r.Context(), "category", &category)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

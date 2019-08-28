@@ -65,7 +65,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const PostsForm = ({ match }) => {
+const PostForm = ({ match }) => {
     const { post, loading, setLoading, newPost, savePost, getPost, deletePost, handleChange, handleUpdate } = usePost();
     const classes = useStyles();
     const anchorRef = React.useRef(null);
@@ -247,4 +247,4 @@ const PostsForm = ({ match }) => {
     )
 };
 
-export default PostsForm;
+export default PostForm;

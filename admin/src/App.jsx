@@ -8,16 +8,18 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 
 import Navigation from "./components/Navigation";
 
-import Login from "./views/Login";
+import Login from "./views/auth/Login";
 import Dashboard from "./views/Dashboard";
 import NoMatch from "./views/errors/NoMatch";
 import Profile from "./views/Profile";
-import PostsList from "./views/posts/List";
-import PostsForm from "./views/posts/Form";
+import TagList from "./views/tags/List";
+import PostList from "./views/posts/List";
+import PostForm from "./views/posts/Form";
 import PrivateRoute from "./components/PrivateRoute";
 import Alert from "./components/Alert";
 
 import { PostProvider } from './context/Post'
+import { TagProvider } from './context/Tag'
 
 
 import './App.css';
@@ -65,9 +67,11 @@ function App() {
           <div className={classes.toolbar} />
           <Switch>
             <Route path="/" exact component={Dashboard} />
-            <PrivateRoute exact path="/posts/create" render={p => (<PostProvider {...p}><PostsForm {...p}/></PostProvider>)} />
-            <PrivateRoute exact path="/posts/:postId" render={p => (<PostProvider {...p}><PostsForm {...p}/></PostProvider>)} />
-            <PrivateRoute exact path="/posts" render={p => (<PostProvider {...p}><PostsList {...p}/></PostProvider>)} />
+            <PrivateRoute exact path="/posts/create" render={p => (<PostProvider {...p}><PostForm {...p}/></PostProvider>)} />
+            <PrivateRoute exact path="/posts/:postId" render={p => (<PostProvider {...p}><PostForm {...p}/></PostProvider>)} />
+            <PrivateRoute exact path="/posts" render={p => (<PostProvider {...p}><PostList {...p}/></PostProvider>)} />
+            <PrivateRoute exact path="/tags/:tagId" render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
+            <PrivateRoute exact path="/tags" render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
             <PrivateRoute exact path="/profile" component={Profile} />
             <Route component={NoMatch} />
           </Switch>

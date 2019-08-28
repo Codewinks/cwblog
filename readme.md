@@ -38,13 +38,14 @@ Under development. CWBlog is a free and open-source content management system.
     - [ ] Dashboard with statistics
     - [x] Post CRUD/API Integration
         – [x] Error handler
+        - [ ] Add Pagination
         - [ ] JS Validation
         - [ ] SEO block with preview
         - [ ] Wysiwyg content
     - [ ] Categories CRUD/API Integration
     - [ ] Tags CRUD/API Integration
     - [ ] User CRUD/API Integration
-        - [√] Create user in database on successful login
+        - [x] Create user in database on successful login
         - [ ] Manage users
     - [ ] Blog settings/configuration
     - [ ] Compile static blog frontend

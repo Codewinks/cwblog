@@ -22,12 +22,33 @@ type Post struct {
 
 type User struct {
 	Id        string `json:"id"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email"`
+	FirstName string `json:"first_name" binding:"required"`
+	LastName  string `json:"last_name" binding:"required"`
+	Nickname  string `json:"nickname"`
+	Email     string `json:"email" binding:"required"`
 	Avatar    string `json:"avatar"`
 	Timezone  string `json:"timezone"`
 	Role      string `json:"role"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
+}
+
+type Category struct {
+	Id               string `json:"id"`
+	Name             string `json:"name" binding:"required"`
+	Slug             string `json:"slug" binding:"required"`
+	Description      string `json:"description"`
+	ParentCategoryId string `json:"parent_category_id"`
+	Visibility       string `json:"visibility"`
+	CreatedAt        string `json:"created_at"`
+	UpdatedAt        string `json:"updated_at"`
+}
+
+type Tag struct {
+	Id          string `json:"id"`
+	Name        string `json:"name" binding:"required"`
+	Slug        string `json:"slug" binding:"required"`
+	Description string `json:"description"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
 }

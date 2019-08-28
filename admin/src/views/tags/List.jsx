@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { usePost } from '../../context/Post'
+import { useTag } from '../../context/Tag'
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 import Typography from '@material-ui/core/Typography';
@@ -33,13 +33,13 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const PostList = ({history}) => {
-    const { posts, loading, listPosts } = usePost();
+const TagList = ({history}) => {
+    const { tags, loading, listTags } = useTag();
     const classes = useStyles();
 
     useEffect(() => {
         async function fetchData() {
-            await listPosts()
+            await listTags()
         }
 
         fetchData();
@@ -48,22 +48,20 @@ const PostList = ({history}) => {
 
     return (
         <>
-            <Fab to="/posts/create" component={Link} color="primary" aria-label="Add New Post" className={classes.actionBtn}>
+            <Fab to="/tags/create" component={Link} color="primary" aria-label="Add New Tag" className={classes.actionBtn}>
                 <Icon>add</Icon>
             </Fab>
             <Typography variant="h3" gutterBottom>
-                Posts
+                Tags
             </Typography>
             <Paper className={classes.root}>
                 <Table className={classes.table}>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Title</TableCell>
-                            <TableCell>Author</TableCell>
-                            <TableCell align="right">Categories</TableCell>
-                            <TableCell align="right">Tags</TableCell>
-                            <TableCell align="right">Comments</TableCell>
-                            <TableCell align="right">Date</TableCell>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Description</TableCell>
+                            <TableCell>Slug</TableCell>
+                            <TableCell align="right">Count</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -76,23 +74,21 @@ const PostList = ({history}) => {
                         )}
                         {!loading && (
                             <>
-                                {(!posts || !posts.length) && (
+                                {(!tags || !tags.length) && (
                                     <TableRow>
                                         <TableCell colSpan="100%" align="center">
-                                            No posts found.
+                                            No tags found.
                                         </TableCell>
                                     </TableRow>
                                 )}
-                                {posts && posts.length > 0 && posts.map(row => (
+                                {tags && tags.length > 0 && tags.map(row => (
                                     <TableRow key={row.id} hover>
                                         <TableCell component="th" scope="row">
-                                            <Link to={`/posts/${row.id}`}>{row.title}</Link>
+                                            <Link to={`/tags/${row.id}`}>{row.name}</Link>
                                         </TableCell>
-                                        <TableCell>{row.user.first_name}</TableCell>
-                                        <TableCell align="right"></TableCell>
-                                        <TableCell align="right"></TableCell>
-                                        <TableCell align="right"></TableCell>
-                                        <TableCell align="right"></TableCell>
+                                        <TableCell>{row.description}</TableCell>
+                                        <TableCell>{row.slug}</TableCell>
+                                        <TableCell align="right">0</TableCell>
                                     </TableRow>
                                 ))}
                             </>
@@ -104,4 +100,4 @@ const PostList = ({history}) => {
     );
 };
 
-export default PostList;
+export default TagList;

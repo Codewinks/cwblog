@@ -1,4 +1,4 @@
-package posts
+package tags
 
 import (
 	"context"
@@ -19,108 +19,108 @@ type Handler core.Handler
 
 func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	cw := &Handler{DB: db}
-	r.Route("/posts", func(r chi.Router) {
+	r.Route("/tags", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.IsAuthenticated)
 			r.Get("/", cw.List)
 			r.Post("/", cw.Store)
 
-			r.Route("/{postId}", func(r chi.Router) {
-				r.Use(cw.PostCtx)
+			r.Route("/{tagId}", func(r chi.Router) {
+				r.Use(cw.TagCtx)
 				r.Get("/", cw.Get)
 				r.Put("/", cw.Update)
 				r.Delete("/", cw.Delete)
 			})
 		})
 
-		r.With(cw.PostCtx).Get("/slug/{postSlug}", cw.Get)
+		r.With(cw.TagCtx).Get("/slug/{tagSlug}", cw.Get)
 	})
 
 	return r
 }
 
 func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
-	posts, err := cw.DB.Join(models.User{}, "user_id").Get(&models.Post{})
+	tags, err := cw.DB.Get(&models.Tag{})
 	if err != nil {
 		panic(err)
 	}
 
-	render.JSON(w, r, posts)
+	render.JSON(w, r, tags)
 }
 
 func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
-	data := &PostRequest{}
+	data := &TagRequest{}
 	if err := render.Bind(r, data); err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
-	exists, err := cw.DB.Where("slug", "=", data.Post.Slug).Exists(models.Post{})
+	exists, err := cw.DB.Where("slug", "=", data.Tag.Slug).Exists(models.Tag{})
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
 	if exists {
-		render.Render(w, r, core.ErrConflict(errors.New("Post already exists with that slug.")))
+		render.Render(w, r, core.ErrConflict(errors.New("Tag already exists with that slug.")))
 		return
 	}
 
-	post, err := cw.DB.New(data.Post)
+	tag, err := cw.DB.New(data.Tag)
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
-	fmt.Printf("====%#v \n", post)
+	fmt.Printf("====%#v \n", tag)
 
-	render.JSON(w, r, post)
+	render.JSON(w, r, tag)
 }
 
 func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("-----")
-	post := r.Context().Value("post").(*models.Post)
+	tag := r.Context().Value("tag").(*models.Tag)
 
-	if post == nil {
+	if tag == nil {
 		render.Render(w, r, core.ErrNotFound)
 		return
 	}
 
-	render.JSON(w, r, post)
+	render.JSON(w, r, tag)
 }
 
 func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
-	post := r.Context().Value("post").(*models.Post)
+	tag := r.Context().Value("tag").(*models.Tag)
 
-	data := &PostRequest{Post: post}
+	data := &TagRequest{Tag: tag}
 	if err := render.Bind(r, data); err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
-	post = data.Post
+	tag = data.Tag
 
-	cw.DB.Save(post)
+	cw.DB.Save(tag)
 
-	render.JSON(w, r, post)
+	render.JSON(w, r, tag)
 }
 
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
-	post := r.Context().Value("post").(*models.Post)
-	cw.DB.Delete(post)
+	tag := r.Context().Value("tag").(*models.Tag)
+	cw.DB.Delete(tag)
 
-	render.JSON(w, r, post)
+	render.JSON(w, r, tag)
 }
 
-func (cw *Handler) PostCtx(next http.Handler) http.Handler {
+func (cw *Handler) TagCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var post models.Post
+		var tag models.Tag
 		var err error
 
-		if postId := chi.URLParam(r, "postId"); postId != "" {
-			err = cw.DB.Join(models.User{}, "user_id").Where("id", "=", postId).First(&post)
-		} else if postSlug := chi.URLParam(r, "postSlug"); postSlug != "" {
-			err = cw.DB.Join(models.User{}, "user_id").Where("slug", "=", postSlug).First(&post)
+		if tagId := chi.URLParam(r, "tagId"); tagId != "" {
+			err = cw.DB.Join(models.User{}, "user_id").Where("id", "=", tagId).First(&tag)
+		} else if tagSlug := chi.URLParam(r, "tagSlug"); tagSlug != "" {
+			err = cw.DB.Join(models.User{}, "user_id").Where("slug", "=", tagSlug).First(&tag)
 		} else {
 			render.Render(w, r, core.ErrNotFound)
 			return
@@ -131,7 +131,7 @@ func (cw *Handler) PostCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "post", &post)
+		ctx := context.WithValue(r.Context(), "tag", &tag)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

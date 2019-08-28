@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuth0 } from "../context/Auth0";
+import { useAuth0 } from "../../context/Auth0";
 import Typography from '@material-ui/core/Typography';
 
 
@@ -15,7 +15,7 @@ const Login = () => {
         <>
           <button
             onClick={() =>
-              loginWithRedirect({})
+              loginWithRedirect({prompt: 'login'})
             }
           >
             Log in
