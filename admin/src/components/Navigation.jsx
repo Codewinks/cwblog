@@ -183,6 +183,16 @@ const Navigation = (props) => {
         setOpen(toggle => !toggle);
     }
 
+    const [menu, setMenu] = React.useState({target: null, key: null});
+    function openMenu(event, key) {
+        console.log('open menu ' + key )
+        setMenu({target: event.currentTarget, key: key});
+    }
+    function closeMenu(){
+        console.log('close menu')
+        setMenu({target: null, key: null});
+    }
+    
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -209,13 +219,13 @@ const Navigation = (props) => {
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
         <Menu
-            anchorEl={anchorEl}
+            anchorEl={menu.target}
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             id={menuId}
             keepMounted
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={isMenuOpen}
-            onClose={handleMenuClose}
+            open={menu.key === 'main'}
+            onClose={closeMenu}
         >
             {isAuthenticated ? [
                 <MenuItem onClick={handleMenuClose} component={Link} to="/profile" key="profile">Profile</MenuItem>,
@@ -253,7 +263,7 @@ const Navigation = (props) => {
                 </IconButton>
                 <p>Notifications</p>
             </MenuItem>
-            <MenuItem onClick={handleProfileMenuOpen}>
+            <MenuItem onClick={event => openMenu(event, 'main')}>
                 <IconButton
                     aria-label="Account of current user"
                     aria-controls="primary-search-account-menu"
@@ -346,10 +356,26 @@ const Navigation = (props) => {
                         <ListItemIcon className={classes.navIcon}><DashboardIcon /></ListItemIcon>
                         <ListItemText primary="Dashboard"/>
                     </ListItem>
-                    <ListItem button to="/posts" component={Link}>
+
+                    <ListItem button to="/posts" component={Link}  onMouseEnter={!open ? event => openMenu(event, 'posts') : null}>
                         <ListItemIcon className={classes.navIcon}><LibraryBooksIcon /></ListItemIcon>
                         <ListItemText primary="Posts" />
                     </ListItem>
+                    <Menu
+                    anchorEl={menu.target}
+                    getContentAnchorEl={null}
+                    open={!open && menu.key === 'posts'}
+                    onClose={closeMenu}
+                    anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                    >
+                        <div onMouseLeave={closeMenu}>
+                            <MenuItem onClick={closeMenu}>All Posts</MenuItem>
+                            <MenuItem onClick={closeMenu}>Add New</MenuItem>
+                            <MenuItem onClick={closeMenu}>Categories</MenuItem>
+                            <MenuItem onClick={closeMenu}>Tags</MenuItem>
+                        </div>
+                    </Menu>
+
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <List disablePadding className={classes.navNested}>
                             <ListItem button to="/posts" component={Link}>
