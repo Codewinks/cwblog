@@ -2,12 +2,12 @@ package categories
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
 
 	"github.com/codewinks/cwblog/api/models"
+	"github.com/google/uuid"
 )
 
 type CategoryRequest struct {
@@ -15,9 +15,13 @@ type CategoryRequest struct {
 }
 
 func (c *CategoryRequest) Bind(r *http.Request) error {
-	fmt.Printf("====%#v \n", c.Category)
+	// fmt.Printf("====%#v \n", c.Category)
 	if c.Category == nil {
 		return errors.New("Missing required Post fields")
+	}
+
+	if c.Category.Id == "" {
+		c.Category.Id = uuid.New().String()
 	}
 
 	if c.Category.Slug == "" {

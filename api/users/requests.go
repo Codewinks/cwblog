@@ -2,7 +2,6 @@ package users
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/codewinks/cwblog/api/models"
@@ -39,7 +38,7 @@ func (u *UserRequest) Bind(r *http.Request) error {
 	// this won't cause a panic, but checks in this Bind method may be required if
 	// a.User or futher nested fields like a.User.Name are accessed elsewhere.
 
-	fmt.Println(u.User)
+	// fmt.Println(u.User)
 
 	return nil
 }

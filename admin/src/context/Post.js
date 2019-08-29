@@ -88,7 +88,7 @@ export const PostProvider = ({ history, children }) => {
                 history.push(`/posts/${data.id}`)
             }
 
-            showAlert('success', `Post ${post.id ? 'saved' : 'created'}.`, 5000)
+            showAlert('success', `Post successfully ${post.id ? 'saved' : 'created'}.`, 5000)
         } catch (error) {
             showAlert('error', error.message)
         } finally {

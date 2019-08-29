@@ -75,13 +75,12 @@ export const CategoryProvider = ({ history, children }) => {
     const saveCategory = async () => {
         setLoading(true);
         try {
-            const data = await request(category.id ? 'put' : 'category', `/v1/categories/${category.id ? category.id : ''}`, {...category} )
+            await request(category.id ? 'put' : 'post', `/v1/categories/${category.id ? category.id : ''}`, {...category} )
 
-            if(!category.id){
-                history.push(`/categories/${data.id}`)
-            }
+            setCategory(emptyCategory);
+            await listCategories()
 
-            showAlert('success', `Category ${category.id ? 'saved' : 'created'}.`, 5000)
+            showAlert('success', `Category successfully ${category.id ? 'saved' : 'created'}.`, 5000)
         } catch (error) {
             showAlert('error', error.message)
         } finally {
@@ -89,13 +88,14 @@ export const CategoryProvider = ({ history, children }) => {
         }
     }
 
-    const deleteCategory = async () => {
+    const deleteCategory = async (id) => {
         setLoading(true);
         try {
-            await request('delete', `/v1/categories/${category.id}`)
+            await request('delete', `/v1/categories/${category.id ? category.id : id}`)
 
-            setCategory(null);
-            history.push(`/categories`)
+            setCategory(emptyCategory);            
+            await listCategories()
+
             showAlert('success', `Category successfully deleted.`, 5000)
         } catch (error) {
             showAlert('error', error.message)

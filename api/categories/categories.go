@@ -107,6 +107,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	category := r.Context().Value("category").(*models.Category)
+
 	cw.DB.Delete(category)
 
 	render.JSON(w, r, category)
@@ -118,9 +119,9 @@ func (cw *Handler) CategoryCtx(next http.Handler) http.Handler {
 		var err error
 
 		if categoryId := chi.URLParam(r, "categoryId"); categoryId != "" {
-			err = cw.DB.Join(models.User{}, "user_id").Where("id", "=", categoryId).First(&category)
+			err = cw.DB.Where("id", "=", categoryId).First(&category)
 		} else if categorySlug := chi.URLParam(r, "categorySlug"); categorySlug != "" {
-			err = cw.DB.Join(models.User{}, "user_id").Where("slug", "=", categorySlug).First(&category)
+			err = cw.DB.Where("slug", "=", categorySlug).First(&category)
 		} else {
 			render.Render(w, r, core.ErrNotFound)
 			return

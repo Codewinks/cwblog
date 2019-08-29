@@ -107,6 +107,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	tag := r.Context().Value("tag").(*models.Tag)
+
 	cw.DB.Delete(tag)
 
 	render.JSON(w, r, tag)
@@ -118,9 +119,9 @@ func (cw *Handler) TagCtx(next http.Handler) http.Handler {
 		var err error
 
 		if tagId := chi.URLParam(r, "tagId"); tagId != "" {
-			err = cw.DB.Join(models.User{}, "user_id").Where("id", "=", tagId).First(&tag)
+			err = cw.DB.Where("id", "=", tagId).First(&tag)
 		} else if tagSlug := chi.URLParam(r, "tagSlug"); tagSlug != "" {
-			err = cw.DB.Join(models.User{}, "user_id").Where("slug", "=", tagSlug).First(&tag)
+			err = cw.DB.Where("slug", "=", tagSlug).First(&tag)
 		} else {
 			render.Render(w, r, core.ErrNotFound)
 			return

@@ -13,6 +13,7 @@ import Dashboard from "./views/Dashboard";
 import NoMatch from "./views/errors/NoMatch";
 import Profile from "./views/Profile";
 import TagList from "./views/tags/List";
+import CategoryList from "./views/categories/List";
 import PostList from "./views/posts/List";
 import PostForm from "./views/posts/Form";
 import PrivateRoute from "./components/PrivateRoute";
@@ -20,6 +21,7 @@ import Alert from "./components/Alert";
 
 import { PostProvider } from './context/Post'
 import { TagProvider } from './context/Tag'
+import { CategoryProvider } from './context/Category'
 
 
 import './App.css';
@@ -72,6 +74,8 @@ function App() {
             <PrivateRoute exact path="/posts" render={p => (<PostProvider {...p}><PostList {...p}/></PostProvider>)} />
             <PrivateRoute exact path="/tags/:tagId" render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
             <PrivateRoute exact path="/tags" render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
+            <PrivateRoute exact path="/categories/:categoryId" render={p => (<CategoryProvider {...p}><CategoryList {...p}/></CategoryProvider>)} />
+            <PrivateRoute exact path="/categories" render={p => (<CategoryProvider {...p}><CategoryList {...p}/></CategoryProvider>)} />
             <PrivateRoute exact path="/profile" component={Profile} />
             <Route component={NoMatch} />
           </Switch>

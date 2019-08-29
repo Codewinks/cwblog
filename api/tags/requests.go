@@ -2,12 +2,12 @@ package tags
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
 
 	"github.com/codewinks/cwblog/api/models"
+	"github.com/google/uuid"
 )
 
 type TagRequest struct {
@@ -15,9 +15,13 @@ type TagRequest struct {
 }
 
 func (t *TagRequest) Bind(r *http.Request) error {
-	fmt.Printf("====%#v \n", t.Tag)
+	// fmt.Printf("====%#v \n", t.Tag)
 	if t.Tag == nil {
 		return errors.New("Missing required Post fields")
+	}
+
+	if t.Tag.Id == "" {
+		t.Tag.Id = uuid.New().String()
 	}
 
 	if t.Tag.Slug == "" {

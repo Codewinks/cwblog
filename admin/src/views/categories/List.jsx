@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useTag } from '../../context/Tag'
+import { useCategory } from '../../context/Category'
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 import Button from '@material-ui/core/Button';
@@ -44,13 +44,13 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const TagList = ({history}) => {
-    const { tag, tags, loading, listTags, saveTag, deleteTag, handleChange } = useTag();
+const CategoryList = ({history}) => {
+    const { category, categories, loading, listCategories, saveCategory, deleteCategory, handleChange } = useCategory();
     const classes = useStyles();
 
     useEffect(() => {
         async function fetchData() {
-            await listTags()
+            await listCategories()
         }
 
         fetchData();
@@ -60,35 +60,35 @@ const TagList = ({history}) => {
     return (
         <>
             <Typography variant="h3" gutterBottom>
-                Tags
+                Categories
             </Typography>
             <Grid container spacing={4} className={classes.wrapper}>
                 <Grid item className={classes.leftCol}>
                     <Typography variant="h6">
-                        Add New Tag
+                        Add New Category
                     </Typography>
-                    <TextField id="tag-name"
+                    <TextField id="category-name"
                             label="Name"
                             onChange={event => handleChange(event, 'name')}
                             margin="normal"
                             fullWidth
                             variant="outlined"
-                            value={tag.name ? tag.name : ""}
+                            value={category.name ? category.name : ""}
                             // error={true}
                             // helperText="Post name is required."
                         />
-                    <TextField id="tag-slug"
+                    <TextField id="category-slug"
                             label="Slug"
                             onChange={event => handleChange(event, 'slug')}
                             margin="normal"
                             fullWidth
                             variant="outlined"
-                            value={tag.slug ? tag.slug : ""}
+                            value={category.slug ? category.slug : ""}
                             // error={true}
                             // helperText="Post slug is required."
                         />
                     <TextField
-                        id="tag-description"
+                        id="category-description"
                         label="Description"
                         onChange={event => handleChange(event, 'description')}
                         multiline
@@ -96,10 +96,10 @@ const TagList = ({history}) => {
                         margin="normal"
                         fullWidth
                         variant="outlined"
-                        value={tag.description ? tag.description : ""}
+                        value={category.description ? category.description : ""}
                     />
-                    <Button onClick={saveTag} variant="contained" color="primary" aria-label={tag.id ? 'Update' : 'Add New Tag'}>
-                        {tag.id ? 'Update' : 'Add New Tag'}
+                    <Button onClick={saveCategory} variant="contained" color="primary" aria-label={category.id ? 'Update' : 'Add New Category'}>
+                        {category.id ? 'Update' : 'Add New Category'}
                     </Button>
                 </Grid>
                 <Grid item className={classes.rightCol}>
@@ -123,22 +123,22 @@ const TagList = ({history}) => {
                                 )}
                                 {!loading && (
                                     <>
-                                        {(!tags || !tags.length) && (
+                                        {(!categories || !categories.length) && (
                                             <TableRow>
                                                 <TableCell colSpan="100%" align="center">
-                                                    No tags found.
+                                                    No categories found.
                                                 </TableCell>
                                             </TableRow>
                                         )}
-                                        {tags && tags.length > 0 && tags.map(row => (
+                                        {categories && categories.length > 0 && categories.map(row => (
                                             <TableRow key={row.id}>
                                                 <TableCell component="th" scope="row">
-                                                    <Link to={`/tags/${row.id}`}>{row.name}</Link>
+                                                    <Link to={`/categories/${row.id}`}>{row.name}</Link>
                                                 </TableCell>
                                                 <TableCell>{row.description}</TableCell>
                                                 <TableCell>{row.slug}</TableCell>
                                                 <TableCell align="right">0</TableCell>
-                                                <TableCell align="right"><Icon onClick={() => deleteTag(row.id)}>delete_forever</Icon></TableCell>
+                                                <TableCell align="right"><Icon onClick={() => deleteCategory(row.id)}>delete_forever</Icon></TableCell>
                                             </TableRow>
                                         ))}
                                     </>
@@ -152,4 +152,4 @@ const TagList = ({history}) => {
     );
 };
 
-export default TagList;
+export default CategoryList;

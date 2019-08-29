@@ -186,41 +186,21 @@ const Navigation = (props) => {
     const [menu, setMenu] = React.useState({target: null, key: null});
     function openMenu(event, key) {
         console.log('open menu ' + key )
+        console.log(event.currentTarget)
         setMenu({target: event.currentTarget, key: key});
     }
-    function closeMenu(){
+    function closeMenu(event){
         console.log('close menu')
+        console.log(event.currentTarget)
         setMenu({target: null, key: null});
     }
     
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
-    const isMenuOpen = Boolean(anchorEl);
-    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-    function handleProfileMenuOpen(event) {
-        setAnchorEl(event.currentTarget);
-    }
-
-    function handleMobileMenuClose() {
-        setMobileMoreAnchorEl(null);
-    }
-
-    function handleMenuClose() {
-        setAnchorEl(null);
-        handleMobileMenuClose();
-    }
-
-    function handleMobileMenuOpen(event) {
-        setMobileMoreAnchorEl(event.currentTarget);
-    }
-
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
         <Menu
             anchorEl={menu.target}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            getContentAnchorEl={null}
             id={menuId}
             keepMounted
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -228,7 +208,7 @@ const Navigation = (props) => {
             onClose={closeMenu}
         >
             {isAuthenticated ? [
-                <MenuItem onClick={handleMenuClose} component={Link} to="/profile" key="profile">Profile</MenuItem>,
+                <MenuItem onClick={closeMenu} component={Link} to="/profile" key="profile">Profile</MenuItem>,
                 <MenuItem onClick={() => logout()} key="logout">Logout</MenuItem>
             ] :  
                 <MenuItem onClick={() => loginWithRedirect({})}>Login</MenuItem>
@@ -239,13 +219,13 @@ const Navigation = (props) => {
     const mobileMenuId = 'primary-search-account-menu-mobile';
     const renderMobileMenu = (
         <Menu
-            anchorEl={mobileMoreAnchorEl}
+            anchorEl={menu.target}
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             id={mobileMenuId}
             keepMounted
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={isMobileMenuOpen}
-            onClose={handleMobileMenuClose}
+            open={menu.key === 'mobile'}
+            onClose={closeMenu}
         >
             <MenuItem>
                 <IconButton aria-label="Show 4 new mails" color="inherit">
@@ -316,7 +296,7 @@ const Navigation = (props) => {
                             aria-label="Account of current user"
                             aria-controls={menuId}
                             aria-haspopup="true"
-                            onClick={handleProfileMenuOpen}
+                            onClick={event => openMenu(event, 'main')}
                             color="inherit"
                         >
                             {props.avatar ? <Avatar alt="Remy Sharp" src={props.avatar} /> : <Avatar ><PersonIcon /></Avatar>}
@@ -327,7 +307,7 @@ const Navigation = (props) => {
                             aria-label="Show more"
                             aria-controls={mobileMenuId}
                             aria-haspopup="true"
-                            onClick={handleMobileMenuOpen}
+                            onClick={event => openMenu(event, 'mobile')}
                             color="inherit"
                         >
                             <MoreIcon />
@@ -369,10 +349,10 @@ const Navigation = (props) => {
                     anchorOrigin={{ vertical: "top", horizontal: "right" }}
                     >
                         <div onMouseLeave={closeMenu}>
-                            <MenuItem onClick={closeMenu}>All Posts</MenuItem>
-                            <MenuItem onClick={closeMenu}>Add New</MenuItem>
-                            <MenuItem onClick={closeMenu}>Categories</MenuItem>
-                            <MenuItem onClick={closeMenu}>Tags</MenuItem>
+                            <MenuItem to="/posts" component={Link}>All Posts</MenuItem>
+                            <MenuItem to="/posts/create" component={Link}>Add New</MenuItem>
+                            <MenuItem to="/categories" component={Link}>Categories</MenuItem>
+                            <MenuItem to="/tags" component={Link}>Tags</MenuItem>
                         </div>
                     </Menu>
 

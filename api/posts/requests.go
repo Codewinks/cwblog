@@ -2,12 +2,12 @@ package posts
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
 
 	"github.com/codewinks/cwblog/api/models"
+	"github.com/google/uuid"
 )
 
 type PostRequest struct {
@@ -15,9 +15,13 @@ type PostRequest struct {
 }
 
 func (p *PostRequest) Bind(r *http.Request) error {
-	fmt.Printf("====%#v \n", p.Post)
+	// fmt.Printf("====%#v \n", p.Post)
 	if p.Post == nil {
 		return errors.New("Missing required Post fields")
+	}
+
+	if p.Post.Id == "" {
+		p.Post.Id = uuid.New().String()
 	}
 
 	if p.Post.Title == "" {
