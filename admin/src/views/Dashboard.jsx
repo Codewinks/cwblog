@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 const Dashboard = () => {
   return (
     <>
-      <Typography variant="h3" gutterBottom>
+      <Typography variant="h4" gutterBottom>
         Dashboard
       </Typography>
       <Typography paragraph>

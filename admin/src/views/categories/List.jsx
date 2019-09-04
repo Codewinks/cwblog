@@ -13,6 +13,8 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Icon from '@material-ui/core/Icon';
+import Box from '@material-ui/core/Box';
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -46,6 +48,7 @@ const useStyles = makeStyles(theme => ({
 
 const CategoryList = ({history}) => {
     const { category, categories, loading, listCategories, saveCategory, deleteCategory, handleChange } = useCategory();
+    const [confirmDelete, setConfirmDelete] = React.useState(false);
     const classes = useStyles();
 
     useEffect(() => {
@@ -59,7 +62,7 @@ const CategoryList = ({history}) => {
 
     return (
         <>
-            <Typography variant="h3" gutterBottom>
+            <Typography variant="h4" gutterBottom>
                 Categories
             </Typography>
             <Grid container spacing={4} className={classes.wrapper}>
@@ -133,12 +136,21 @@ const CategoryList = ({history}) => {
                                         {categories && categories.length > 0 && categories.map(row => (
                                             <TableRow key={row.id}>
                                                 <TableCell component="th" scope="row">
-                                                    <Link to={`/categories/${row.id}`}>{row.name}</Link>
+                                                    <Box mb={0.5} fontWeight="fontWeightBold">
+                                                        <Link to={`/categories/${row.id}`}>{row.name}</Link>
+                                                    </Box>
+                                                    <Box className={`${classes.actions} text-grey`}>
+                                                        <Link to={`/categories/${row.id}`}>Edit</Link>
+                                                        <Box display="inline" px={0.65}>|</Box>
+                                                        <Link to="#" onClick={() => setConfirmDelete(row.id)} className="pointer text-danger">Delete</Link>
+                                                        <Box display="inline" px={0.65}>|</Box>
+                                                        <Link to={`/categories/${row.id}`} target="_blank" rel="noopener noreferrer">View</Link>
+                                                    </Box>
                                                 </TableCell>
                                                 <TableCell>{row.description}</TableCell>
                                                 <TableCell>{row.slug}</TableCell>
                                                 <TableCell align="right">0</TableCell>
-                                                <TableCell align="right"><Icon onClick={() => deleteCategory(row.id)}>delete_forever</Icon></TableCell>
+                                                <TableCell align="right"><Icon onClick={() => setConfirmDelete(row.id)}>delete_forever</Icon></TableCell>
                                             </TableRow>
                                         ))}
                                     </>
@@ -147,7 +159,14 @@ const CategoryList = ({history}) => {
                         </Table>
                     </Paper>
                 </Grid>
-            </Grid>            
+            </Grid>           
+
+            <ConfirmDialog open={confirmDelete} onClose={() => setConfirmDelete(false)}
+                title="Are you sure you want to delete this category?"
+                content="The category will be deleted and removed from all posts."
+                action="Delete"
+                callback={() => deleteCategory(confirmDelete)}
+            ></ConfirmDialog>             
         </>
     );
 };

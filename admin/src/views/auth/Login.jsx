@@ -8,7 +8,7 @@ const Login = () => {
 
   return (
     <>
-      <Typography variant="h3" gutterBottom>
+      <Typography variant="h4" gutterBottom>
         Login
       </Typography>
       {!isAuthenticated && (

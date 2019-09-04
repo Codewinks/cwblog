@@ -174,7 +174,7 @@ const PostForm = ({ match }) => {
                     )}
                 </Popper>
             </div>
-            <Typography variant="h3" gutterBottom>
+            <Typography variant="h4" gutterBottom>
                 {post.id}
                 {post.id ? 'Edit' : 'Create' } Post
             </Typography>
@@ -221,10 +221,10 @@ const PostForm = ({ match }) => {
             </Grid>
 
             <ConfirmDialog open={confirmDelete} onClose={() => setConfirmDelete(false)}
-            title="Are you sure you want to delete this post?"
-            content="The post will no longer be published and marked for deletion."
-            action="Delete"
-            callback={() => deletePost(confirmDelete)}
+                title="Are you sure you want to delete this post?"
+                content="The post will no longer be published and marked for deletion."
+                action="Delete"
+                callback={() => deletePost(confirmDelete)}
             ></ConfirmDialog>
         </>
     )

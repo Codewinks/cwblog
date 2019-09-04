@@ -62,7 +62,7 @@ const PostList = ({history}) => {
             <Fab to="/posts/create" component={Link} color="primary" aria-label="Add New Post" className={classes.actionBtn}>
                 <Icon>add</Icon>
             </Fab>
-            <Typography variant="h3" gutterBottom>
+            <Typography variant="h4" gutterBottom>
                 Posts
             </Typography>
             <Paper className={classes.root}>
@@ -124,7 +124,12 @@ const PostList = ({history}) => {
                                                 <Box display="inline" px={0.65}>|</Box>
                                                 <Link to="#" onClick={() => setConfirmDelete(row.id)} className="pointer text-danger">Trash</Link>
                                                 <Box display="inline" px={0.65}>|</Box>
-                                                <Link to={`/posts/${row.id}`}>Preview</Link>
+                                                {row.status !== 'published' && (
+                                                    <Link to={`/posts/${row.id}?preview=1`} target="_blank" rel="noopener noreferrer">Preview</Link>
+                                                )}
+                                                {row.status === 'published' && (
+                                                    <Link to={`/posts/${row.id}`} target="_blank" rel="noopener noreferrer">View</Link>                                                    
+                                                )}
                                             </Box>
                                         </TableCell>
                                         <TableCell className={classes.cell}>{row.user.first_name}</TableCell>
@@ -143,10 +148,10 @@ const PostList = ({history}) => {
                 </Table>
             </Paper>
             <ConfirmDialog open={confirmDelete} onClose={() => setConfirmDelete(false)}
-            title="Are you sure you want to delete this post?"
-            content="The post will no longer be published and marked for deletion."
-            action="Delete"
-            callback={() => deletePost(confirmDelete)}
+                title="Are you sure you want to delete this post?"
+                content="The post will no longer be published and marked for deletion."
+                action="Delete"
+                callback={() => deletePost(confirmDelete)}
             ></ConfirmDialog>
         </>
     );
