@@ -16,12 +16,14 @@ export const PostProvider = ({ history, children }) => {
         slug: null,
         status: 'draft',
         visibility: 'public',
-        published_at: null,
         user_id: null,
         format: 'post',
+        published_at: null,
+        updated_at: null,
+        created_at: null,
     }
 
-    const [post, setPost] = useState(emptyPost);
+    const [post, setPost] = useState({...emptyPost});
 
     const options = {
         status: [
@@ -48,11 +50,11 @@ export const PostProvider = ({ history, children }) => {
     }
 
     const handleChange = (event, key, callback) => {
-        handleUpdate(key, event.target.value, callback);
+        handleUpdate(key, event.target.value, callback)
     }
 
     const newPost = () => {
-        setPost(emptyPost);
+        setPost({...emptyPost})
     }
 
     const listPosts = async () => {
@@ -83,6 +85,7 @@ export const PostProvider = ({ history, children }) => {
         setLoading(true);
         try {
             const data = await request(post.id ? 'put' : 'post', `/v1/posts/${post.id ? post.id : ''}`, {...post} )
+            setPost(data);
 
             if(!post.id){
                 history.push(`/posts/${data.id}`)
@@ -96,12 +99,13 @@ export const PostProvider = ({ history, children }) => {
         }
     }
 
-    const deletePost = async () => {
+    const deletePost = async (id) => {
         setLoading(true);
         try {
-            await request('delete', `/v1/posts/${post.id}`)
+            await request('delete', `/v1/posts/${post.id ? post.id : id}`)
 
-            setPost(null);
+            setPost({...emptyPost});
+            await listPosts()
             history.push(`/posts`)
             showAlert('success', `Post successfully deleted.`, 5000)
         } catch (error) {

@@ -185,77 +185,11 @@ const Navigation = (props) => {
 
     const [menu, setMenu] = React.useState({target: null, key: null});
     function openMenu(event, key) {
-        console.log('open menu ' + key )
-        console.log(event.currentTarget)
         setMenu({target: event.currentTarget, key: key});
     }
     function closeMenu(event){
-        console.log('close menu')
-        console.log(event.currentTarget)
         setMenu({target: null, key: null});
     }
-    
-    const menuId = 'primary-search-account-menu';
-    const renderMenu = (
-        <Menu
-            anchorEl={menu.target}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            getContentAnchorEl={null}
-            id={menuId}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={menu.key === 'main'}
-            onClose={closeMenu}
-        >
-            {isAuthenticated ? [
-                <MenuItem onClick={closeMenu} component={Link} to="/profile" key="profile">Profile</MenuItem>,
-                <MenuItem onClick={() => logout()} key="logout">Logout</MenuItem>
-            ] :  
-                <MenuItem onClick={() => loginWithRedirect({})}>Login</MenuItem>
-            }
-        </Menu>
-    );
-
-    const mobileMenuId = 'primary-search-account-menu-mobile';
-    const renderMobileMenu = (
-        <Menu
-            anchorEl={menu.target}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            id={mobileMenuId}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={menu.key === 'mobile'}
-            onClose={closeMenu}
-        >
-            <MenuItem>
-                <IconButton aria-label="Show 4 new mails" color="inherit">
-                    <Badge badgeContent={4} color="secondary">
-                        <MailIcon />
-                    </Badge>
-                </IconButton>
-                <p>Messages</p>
-            </MenuItem>
-            <MenuItem>
-                <IconButton aria-label="Show 11 new notifications" color="inherit">
-                    <Badge badgeContent={11} color="secondary">
-                        <NotificationsIcon />
-                    </Badge>
-                </IconButton>
-                <p>Notifications</p>
-            </MenuItem>
-            <MenuItem onClick={event => openMenu(event, 'main')}>
-                <IconButton
-                    aria-label="Account of current user"
-                    aria-controls="primary-search-account-menu"
-                    aria-haspopup="true"
-                    color="inherit"
-                >
-                    {props.avatar ? <Avatar alt="Remy Sharp" src={props.avatar} /> : <Avatar><PersonIcon /></Avatar>}
-                </IconButton>
-                <p>Profile</p>
-            </MenuItem>
-        </Menu>
-    );
 
     return (
         <>
@@ -294,7 +228,7 @@ const Navigation = (props) => {
                             className={classes.avatar}
                             edge="end"
                             aria-label="Account of current user"
-                            aria-controls={menuId}
+                            aria-controls="main-menu"
                             aria-haspopup="true"
                             onClick={event => openMenu(event, 'main')}
                             color="inherit"
@@ -304,8 +238,8 @@ const Navigation = (props) => {
                     </div>
                     <div className={classes.sectionMobile}>
                         <IconButton
-                            aria-label="Show more"
-                            aria-controls={mobileMenuId}
+                            aria-label="Show menu"
+                            aria-controls="mobile-menu"
                             aria-haspopup="true"
                             onClick={event => openMenu(event, 'mobile')}
                             color="inherit"
@@ -315,8 +249,64 @@ const Navigation = (props) => {
                     </div>
                 </Toolbar>
             </AppBar>
-            {renderMobileMenu}
-            {renderMenu}
+            {/* Mobile Menu */}
+            <Menu
+                anchorEl={menu.target}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                id="mobile-menu"
+                keepMounted
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                open={menu.key === 'mobile'}
+                onClose={closeMenu}
+            >
+                <MenuItem>
+                    <IconButton aria-label="Show 4 new mails" color="inherit">
+                        <Badge badgeContent={4} color="secondary">
+                            <MailIcon />
+                        </Badge>
+                    </IconButton>
+                    <p>Messages</p>
+                </MenuItem>
+                <MenuItem>
+                    <IconButton aria-label="Show 11 new notifications" color="inherit">
+                        <Badge badgeContent={11} color="secondary">
+                            <NotificationsIcon />
+                        </Badge>
+                    </IconButton>
+                    <p>Notifications</p>
+                </MenuItem>
+                <MenuItem onClick={event => openMenu(event, 'main')}>
+                    <IconButton
+                        aria-label="Account of current user"
+                        aria-controls="primary-search-account-menu"
+                        aria-haspopup="true"
+                        color="inherit"
+                    >
+                        {props.avatar ? <Avatar alt="Remy Sharp" src={props.avatar} /> : <Avatar><PersonIcon /></Avatar>}
+                    </IconButton>
+                    <p>Profile</p>
+                </MenuItem>
+            </Menu>
+
+            {/* Desktop Menu */}            
+            <Menu
+                anchorEl={menu.target}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                getContentAnchorEl={null}
+                id="main-menu"
+                keepMounted
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                open={menu.key === 'main'}
+                onClose={closeMenu}
+            >
+                {isAuthenticated ? [
+                    <MenuItem onClick={closeMenu} component={Link} to="/profile" key="profile">Profile</MenuItem>,
+                    <MenuItem onClick={() => logout()} key="logout">Logout</MenuItem>
+                ] :  
+                    <MenuItem onClick={() => loginWithRedirect({})}>Login</MenuItem>
+                }
+            </Menu>
+
             <Drawer variant="permanent" PaperProps={{ elevation: 8 }}
                 className={clsx(classes.drawer, {
                     [classes.drawerOpen]: open,

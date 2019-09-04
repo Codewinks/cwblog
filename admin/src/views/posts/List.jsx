@@ -8,11 +8,15 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Checkbox from '@material-ui/core/Checkbox';
 import Paper from '@material-ui/core/Paper';
 import Fab from '@material-ui/core/Fab';
+import Box from '@material-ui/core/Box';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Icon from '@material-ui/core/Icon';
+
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -30,11 +34,18 @@ const useStyles = makeStyles(theme => ({
     },
     cursor: {
         cursor: 'pointer'
+    },
+    capitalize: {
+        textTransform: 'capitalize'
+    },
+    cell: {
+        verticalAlign: 'top'
     }
 }));
 
 const PostList = ({history}) => {
-    const { posts, loading, listPosts } = usePost();
+    const { posts, loading, listPosts, deletePost } = usePost();
+    const [confirmDelete, setConfirmDelete] = React.useState(false);
     const classes = useStyles();
 
     useEffect(() => {
@@ -58,12 +69,20 @@ const PostList = ({history}) => {
                 <Table className={classes.table}>
                     <TableHead>
                         <TableRow>
+                            <TableCell padding="checkbox">
+                                <Checkbox
+                                    // indeterminate={numSelected > 0 && numSelected < rowCount}
+                                    // checked={numSelected === rowCount}
+                                    // onChange={onSelectAllClick}
+                                    inputProps={{ 'aria-label': 'Select all posts' }}
+                                />
+                            </TableCell>
                             <TableCell>Title</TableCell>
                             <TableCell>Author</TableCell>
                             <TableCell align="right">Categories</TableCell>
                             <TableCell align="right">Tags</TableCell>
                             <TableCell align="right">Comments</TableCell>
-                            <TableCell align="right">Date</TableCell>
+                            <TableCell style={{ width: "1%" }}>Date</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -85,14 +104,37 @@ const PostList = ({history}) => {
                                 )}
                                 {posts && posts.length > 0 && posts.map(row => (
                                     <TableRow key={row.id} hover>
-                                        <TableCell component="th" scope="row">
-                                            <Link to={`/posts/${row.id}`}>{row.title}</Link>
+                                        <TableCell padding="checkbox">
+                                            <Checkbox
+                                                // indeterminate={numSelected > 0 && numSelected < rowCount}
+                                                // checked={numSelected === rowCount}
+                                                // onChange={onSelectAllClick}
+                                                inputProps={{ 'aria-labelledby': row.id }}
+                                            />
                                         </TableCell>
-                                        <TableCell>{row.user.first_name}</TableCell>
-                                        <TableCell align="right"></TableCell>
-                                        <TableCell align="right"></TableCell>
-                                        <TableCell align="right"></TableCell>
-                                        <TableCell align="right"></TableCell>
+                                        <TableCell component="th" scope="row" id={row.id}>
+                                            <Box mb={0.5} fontWeight="fontWeightBold">
+                                                <Link to={`/posts/${row.id}`}>{row.title}</Link>
+                                                {row.status !== 'published' && (
+                                                    <span className={`${classes.capitalize} text-muted`}> — {row.status}</span>
+                                                )}
+                                            </Box>
+                                            <Box className={`${classes.actions} text-grey`}>
+                                                <Link to={`/posts/${row.id}`}>Edit</Link>
+                                                <Box display="inline" px={0.65}>|</Box>
+                                                <Link to="#" onClick={() => setConfirmDelete(row.id)} className="pointer text-danger">Trash</Link>
+                                                <Box display="inline" px={0.65}>|</Box>
+                                                <Link to={`/posts/${row.id}`}>Preview</Link>
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell className={classes.cell}>{row.user.first_name}</TableCell>
+                                        <TableCell align="right" className={classes.cell}></TableCell>
+                                        <TableCell align="right" className={classes.cell}>—</TableCell>
+                                        <TableCell align="right" className={classes.cell}>—</TableCell>
+                                        <TableCell className={`${classes.cell} nowrap`}>
+                                            <div className={classes.capitalize}>{row.status === 'published' ? 'Published' : 'Last Modified' }</div>
+                                            <div className="text-muted">{row.published_at ? row.published_at : row.updated_at}</div>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </>
@@ -100,6 +142,12 @@ const PostList = ({history}) => {
                     </TableBody>
                 </Table>
             </Paper>
+            <ConfirmDialog open={confirmDelete} onClose={() => setConfirmDelete(false)}
+            title="Are you sure you want to delete this post?"
+            content="The post will no longer be published and marked for deletion."
+            action="Delete"
+            callback={() => deletePost(confirmDelete)}
+            ></ConfirmDialog>
         </>
     );
 };

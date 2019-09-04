@@ -20,12 +20,7 @@ import TextField from '@material-ui/core/TextField';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -79,8 +74,8 @@ const PostForm = ({ match }) => {
     })
 
     useEffect(() => {
-        newPost();
         if (!match.params.postId) {
+            newPost();
             setLoading(false);
             return
         }
@@ -88,10 +83,11 @@ const PostForm = ({ match }) => {
         async function fetchData() {
             await getPost(match.params.postId)
         }
+
         fetchData();
 
         // eslint-disable-next-line
-    }, [])
+    }, [match.params.postId])
     
     const handleToggleDropdown = () => {
         setToggleDropdown(toggle => !toggle);
@@ -136,34 +132,13 @@ const PostForm = ({ match }) => {
     return (
         <>
             <div className={classes.actionBtn}>
-                <IconButton className={classes.settingsBtn} aria-label="Delete" onClick={() => setConfirmDelete(true)}>
+                <IconButton className={classes.settingsBtn} aria-label="Delete" onClick={() => setConfirmDelete(post.id)}>
                     <DeleteIcon />
                 </IconButton>
-                <Dialog
-                    open={confirmDelete}
-                    onClose={() => setConfirmDelete(false)}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete this post?"}</DialogTitle>
-                    <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        The post will no longer be published and marked for deletion.
-                    </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                    <Button onClick={() => setConfirmDelete(false)} color="primary" autoFocus>
-                        Cancel
-                    </Button>
-                    <Button onClick={deletePost} color="secondary">
-                        Delete
-                    </Button>
-                    </DialogActions>
-                </Dialog>
                 <IconButton className={classes.settingsBtn} aria-label="Settings" onClick={handleToggleSettings}>
                     <SettingsIcon />
                 </IconButton>
-                <Button variant="contained" className={classes.button}>Preview</Button>
+                <Button variant="contained" className={classes.button} onClick={() => console.log(post)}>Preview</Button>
                 <ButtonGroup variant="contained" color="primary" aria-label="Publish">
                     <Button onClick={savePost}>
                         {post.id ? 'Update' : 'Publish Now' }
@@ -200,6 +175,7 @@ const PostForm = ({ match }) => {
                 </Popper>
             </div>
             <Typography variant="h3" gutterBottom>
+                {post.id}
                 {post.id ? 'Edit' : 'Create' } Post
             </Typography>
             <Permalink />
@@ -243,6 +219,13 @@ const PostForm = ({ match }) => {
                     </Grid>
                 )}
             </Grid>
+
+            <ConfirmDialog open={confirmDelete} onClose={() => setConfirmDelete(false)}
+            title="Are you sure you want to delete this post?"
+            content="The post will no longer be published and marked for deletion."
+            action="Delete"
+            callback={() => deletePost(confirmDelete)}
+            ></ConfirmDialog>
         </>
     )
 };

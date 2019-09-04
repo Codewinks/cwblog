@@ -1,0 +1,27 @@
+a {
+    text-decoration: none;
+    color: #3f52b5;
+}
+
+a:hover{
+    color: #8599ff;
+}
+
+.pointer{
+    cursor: pointer;
+}
+
+.nowrap{
+    white-space: nowrap;
+}
+
+.text-muted{
+    color: #666666
+}
+.text-grey{
+    color: #aaa;
+}
+
+.text-danger{
+    color: #b70000;
+}
