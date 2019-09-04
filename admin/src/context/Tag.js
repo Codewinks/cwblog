@@ -68,6 +68,7 @@ export const TagProvider = ({ history, children }) => {
             await request(tag.id ? 'put' : 'post', `/v1/tags/${tag.id ? tag.id : ''}`, {...tag} )
             
             setTag(emptyTag)
+            history.push(`/tags`)
             await listTags()
             
             showAlert('success', `Tag successfully ${tag.id ? 'saved' : 'created'}.`, 5000)

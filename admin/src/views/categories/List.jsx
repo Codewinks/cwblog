@@ -12,7 +12,6 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import Icon from '@material-ui/core/Icon';
 import Box from '@material-ui/core/Box';
 import ConfirmDialog from "../../components/ConfirmDialog";
 
@@ -44,21 +43,36 @@ const useStyles = makeStyles(theme => ({
     rightCol: {
         flexGrow: 1
     },
+    button:{
+        marginTop: theme.spacing(1),
+        marginRight: theme.spacing(2),
+    }
 }));
 
-const CategoryList = ({history}) => {
-    const { category, categories, loading, listCategories, saveCategory, deleteCategory, handleChange } = useCategory();
+const CategoryList = ({match, history}) => {
+    const { category, categories, loading, listCategories, getCategory, newCategory, saveCategory, deleteCategory, handleChange } = useCategory();
     const [confirmDelete, setConfirmDelete] = React.useState(false);
     const classes = useStyles();
+    const categoryId = match.params.categoryId;
 
     useEffect(() => {
+        if (categoryId) {
+            async function fetchData() {
+                getCategory(categoryId)
+            }
+
+            fetchData();            
+            return
+        }
+        
+        newCategory();
         async function fetchData() {
             await listCategories()
         }
 
         fetchData();
         // eslint-disable-next-line
-    }, []);
+    }, [categoryId]);
 
     return (
         <>
@@ -68,7 +82,7 @@ const CategoryList = ({history}) => {
             <Grid container spacing={4} className={classes.wrapper}>
                 <Grid item className={classes.leftCol}>
                     <Typography variant="h6">
-                        Add New Category
+                        {categoryId ? 'Edit' : 'Add New' }Category
                     </Typography>
                     <TextField id="category-name"
                             label="Name"
@@ -101,11 +115,17 @@ const CategoryList = ({history}) => {
                         variant="outlined"
                         value={category.description ? category.description : ""}
                     />
-                    <Button onClick={saveCategory} variant="contained" color="primary" aria-label={category.id ? 'Update' : 'Add New Category'}>
-                        {category.id ? 'Update' : 'Add New Category'}
+                    { categoryId && (
+                    <Button onClick={() => history.push(`/categories`)} variant="contained" aria-label="Cancel" className={classes.button}>
+                        Cancel
+                    </Button>
+                    )}
+                    <Button onClick={saveCategory} variant="contained" color="primary" aria-label={categoryId ? 'Update' : 'Add New Category'} className={classes.button}>
+                        {categoryId ? 'Update' : 'Add New Category'}
                     </Button>
                 </Grid>
                 <Grid item className={classes.rightCol}>
+                    { !categoryId && (
                     <Paper className={classes.root}>
                         <Table className={classes.table}>
                             <TableHead>
@@ -150,7 +170,6 @@ const CategoryList = ({history}) => {
                                                 <TableCell>{row.description}</TableCell>
                                                 <TableCell>{row.slug}</TableCell>
                                                 <TableCell align="right">0</TableCell>
-                                                <TableCell align="right"><Icon onClick={() => setConfirmDelete(row.id)}>delete_forever</Icon></TableCell>
                                             </TableRow>
                                         ))}
                                     </>
@@ -158,6 +177,7 @@ const CategoryList = ({history}) => {
                             </TableBody>
                         </Table>
                     </Paper>
+                    )}
                 </Grid>
             </Grid>           
 

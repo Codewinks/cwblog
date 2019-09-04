@@ -24,6 +24,10 @@ func (t *TagRequest) Bind(r *http.Request) error {
 		t.Tag.Id = uuid.New().String()
 	}
 
+	if t.Tag.Name == "" {
+		return errors.New("Missing tag name")
+	}
+
 	if t.Tag.Slug == "" {
 		t.Tag.Slug = slugify(t.Tag.Name)
 	}

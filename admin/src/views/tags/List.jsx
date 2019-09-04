@@ -12,7 +12,6 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import Icon from '@material-ui/core/Icon';
 import Box from '@material-ui/core/Box';
 import ConfirmDialog from "../../components/ConfirmDialog";
 
@@ -44,21 +43,36 @@ const useStyles = makeStyles(theme => ({
     rightCol: {
         flexGrow: 1
     },
+    button:{
+        marginTop: theme.spacing(1),
+        marginRight: theme.spacing(2),
+    }
 }));
 
-const TagList = ({history}) => {
-    const { tag, tags, loading, listTags, saveTag, deleteTag, handleChange } = useTag();
+const TagList = ({match, history}) => {
+    const { tag, tags, loading, listTags, getTag, newTag, saveTag, deleteTag, handleChange } = useTag();
     const [confirmDelete, setConfirmDelete] = React.useState(false);
     const classes = useStyles();
+    const tagId = match.params.tagId;
 
     useEffect(() => {
+        if (tagId) {
+            async function fetchData() {
+                getTag(tagId)
+            }
+
+            fetchData();            
+            return
+        }
+        
+        newTag();
         async function fetchData() {
             await listTags()
         }
 
         fetchData();
         // eslint-disable-next-line
-    }, []);
+    }, [tagId]);
 
     return (
         <>
@@ -68,7 +82,7 @@ const TagList = ({history}) => {
             <Grid container spacing={4} className={classes.wrapper}>
                 <Grid item className={classes.leftCol}>
                     <Typography variant="h6">
-                        Add New Tag
+                        {tagId ? 'Edit' : 'Add New' } Tag
                     </Typography>
                     <TextField id="tag-name"
                             label="Name"
@@ -101,11 +115,17 @@ const TagList = ({history}) => {
                         variant="outlined"
                         value={tag.description ? tag.description : ""}
                     />
-                    <Button onClick={saveTag} variant="contained" color="primary" aria-label={tag.id ? 'Update' : 'Add New Tag'}>
-                        {tag.id ? 'Update' : 'Add New Tag'}
+                    { tagId && (
+                    <Button onClick={() => history.push(`/tags`)} variant="contained" aria-label="Cancel" className={classes.button}>
+                        Cancel
+                    </Button>
+                    )}
+                    <Button onClick={saveTag} variant="contained" color="primary" aria-label={tagId ? 'Update' : 'Add New Tag'} className={classes.button}>
+                        {tagId ? 'Update' : 'Add New Tag'}
                     </Button>
                 </Grid>
                 <Grid item className={classes.rightCol}>
+                    { !tagId && (
                     <Paper className={classes.root}>
                         <Table className={classes.table}>
                             <TableHead>
@@ -150,7 +170,6 @@ const TagList = ({history}) => {
                                                 <TableCell>{row.description}</TableCell>
                                                 <TableCell>{row.slug}</TableCell>
                                                 <TableCell align="right">0</TableCell>
-                                                <TableCell align="right"><Icon onClick={() => setConfirmDelete(row.id)}>delete_forever</Icon></TableCell>
                                             </TableRow>
                                         ))}
                                     </>
@@ -158,6 +177,7 @@ const TagList = ({history}) => {
                             </TableBody>
                         </Table>
                     </Paper>
+                    )}
                 </Grid>
             </Grid>          
 

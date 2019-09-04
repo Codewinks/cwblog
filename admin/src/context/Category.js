@@ -78,6 +78,7 @@ export const CategoryProvider = ({ history, children }) => {
             await request(category.id ? 'put' : 'post', `/v1/categories/${category.id ? category.id : ''}`, {...category} )
 
             setCategory(emptyCategory);
+            history.push(`/tags`)
             await listCategories()
 
             showAlert('success', `Category successfully ${category.id ? 'saved' : 'created'}.`, 5000)

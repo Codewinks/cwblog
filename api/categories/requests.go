@@ -24,6 +24,10 @@ func (c *CategoryRequest) Bind(r *http.Request) error {
 		c.Category.Id = uuid.New().String()
 	}
 
+	if c.Category.Name == "" {
+		return errors.New("Missing category name")
+	}
+
 	if c.Category.Slug == "" {
 		c.Category.Slug = slugify(c.Category.Name)
 	}

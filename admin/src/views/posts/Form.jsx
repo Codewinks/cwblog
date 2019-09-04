@@ -72,22 +72,23 @@ const PostForm = ({ match }) => {
     const [config, setConfig] = useState({
         tab: 0
     })
+    const postId = match.params.postId;
 
     useEffect(() => {
-        if (!match.params.postId) {
+        if (!postId) {
             newPost();
             setLoading(false);
             return
         }
 
         async function fetchData() {
-            await getPost(match.params.postId)
+            await getPost(postId)
         }
 
         fetchData();
 
         // eslint-disable-next-line
-    }, [match.params.postId])
+    }, [postId])
     
     const handleToggleDropdown = () => {
         setToggleDropdown(toggle => !toggle);
@@ -132,7 +133,7 @@ const PostForm = ({ match }) => {
     return (
         <>
             <div className={classes.actionBtn}>
-                <IconButton className={classes.settingsBtn} aria-label="Delete" onClick={() => setConfirmDelete(post.id)}>
+                <IconButton className={classes.settingsBtn} aria-label="Delete" onClick={() => setConfirmDelete(postId)}>
                     <DeleteIcon />
                 </IconButton>
                 <IconButton className={classes.settingsBtn} aria-label="Settings" onClick={handleToggleSettings}>
@@ -141,7 +142,7 @@ const PostForm = ({ match }) => {
                 <Button variant="contained" className={classes.button} onClick={() => console.log(post)}>Preview</Button>
                 <ButtonGroup variant="contained" color="primary" aria-label="Publish">
                     <Button onClick={savePost}>
-                        {post.id ? 'Update' : 'Publish Now' }
+                        {postId ? 'Update' : 'Publish Now' }
                     </Button>
                     <Button
                         ref={anchorRef}
@@ -175,8 +176,7 @@ const PostForm = ({ match }) => {
                 </Popper>
             </div>
             <Typography variant="h4" gutterBottom>
-                {post.id}
-                {post.id ? 'Edit' : 'Create' } Post
+                {postId ? 'Edit' : 'Create' } Post
             </Typography>
             <Permalink />
             <Grid container spacing={3} className={classes.wrapper}>
