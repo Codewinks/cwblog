@@ -20,6 +20,7 @@ import (
 	"github.com/codewinks/cworm"
 )
 
+//Routes consists of the main route method declarations.
 func Routes(db *cworm.DB) *chi.Mux {
 	router := chi.NewRouter()
 
@@ -53,6 +54,7 @@ func Routes(db *cworm.DB) *chi.Mux {
 	return router
 }
 
+//AllowedOriginFunc validates the request origin.
 func AllowedOriginFunc(r *http.Request, origin string) bool {
 	if origin == "http://localhost:3000" {
 		return true

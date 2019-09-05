@@ -15,8 +15,10 @@ import (
 	"github.com/codewinks/cwblog/middleware"
 )
 
+//Handler consists of the DB connection and Routes
 type Handler core.Handler
 
+//Routes consists of the route method declarations for Categories.
 func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	cw := &Handler{DB: db}
 	r.Route("/categories", func(r chi.Router) {
@@ -39,6 +41,7 @@ func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	return r
 }
 
+//List handler returns all categories in JSON format.
 func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
 	categories, err := cw.DB.Get(&models.Category{})
 	if err != nil {
@@ -48,6 +51,7 @@ func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, categories)
 }
 
+//Store handler creates a new category and returns the category in JSON format.
 func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 	data := &CategoryRequest{}
 	if err := render.Bind(r, data); err != nil {
@@ -77,8 +81,8 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, category)
 }
 
+//Get handler returns a category by the provided {categoryId}
 func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("-----")
 	category := r.Context().Value("category").(*models.Category)
 
 	if category == nil {
@@ -89,6 +93,7 @@ func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, category)
 }
 
+//Update handler updates a category by the provided {categoryId}
 func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	category := r.Context().Value("category").(*models.Category)
 
@@ -105,6 +110,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, category)
 }
 
+//Delete handler deletes a category by the provided {categoryId}
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	category := r.Context().Value("category").(*models.Category)
 
@@ -113,6 +119,7 @@ func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, category)
 }
 
+//CategoryCtx handler loads a category by either {categoryId} or {categorySlug}
 func (cw *Handler) CategoryCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var category models.Category

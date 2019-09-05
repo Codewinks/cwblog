@@ -1,5 +1,6 @@
 package models
 
+//Post model
 type Post struct {
 	Id            string `json:"id"`
 	UserId        string `json:"user_id"`
@@ -20,6 +21,7 @@ type Post struct {
 	User          User   `json:"user"`
 }
 
+//User model
 type User struct {
 	Id        string `json:"id"`
 	FirstName string `json:"first_name" binding:"required"`
@@ -33,6 +35,7 @@ type User struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
+//Category model
 type Category struct {
 	Id               string `json:"id"`
 	Name             string `json:"name" binding:"required"`
@@ -44,6 +47,7 @@ type Category struct {
 	UpdatedAt        string `json:"updated_at"`
 }
 
+//Tag model
 type Tag struct {
 	Id          string `json:"id"`
 	Name        string `json:"name" binding:"required"`

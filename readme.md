@@ -17,11 +17,10 @@ Under development. CWBlog is a free and open-source content management system.
 - [ ] Project structure and plan
 - [ ] Documentation
 - [x] CWB CMD Line
-- [ ] DB Migrations
+    - [ ] Easy setup 
+- [x] DB Migrations
     - [x] Initial migrations
-    - [ ] Port migrations so that it runs as its own package
-    - [ ] Add migrate generate/rollback/reset/refresh
-    - [ ] Update command line
+    - [ ] Add migrate rollback/reset/refresh
 - [x] API
     - [x] CWORM Integration
     - [x] Posts CRUD Endpoints
@@ -48,7 +47,7 @@ Under development. CWBlog is a free and open-source content management system.
     - [x] Tags CRUD/API Integration
     - [ ] User CRUD/API Integration
         - [x] Create user in database on successful login
-        - [ ] Manage users
+        - [ ] Manage users/roles
     - [ ] Blog settings/configuration
     - [ ] Compile static blog frontend
     - [ ] Compile to static pages    

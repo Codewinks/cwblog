@@ -10,10 +10,12 @@ import (
 	"github.com/google/uuid"
 )
 
+// PostRequest is a pointer to the Post model.
 type PostRequest struct {
 	*models.Post
 }
 
+// Bind validates the Post Request body for required fields.
 func (p *PostRequest) Bind(r *http.Request) error {
 	// fmt.Printf("====%#v \n", p.Post)
 	if p.Post == nil {

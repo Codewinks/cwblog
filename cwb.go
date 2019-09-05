@@ -43,7 +43,26 @@ func main() {
 		}
 
 		print(msg)
+	case "make":
+		if len(os.Args) > 3 {
+			fmt.Println(colors.Red("Too many arguments."))
+			break
+		}
 
+		if len(os.Args) < 3 {
+			fmt.Println(colors.Red("Not enough arguments (missing: \"name\")."))
+			break
+		}
+
+		run = cmd[1]
+		name := os.Args[2]
+
+		if msg, err = cworm.Make(run, name); err != nil {
+			fmt.Println(colors.Red(err.Error()))
+			break
+		}
+
+		print(msg)
 	default:
 		colors.Red(fmt.Sprintf("Command \"%s\" is not defined", cmd[0]))
 		showHelp()

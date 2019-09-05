@@ -10,14 +10,16 @@ import (
 	"github.com/google/uuid"
 )
 
+// TagRequest is a pointer to the Tag model.
 type TagRequest struct {
 	*models.Tag
 }
 
+// Bind validates the TagRequest body for required fields.
 func (t *TagRequest) Bind(r *http.Request) error {
 	// fmt.Printf("====%#v \n", t.Tag)
 	if t.Tag == nil {
-		return errors.New("Missing required Post fields")
+		return errors.New("Missing required Tag fields")
 	}
 
 	if t.Tag.Id == "" {

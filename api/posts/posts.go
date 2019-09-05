@@ -15,8 +15,10 @@ import (
 	"github.com/codewinks/cwblog/middleware"
 )
 
+//Handler consists of the DB connection and Routes
 type Handler core.Handler
 
+//Routes consists of the route method declarations for Posts.
 func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	cw := &Handler{DB: db}
 	r.Route("/posts", func(r chi.Router) {
@@ -39,6 +41,7 @@ func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	return r
 }
 
+//List handler returns all posts in JSON format.
 func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
 	posts, err := cw.DB.Join(models.User{}, "user_id").Get(&models.Post{})
 	if err != nil {
@@ -48,6 +51,7 @@ func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, posts)
 }
 
+//Store handler creates a new post and returns the post in JSON format.
 func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 	data := &PostRequest{}
 	if err := render.Bind(r, data); err != nil {
@@ -77,6 +81,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, post)
 }
 
+//Get handler returns a post by the provided {postId}
 func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("-----")
 	post := r.Context().Value("post").(*models.Post)
@@ -89,6 +94,7 @@ func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, post)
 }
 
+//Update handler updates a post by the provided {postId}
 func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	post := r.Context().Value("post").(*models.Post)
 
@@ -105,6 +111,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, post)
 }
 
+//Delete handler deletes a post by the provided {postId}
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	post := r.Context().Value("post").(*models.Post)
 	cw.DB.Delete(post)
@@ -112,6 +119,7 @@ func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, post)
 }
 
+//PostCtx handler loads a post by either {postId} or {postSlug}
 func (cw *Handler) PostCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var post models.Post

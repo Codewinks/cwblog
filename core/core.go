@@ -8,11 +8,13 @@ import (
 	"github.com/go-chi/render"
 )
 
+//Handler consists of the DB connection and Routes
 type Handler struct {
 	DB     *cworm.DB
 	Routes *chi.Mux
 }
 
+//ErrResponse contains error information
 type ErrResponse struct {
 	Err            error `json:"-"` // low-level runtime error
 	HTTPStatusCode int   `json:"-"` // http response status code
@@ -22,6 +24,7 @@ type ErrResponse struct {
 	ErrorText  string `json:"error,omitempty"` // application-level error message, for debugging
 }
 
+//Render response writer
 func (e *ErrResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	render.Status(r, e.HTTPStatusCode)
 	return nil
@@ -63,7 +66,7 @@ func ErrConflict(err error) render.Renderer {
 	}
 }
 
-//ErrRender
+//ErrRender response error writer
 func ErrRender(err error) render.Renderer {
 	return &ErrResponse{
 		Err:            err,

@@ -15,8 +15,10 @@ import (
 	"github.com/codewinks/cwblog/middleware"
 )
 
+//Handler consists of the DB connection and Routes
 type Handler core.Handler
 
+//Routes consists of the route method declarations for Tags.
 func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	cw := &Handler{DB: db}
 	r.Route("/tags", func(r chi.Router) {
@@ -39,6 +41,7 @@ func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	return r
 }
 
+//List handler returns all tags in JSON format.
 func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
 	tags, err := cw.DB.Get(&models.Tag{})
 	if err != nil {
@@ -48,6 +51,7 @@ func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, tags)
 }
 
+//Store handler creates a new tag and returns the tag in JSON format.
 func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 	data := &TagRequest{}
 	if err := render.Bind(r, data); err != nil {
@@ -77,6 +81,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, tag)
 }
 
+//Get handler returns a tag by the provided {tagId}
 func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("-----")
 	tag := r.Context().Value("tag").(*models.Tag)
@@ -89,6 +94,7 @@ func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, tag)
 }
 
+//Update handler updates a tag by the provided {tagId}
 func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	tag := r.Context().Value("tag").(*models.Tag)
 
@@ -105,6 +111,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, tag)
 }
 
+//Delete handler deletes a tag by the provided {tagId}
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	tag := r.Context().Value("tag").(*models.Tag)
 
@@ -113,6 +120,7 @@ func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, tag)
 }
 
+//TagCtx handler loads a tag by either {tagId} or {tagSlug}
 func (cw *Handler) TagCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var tag models.Tag

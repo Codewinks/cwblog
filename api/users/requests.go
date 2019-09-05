@@ -7,10 +7,12 @@ import (
 	"github.com/codewinks/cwblog/api/models"
 )
 
+// UserRequest is a pointer to the Category model.
 type UserRequest struct {
 	*models.User
 }
 
+// Bind validates the User Request body for required fields.
 func (u *UserRequest) Bind(r *http.Request) error {
 	// u.User is nil if no Post fields are sent in the request. Return an
 	// error to avoid a nil pointer dereference.

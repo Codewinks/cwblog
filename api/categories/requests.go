@@ -10,14 +10,16 @@ import (
 	"github.com/google/uuid"
 )
 
+// CategoryRequest is a pointer to the Category model.
 type CategoryRequest struct {
 	*models.Category
 }
 
+// Bind validates the Category Request body for required fields.
 func (c *CategoryRequest) Bind(r *http.Request) error {
 	// fmt.Printf("====%#v \n", c.Category)
 	if c.Category == nil {
-		return errors.New("Missing required Post fields")
+		return errors.New("Missing required Category fields")
 	}
 
 	if c.Category.Id == "" {

@@ -17,8 +17,10 @@ import (
 	"github.com/codewinks/cworm"
 )
 
+//Handler consists of the DB connection and Routes
 type Handler core.Handler
 
+//Routes consists of the route method declarations for Auth.
 func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	cw := &Handler{DB: db}
 	r.Route("/auth", func(r chi.Router) {
@@ -30,6 +32,7 @@ func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	return r
 }
 
+//Login handler to obtain jwt token.
 func (cw *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	token := r.Context().Value("user").(*jwt.Token).Raw
 
@@ -91,6 +94,7 @@ func (cw *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	// w.Write(body)
 }
 
+//Logout handler – Unfinished
 func (cw *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, nil)
 }

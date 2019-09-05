@@ -5,18 +5,22 @@ import (
 	"net/http"
 
 	"fmt"
+
 	"github.com/codewinks/cworm"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
 	"errors"
+
 	"github.com/codewinks/cwblog/api/models"
 	"github.com/codewinks/cwblog/core"
 	"github.com/codewinks/cwblog/middleware"
 )
 
+//Handler consists of the DB connection and Routes
 type Handler core.Handler
 
+//Routes consists of the route method declarations for Users.
 func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	fmt.Println("users routes loaded")
 	cw := &Handler{DB: db}
@@ -39,6 +43,7 @@ func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	return r
 }
 
+//List handler returns all users in JSON format.
 func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
 	users, err := cw.DB.Get(&models.User{})
 	if err != nil {
@@ -48,6 +53,7 @@ func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, users)
 }
 
+//Store handler creates a new user and returns the user in JSON format.
 func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 	data := &UserRequest{}
 	if err := render.Bind(r, data); err != nil {
@@ -60,7 +66,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
-	
+
 	if exists {
 		render.Render(w, r, core.ErrConflict(errors.New("User already exists with that email.")))
 		return
@@ -77,12 +83,14 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, user)
 }
 
+//Get handler returns a user by the provided {userId}
 func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(*models.User)
 
 	render.JSON(w, r, user)
 }
 
+//Update handler updates a user by the provided {userId}
 func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	//[] Implement update
 	user := r.Context().Value("user").(*models.User)
@@ -100,6 +108,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, user)
 }
 
+//Delete handler deletes a user by the provided {userId}
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(models.User)
 	cw.DB.Delete(user)
@@ -107,6 +116,7 @@ func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, user)
 }
 
+//UserCtx handler loads a user by either {userId} or {userSlug}
 func (cw *Handler) UserCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var user models.User
