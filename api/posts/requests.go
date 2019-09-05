@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/codewinks/cwblog/api/models"
+	"github.com/codewinks/cwblog/middleware"
 	"github.com/google/uuid"
 )
 
@@ -31,7 +32,7 @@ func (p *PostRequest) Bind(r *http.Request) error {
 	}
 
 	if p.Post.UserId == "" {
-		p.Post.UserId = r.Context().Value("userID").(string)
+		p.Post.UserId = r.Context().Value(middleware.UserIdKey).(string)
 	}
 
 	if p.Post.Slug == "" {

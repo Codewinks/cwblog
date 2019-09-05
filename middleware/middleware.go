@@ -12,6 +12,13 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
+type key int
+
+//UserIdKey is the context key for the user id.
+const (
+	UserIdKey key = iota
+)
+
 //Response ...
 type Response struct {
 	Message string `json:"message"`
@@ -69,7 +76,7 @@ func IsAuthenticated(next http.Handler) http.Handler {
 
 		// next.ServeHTTP(w, r)
 		userID := r.Context().Value("user").(*jwt.Token).Claims.(jwt.MapClaims)["sub"]
-		ctx := context.WithValue(r.Context(), "userID", userID)
+		ctx := context.WithValue(r.Context(), UserIdKey, userID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
