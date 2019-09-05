@@ -10,11 +10,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
 import Paper from '@material-ui/core/Paper';
-import Fab from '@material-ui/core/Fab';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Icon from '@material-ui/core/Icon';
 
 import ConfirmDialog from "../../components/ConfirmDialog";
 
@@ -29,8 +28,8 @@ const useStyles = makeStyles(theme => ({
     },
     actionBtn: {
         position: 'absolute',
-        bottom: theme.spacing(2),
-        right: theme.spacing(2),
+        top: theme.spacing(12),
+        right: theme.spacing(3),
     },
     cursor: {
         cursor: 'pointer'
@@ -59,9 +58,9 @@ const PostList = ({history}) => {
 
     return (
         <>
-            <Fab to="/posts/create" component={Link} color="primary" aria-label="Add New Post" className={classes.actionBtn}>
-                <Icon>add</Icon>
-            </Fab>
+            <div className={classes.actionBtn}>
+                <Button variant="contained" color="primary" to="/posts/create" component={Link}>Add New</Button>
+            </div>
             <Typography variant="h4" gutterBottom>
                 Posts
             </Typography>

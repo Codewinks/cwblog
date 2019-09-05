@@ -11,12 +11,12 @@ import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
 import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -37,6 +37,8 @@ import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Collapse from '@material-ui/core/Collapse';
+
+import ArrowTooltip from './ArrowTooltip';
 
 
 const drawerWidth = 180;
@@ -115,7 +117,7 @@ const useStyles = makeStyles(theme => ({
         [theme.breakpoints.up('sm')]: {
             display: 'block',
         },
-    }, 
+    },
     search: {
         position: 'relative',
         borderRadius: theme.shape.borderRadius,
@@ -166,10 +168,10 @@ const useStyles = makeStyles(theme => ({
     navNested: {
         backgroundColor: 'rgba(162,162,162,0.1)'
     },
-    navIcon:{
+    navIcon: {
         color: 'inherit',
         minWidth: '40px'
-    }
+    },
 }));
 
 const Navigation = (props) => {
@@ -179,16 +181,16 @@ const Navigation = (props) => {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
 
-    function toggleDrawer() {        
+    function toggleDrawer() {
         setOpen(toggle => !toggle);
     }
 
-    const [menu, setMenu] = React.useState({target: null, key: null});
+    const [menu, setMenu] = React.useState({ target: null, key: null });
     function openMenu(event, key) {
-        setMenu({target: event.currentTarget, key: key});
+        setMenu({ target: event.currentTarget, key: key });
     }
-    function closeMenu(event){
-        setMenu({target: null, key: null});
+    function closeMenu(event) {
+        setMenu({ target: null, key: null });
     }
 
     return (
@@ -196,7 +198,7 @@ const Navigation = (props) => {
             <AppBar position="fixed" className={clsx(classes.appBar)}>
                 <Toolbar>
                     <IconButton color="inherit" aria-label="Toggle Navigation" onClick={toggleDrawer} edge="start" className={clsx(classes.menuButton)}>
-                        { !open ? <MenuIcon /> : theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon /> }
+                        {!open ? <MenuIcon /> : theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                     </IconButton>
                     <Typography variant="h6" noWrap className={classes.title}>CWBlog</Typography>
                     <div className={classes.search}>
@@ -288,7 +290,7 @@ const Navigation = (props) => {
                 </MenuItem>
             </Menu>
 
-            {/* Desktop Menu */}            
+            {/* Desktop Menu */}
             <Menu
                 anchorEl={menu.target}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
@@ -302,7 +304,7 @@ const Navigation = (props) => {
                 {isAuthenticated ? [
                     <MenuItem onClick={closeMenu} component={Link} to="/profile" key="profile">Profile</MenuItem>,
                     <MenuItem onClick={() => logout()} key="logout">Logout</MenuItem>
-                ] :  
+                ] :
                     <MenuItem onClick={() => loginWithRedirect({})}>Login</MenuItem>
                 }
             </Menu>
@@ -324,27 +326,27 @@ const Navigation = (props) => {
                 <List>
                     <ListItem button to="/" component={Link}>
                         <ListItemIcon className={classes.navIcon}><DashboardIcon /></ListItemIcon>
-                        <ListItemText primary="Dashboard"/>
+                        <ListItemText primary="Dashboard" />
                     </ListItem>
 
-                    <ListItem button to="/posts" component={Link}  onMouseEnter={!open ? event => openMenu(event, 'posts') : null}>
-                        <ListItemIcon className={classes.navIcon}><LibraryBooksIcon /></ListItemIcon>
-                        <ListItemText primary="Posts" />
-                    </ListItem>
-                    <Menu
-                    anchorEl={menu.target}
-                    getContentAnchorEl={null}
-                    open={!open && menu.key === 'posts'}
-                    onClose={closeMenu}
-                    anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                    >
-                        <div onMouseLeave={closeMenu}>
-                            <MenuItem to="/posts" component={Link}>All Posts</MenuItem>
-                            <MenuItem to="/posts/create" component={Link}>Add New</MenuItem>
-                            <MenuItem to="/categories" component={Link}>Categories</MenuItem>
-                            <MenuItem to="/tags" component={Link}>Tags</MenuItem>
-                        </div>
-                    </Menu>
+                    <ArrowTooltip placement="right-start" interactive disableHoverListener={open}
+                        title={
+                            <List disablePadding>
+                                <ListItem button to="/posts" component={Link}>
+                                    <ListItemText primary="All Posts" /></ListItem>
+                                <ListItem button to="/posts/create" component={Link}>
+                                    <ListItemText primary="Add New" /></ListItem>
+                                <ListItem button to="/categories" component={Link}>
+                                    <ListItemText primary="Categories" /></ListItem>
+                                <ListItem button to="/tags" component={Link}>
+                                    <ListItemText primary="Tags" /></ListItem>
+                            </List>
+                        }>
+                        <ListItem button to="/posts" component={Link}>
+                            <ListItemIcon className={classes.navIcon}><LibraryBooksIcon /></ListItemIcon>
+                            <ListItemText primary="Posts" />
+                        </ListItem>
+                    </ArrowTooltip>
 
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <List disablePadding className={classes.navNested}>
@@ -366,7 +368,7 @@ const Navigation = (props) => {
                         <ListItemIcon className={classes.navIcon}><PeopleIcon /></ListItemIcon>
                         <ListItemText primary="Users" />
                     </ListItem>
-                     <ListItem button to="/settings" component={Link}>
+                    <ListItem button to="/settings" component={Link}>
                         <ListItemIcon className={classes.navIcon}><SettingsIcon /></ListItemIcon>
                         <ListItemText primary="Settings" />
                     </ListItem>

@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
     actionBtn: {
         position: 'absolute',
         top: theme.spacing(12),
-        right: theme.spacing(2),
+        right: theme.spacing(3),
     },
     button: {
         marginLeft: theme.spacing(1),
