@@ -17,6 +17,12 @@ import (
 	"github.com/codewinks/cwblog/middleware"
 )
 
+type key int
+
+const (
+	userKey key = iota
+)
+
 //Handler consists of the DB connection and Routes
 type Handler core.Handler
 
@@ -85,7 +91,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 
 //Get handler returns a user by the provided {userId}
 func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value("user").(*models.User)
+	user := r.Context().Value(userKey).(*models.User)
 
 	render.JSON(w, r, user)
 }
@@ -93,7 +99,7 @@ func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 //Update handler updates a user by the provided {userId}
 func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	//[] Implement update
-	user := r.Context().Value("user").(*models.User)
+	user := r.Context().Value(userKey).(*models.User)
 
 	data := &UserRequest{User: user}
 	if err := render.Bind(r, data); err != nil {
@@ -110,7 +116,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 //Delete handler deletes a user by the provided {userId}
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value("user").(models.User)
+	user := r.Context().Value(userKey).(models.User)
 	cw.DB.Delete(user)
 
 	render.JSON(w, r, user)
@@ -135,7 +141,7 @@ func (cw *Handler) UserCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "user", &user)
+		ctx := context.WithValue(r.Context(), userKey, &user)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

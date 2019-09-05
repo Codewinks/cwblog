@@ -15,6 +15,12 @@ import (
 	"github.com/codewinks/cwblog/middleware"
 )
 
+type key int
+
+const (
+	tagKey key = iota
+)
+
 //Handler consists of the DB connection and Routes
 type Handler core.Handler
 
@@ -84,7 +90,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 //Get handler returns a tag by the provided {tagId}
 func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("-----")
-	tag := r.Context().Value("tag").(*models.Tag)
+	tag := r.Context().Value(tagKey).(*models.Tag)
 
 	if tag == nil {
 		render.Render(w, r, core.ErrNotFound)
@@ -96,7 +102,7 @@ func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 
 //Update handler updates a tag by the provided {tagId}
 func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
-	tag := r.Context().Value("tag").(*models.Tag)
+	tag := r.Context().Value(tagKey).(*models.Tag)
 
 	data := &TagRequest{Tag: tag}
 	if err := render.Bind(r, data); err != nil {
@@ -113,7 +119,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 //Delete handler deletes a tag by the provided {tagId}
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
-	tag := r.Context().Value("tag").(*models.Tag)
+	tag := r.Context().Value(tagKey).(*models.Tag)
 
 	cw.DB.Delete(tag)
 
@@ -140,7 +146,7 @@ func (cw *Handler) TagCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "tag", &tag)
+		ctx := context.WithValue(r.Context(), tagKey, &tag)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

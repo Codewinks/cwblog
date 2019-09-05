@@ -15,6 +15,12 @@ import (
 	"github.com/codewinks/cwblog/middleware"
 )
 
+type key int
+
+const (
+	postKey key = iota
+)
+
 //Handler consists of the DB connection and Routes
 type Handler core.Handler
 
@@ -84,7 +90,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 //Get handler returns a post by the provided {postId}
 func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("-----")
-	post := r.Context().Value("post").(*models.Post)
+	post := r.Context().Value(postKey).(*models.Post)
 
 	if post == nil {
 		render.Render(w, r, core.ErrNotFound)
@@ -96,7 +102,7 @@ func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 
 //Update handler updates a post by the provided {postId}
 func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
-	post := r.Context().Value("post").(*models.Post)
+	post := r.Context().Value(postKey).(*models.Post)
 
 	data := &PostRequest{Post: post}
 	if err := render.Bind(r, data); err != nil {
@@ -113,7 +119,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 //Delete handler deletes a post by the provided {postId}
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
-	post := r.Context().Value("post").(*models.Post)
+	post := r.Context().Value(postKey).(*models.Post)
 	cw.DB.Delete(post)
 
 	render.JSON(w, r, post)
@@ -139,7 +145,7 @@ func (cw *Handler) PostCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "post", &post)
+		ctx := context.WithValue(r.Context(), postKey, &post)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

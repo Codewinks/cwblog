@@ -15,6 +15,12 @@ import (
 	"github.com/codewinks/cwblog/middleware"
 )
 
+type key int
+
+const (
+	categoryKey key = iota
+)
+
 //Handler consists of the DB connection and Routes
 type Handler core.Handler
 
@@ -83,7 +89,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 
 //Get handler returns a category by the provided {categoryId}
 func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
-	category := r.Context().Value("category").(*models.Category)
+	category := r.Context().Value(categoryKey).(*models.Category)
 
 	if category == nil {
 		render.Render(w, r, core.ErrNotFound)
@@ -95,7 +101,7 @@ func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 
 //Update handler updates a category by the provided {categoryId}
 func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
-	category := r.Context().Value("category").(*models.Category)
+	category := r.Context().Value(categoryKey).(*models.Category)
 
 	data := &CategoryRequest{Category: category}
 	if err := render.Bind(r, data); err != nil {
@@ -112,7 +118,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 //Delete handler deletes a category by the provided {categoryId}
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
-	category := r.Context().Value("category").(*models.Category)
+	category := r.Context().Value(categoryKey).(*models.Category)
 
 	cw.DB.Delete(category)
 
@@ -139,7 +145,7 @@ func (cw *Handler) CategoryCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "category", &category)
+		ctx := context.WithValue(r.Context(), categoryKey, &category)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
