@@ -2,6 +2,8 @@
 Under development. CWBlog is a free and open-source content management system.
 
 [![GNU General Public License v3.0](https://img.shields.io/github/license/codewinks/cwblog.svg)](https://opensource.org/licenses/GPL-3.0)
+[![Go Report Card](https://goreportcard.com/badge/github.com/codewinks/cwblog)](https://goreportcard.com/report/github.com/codewinks/cwblog)
+![Discord](https://img.shields.io/discord/619054480297820161)
 
 ## Overview
 
