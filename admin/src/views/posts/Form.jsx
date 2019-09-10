@@ -133,9 +133,11 @@ const PostForm = ({ match }) => {
     return (
         <>
             <div className={classes.actionBtn}>
-                <IconButton className={classes.settingsBtn} aria-label="Delete" onClick={() => setConfirmDelete(postId)}>
-                    <DeleteIcon />
-                </IconButton>
+                { postId && (
+                    <IconButton className={classes.settingsBtn} aria-label="Delete" onClick={() => setConfirmDelete(postId)}>
+                        <DeleteIcon />
+                    </IconButton>                    
+                )}
                 <IconButton className={classes.settingsBtn} aria-label="Settings" onClick={handleToggleSettings}>
                     <SettingsIcon />
                 </IconButton>

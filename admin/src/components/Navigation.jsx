@@ -157,6 +157,7 @@ const useStyles = makeStyles(theme => ({
         display: 'none',
         [theme.breakpoints.up('md')]: {
             display: 'flex',
+            alignItems: 'center'
         },
     },
     sectionMobile: {
@@ -175,20 +176,21 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Navigation = (props) => {
-    const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
+    const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
 
     const classes = useStyles();
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
+    const [menu, setMenu] = React.useState({ target: null, key: null });
 
     function toggleDrawer() {
         setOpen(toggle => !toggle);
     }
-
-    const [menu, setMenu] = React.useState({ target: null, key: null });
+    
     function openMenu(event, key) {
         setMenu({ target: event.currentTarget, key: key });
     }
+
     function closeMenu(event) {
         setMenu({ target: null, key: null });
     }
@@ -235,7 +237,7 @@ const Navigation = (props) => {
                             onClick={event => openMenu(event, 'main')}
                             color="inherit"
                         >
-                            {props.avatar ? <Avatar alt="Remy Sharp" src={props.avatar} /> : <Avatar ><PersonIcon /></Avatar>}
+                            {user.picture ? <Avatar alt={user.name} src={user.picture} /> : <Avatar ><PersonIcon /></Avatar>}
                         </IconButton>
                     </div>
                     <div className={classes.sectionMobile}>
@@ -284,7 +286,7 @@ const Navigation = (props) => {
                         aria-haspopup="true"
                         color="inherit"
                     >
-                        {props.avatar ? <Avatar alt="Remy Sharp" src={props.avatar} /> : <Avatar><PersonIcon /></Avatar>}
+                        {user.picture ? <Avatar alt={user.name} src={user.picture} /> : <Avatar><PersonIcon /></Avatar>}
                     </IconButton>
                     <p>Profile</p>
                 </MenuItem>

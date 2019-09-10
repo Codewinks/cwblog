@@ -59,7 +59,7 @@ const PostList = ({history}) => {
     return (
         <>
             <div className={classes.actionBtn}>
-                <Button variant="contained" color="primary" to="/posts/create" component={Link}>Add New</Button>
+                <Button variant="contained" color="primary" to="/posts/create" component={Link}>Add New Post</Button>
             </div>
             <Typography variant="h4" gutterBottom>
                 Posts

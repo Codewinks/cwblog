@@ -82,7 +82,7 @@ const CategoryList = ({match, history}) => {
             <Grid container spacing={4} className={classes.wrapper}>
                 <Grid item className={classes.leftCol}>
                     <Typography variant="h6">
-                        {categoryId ? 'Edit' : 'Add New' }Category
+                        {categoryId ? 'Edit' : 'Add New' } Category
                     </Typography>
                     <TextField id="category-name"
                             label="Name"

@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
 function App() {
   const { alert, hideAlert } = useApp();
   const classes = useStyles();
-  const { loading, user, isAuthenticated } = useAuth0();
+  const { loading, isAuthenticated } = useAuth0();
 
   if (loading) {
     return "Loading...";
@@ -63,7 +63,7 @@ function App() {
       <Alert variant={alert.variant} message={alert.message} autoHideDuration={alert.autoHideDuration} onClose={hideAlert}/>
       <BrowserRouter>
         <CssBaseline />
-        <Navigation avatar={user.picture}/>
+        <Navigation/>
 
         <main className={classes.content}>
           <div className={classes.toolbar} />
