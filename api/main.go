@@ -1,6 +1,7 @@
 package main
 
 import (
+	"compress/flate"
 	"fmt"
 	"log"
 	"net/http"
@@ -24,7 +25,7 @@ import (
 func Routes(db *cworm.DB) *chi.Mux {
 	router := chi.NewRouter()
 
-	cors := cors.New(cors.Options{
+	corsOptions := cors.New(cors.Options{
 		// AllowedOrigins: []string{"*"},
 		AllowOriginFunc: AllowedOriginFunc,
 		AllowedMethods:  []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -35,9 +36,9 @@ func Routes(db *cworm.DB) *chi.Mux {
 	})
 
 	router.Use(
-		cors.Handler,
+		corsOptions.Handler,
 		middleware.Logger,
-		middleware.DefaultCompress,
+		middleware.NewCompressor(flate.DefaultCompression).Handler,
 		// middleware.RedirectSlashes,
 		middleware.Recoverer,
 		render.SetContentType(render.ContentTypeJSON),
@@ -88,5 +89,5 @@ func main() {
 	}
 
 	log.Println("Running on: < http://api.winks.localhost:8080 >")
-	log.Fatal(http.ListenAndServe(":3001", router))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

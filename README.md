@@ -83,7 +83,3 @@ Under development. cwBLOG is a free and open-source content management system.
 Released under the [GNU General Public License v3.0](https://github.com/codewinks/cwblog/blob/master/LICENSE)
 
 
-
-
-
-

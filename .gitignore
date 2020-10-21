@@ -1,5 +1,6 @@
 /node_modules
 /vendor
+.idea
 .env
 .history
 .phpunit.result.cache
