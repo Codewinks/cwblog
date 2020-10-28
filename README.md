@@ -12,8 +12,8 @@ Under development. cwBLOG is a free and open-source content management system.
 
 ### Features
 * [x] API – Built with GoLang using [cwORM](https://github.com/codewinks/cworm)
-* [x] Admin – Built with React
-* [ ] Blog – TBD
+* [x] Admin – Built with React (Development)
+* [ ] Blog – Frontend (TBD)
 
 
 ### Roadmap:
@@ -30,19 +30,19 @@ Under development. cwBLOG is a free and open-source content management system.
 - [x] API
     - [x] [cwORM](https://github.com/codewinks/cworm) Integration
     - [x] Posts CRUD Endpoints
-        – [ ] Multi-error responses
+        - [ ] Multi-error responses
     - [x] Users CRUD Endpoints
     - [x] Auth0 Integration
 - [ ] Admin
     - [x] Auth0 Login Integration
         - [x] Register – Create user on API
-        - [ ] Solution for disabled registration/signup
+        - [x] Solution for disabled registration/signup
         - [ ] User roles admin, guest
         - [ ] Invite – Invite user/admin
     - [x] API/Auth0 Authentication
     - [ ] Dashboard with statistics
     - [x] Post CRUD/API Integration
-        – [x] Error handler
+        - [x] Error handler
         - [ ] Choose category/tag from create/edit post
         - [ ] New category/tag from create/edit post
         - [ ] Add Pagination
