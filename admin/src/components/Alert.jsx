@@ -66,7 +66,7 @@ const Alert = (props) => {
                 message={
                     <span id="client-snackbar" className={classes.message}>
                         <Icon className={clsx(classes.icon, classes.iconVariant)} />
-                        {message}
+                        <span dangerouslySetInnerHTML={{__html: message}} />
                     </span>
                 }
                 action={[

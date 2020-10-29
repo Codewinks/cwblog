@@ -69,8 +69,8 @@ function App() {
           <div className={classes.toolbar} />
           <Switch>
             <Route path="/" exact component={Dashboard} />
-            <PrivateRoute exact path="/posts/create" render={p => (<PostProvider {...p}><PostForm {...p}/></PostProvider>)} />
-            <PrivateRoute exact path="/posts/:postId" render={p => (<PostProvider {...p}><PostForm {...p}/></PostProvider>)} />
+            <PrivateRoute exact path="/posts/create" render={p => (<TagProvider {...p}><PostProvider {...p}><PostForm {...p}/></PostProvider></TagProvider>)} />
+            <PrivateRoute exact path="/posts/:postId" render={p => (<TagProvider {...p}><PostProvider {...p}><PostForm {...p}/></PostProvider></TagProvider>)} />
             <PrivateRoute exact path="/posts" render={p => (<PostProvider {...p}><PostList {...p}/></PostProvider>)} />
             <PrivateRoute exact path="/tags/:tagId" render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
             <PrivateRoute exact path="/tags" render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />

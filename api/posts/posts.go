@@ -49,9 +49,10 @@ func Routes(r chi.Router, db *cworm.DB) chi.Router {
 
 //List handler returns all posts in JSON format.
 func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
-	posts, err := cw.DB.Join(models.User{}, "user_id").Get(&models.Post{})
+	posts, err := cw.DB.NewQuery().Join(models.User{}, models.Tag{}).Get(&models.Post{})
 	if err != nil {
-		panic(err)
+		render.Render(w, r, core.ErrInvalidRequest(err))
+		return
 	}
 
 	render.JSON(w, r, posts)
@@ -65,7 +66,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	exists, err := cw.DB.Where("slug", "=", data.Post.Slug).Exists(models.Post{})
+	exists, err := cw.DB.NewQuery().Where("slug", "=", data.Post.Slug).Exists(models.Post{})
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
@@ -76,7 +77,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post, err := cw.DB.New(data.Post)
+	post, err := cw.DB.NewQuery().Create(data.Post)
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
@@ -112,7 +113,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	post = data.Post
 
-	cw.DB.Save(post)
+	cw.DB.NewQuery().Save(post)
 
 	render.JSON(w, r, post)
 }
@@ -120,7 +121,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 //Delete handler deletes a post by the provided {postId}
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	post := r.Context().Value(postKey).(*models.Post)
-	cw.DB.Delete(post)
+	cw.DB.NewQuery().Delete(post)
 
 	render.JSON(w, r, post)
 }
@@ -132,9 +133,9 @@ func (cw *Handler) PostCtx(next http.Handler) http.Handler {
 		var err error
 
 		if postId := chi.URLParam(r, "postId"); postId != "" {
-			err = cw.DB.Join(models.User{}, "user_id").Where("id", "=", postId).First(&post)
+			err = cw.DB.NewQuery().Where("id", "=", postId).First(&post)
 		} else if postSlug := chi.URLParam(r, "postSlug"); postSlug != "" {
-			err = cw.DB.Join(models.User{}, "user_id").Where("slug", "=", postSlug).First(&post)
+			err = cw.DB.NewQuery().Where("slug", "=", postSlug).First(&post)
 		} else {
 			render.Render(w, r, core.ErrNotFound)
 			return

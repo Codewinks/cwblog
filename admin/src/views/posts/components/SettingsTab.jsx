@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { usePost } from '../../../context/Post'
+import React, {useEffect, useState} from "react";
+import {usePost} from '../../../context/Post'
 
 import DateFnsUtils from "@date-io/date-fns";
-import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import {DateTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import ListItem from '@material-ui/core/ListItem';
@@ -12,6 +12,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
 import Chip from '@material-ui/core/Chip';
+
+import CancelIcon from '@material-ui/icons/Cancel';
+
 import InsertInvitationIcon from '@material-ui/icons/InsertInvitation';
 import VisibiltyIcon from '@material-ui/icons/Visibility';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
@@ -19,11 +22,13 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import EditIcon from '@material-ui/icons/Edit';
 
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Paper from '@material-ui/core/Paper';
-import Fade from '@material-ui/core/Fade';
-import Popper from '@material-ui/core/Popper';
-import Radio from '@material-ui/core/Radio';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+
+import {ClickAwayListener, Fade, Paper, Popper, Radio} from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -34,9 +39,16 @@ const useStyles = makeStyles(theme => ({
     listIcon: {
         minWidth: '35px'
     },
-    chip: {
+    chipDropdown: {
         marginLeft: theme.spacing(1),
         // marginRight: theme.spacing(1),
+    },
+    chip: {
+        margin: 2,
+    },
+    chips: {
+        display: 'flex',
+        flexWrap: 'wrap',
     },
     chipIcon: {
         order: 1,
@@ -50,6 +62,11 @@ const useStyles = makeStyles(theme => ({
     },
     dropdown: {
         maxWidth: '300px'
+    },
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+        maxWidth: 300,
     },
     publishedAtContainer:{
         position: 'relative',
@@ -68,8 +85,8 @@ const SettingsTab = props => {
     const classes = useStyles();
     const dateFns = new DateFnsUtils();
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [open, setOpen] = React.useState(true);
-    const [dropdown, setDropdown] = React.useState(false);
+    const [menu, toggleMenu] = React.useState(['settings', 'categories', 'tags']);
+    const [dropdown, setDropdown] = React.useState(null);
     const [publishedAt, setPublishedAt] = useState(new Date())
 
     const handleDropdown = (event, menu) => {
@@ -77,18 +94,28 @@ const SettingsTab = props => {
         setDropdown(menu);
     }
 
-    const isDropdown = (menu) => {
-        return Boolean(dropdown === menu);
+    const isDropdown = (key) => {
+        return Boolean(dropdown === key);
     }
 
     const handleClose = () => {
-        setDropdown(false);
+        setDropdown(null);
         props.clearDropdown();
     }
 
-    const handleClick = () => {
-        setOpen(!open);
+    const handleMenu = (key) => {
+        let newMenu = menu;
+
+        if(!isMenuOpen(key)){
+            newMenu.push(key);
+        }else{
+            newMenu = menu.filter(e => e !== key);
+        }
+
+        toggleMenu([...newMenu]);
     }
+
+    const isMenuOpen = (key) => Boolean(menu.includes(key));
 
     const handlePublishedAtChange = (v) => {
         setPublishedAt(v);
@@ -96,8 +123,8 @@ const SettingsTab = props => {
         if(v){
             v = dateFns.format(v, 'MMM d, yyyy h:mma');
         }
-        
-        handleChange({ target: { value: v } }, 'published_at');
+
+        handleUpdate('published_at', v);
     }
 
     useEffect(() => {
@@ -112,11 +139,11 @@ const SettingsTab = props => {
             aria-labelledby="nested-list-subheader"
             className={classes.root} disablePadding
         >
-            <ListItem button onClick={handleClick}>
+            <ListItem button onClick={() => handleMenu('settings')}>
                 <ListItemText primary="Status &amp; Visibility" />
-                {open ? <ExpandLess /> : <ExpandMore />}
+                {isMenuOpen('settings') ? <ExpandLess /> : <ExpandMore />}
             </ListItem>
-            <Collapse in={open} timeout="auto" unmountOnExit>
+            <Collapse in={isMenuOpen('settings')} timeout="auto" unmountOnExit>
                 <List disablePadding dense>
                     <ListItem>
                         <ListItemIcon className={classes.listIcon}>
@@ -126,7 +153,7 @@ const SettingsTab = props => {
                         <Chip
                             size="small"
                             label={options.status.find(v => v.value === post.status).label}
-                            className={classes.chip}
+                            className={classes.chipDropdown}
                             icon={<EditIcon className={classes.chipIcon} />}
                             aria-haspopup="true"
                             onClick={event => handleDropdown(event, 'status')}
@@ -135,7 +162,7 @@ const SettingsTab = props => {
                             {({ TransitionProps }) => (
                                 <Fade {...TransitionProps} timeout={350}>
                                     <Paper id="menu-list-grow">
-                                        <ClickAwayListener onClickAway={handleClose}>
+                                        <ClickAwayListener onClickAway={handleClose} mouseEvent="onMouseUp">
                                             <List dense subheader={
                                                 <ListSubheader component="div" id="nested-list-subheader">
                                                     Post Status
@@ -167,7 +194,7 @@ const SettingsTab = props => {
                         <Chip
                             size="small"
                             label={options.visibility.find(v => v.value === post.visibility).label}
-                            className={classes.chip}
+                            className={classes.chipDropdown}
                             icon={<EditIcon className={classes.chipIcon} />}
                             aria-haspopup="true"
                             onClick={event => handleDropdown(event, 'visibility')}
@@ -176,7 +203,7 @@ const SettingsTab = props => {
                             {({ TransitionProps }) => (
                                 <Fade {...TransitionProps} timeout={350}>
                                     <Paper id="menu-list-grow">
-                                        <ClickAwayListener onClickAway={handleClose}>
+                                        <ClickAwayListener onClickAway={handleClose} mouseEvent="onMouseUp">
                                             <List dense subheader={
                                                 <ListSubheader component="div" id="nested-list-subheader">
                                                     Post Visibility
@@ -209,7 +236,7 @@ const SettingsTab = props => {
                             <Chip
                                 size="small"
                                 label={post.published_at ? String(post.published_at) : 'Immediately'}
-                                className={classes.chip}
+                                className={classes.chipDropdown}
                                 icon={<EditIcon className={classes.chipIcon} />}
                                 onClick={event => handleDropdown(event, 'published_at')}
                             />
@@ -232,15 +259,43 @@ const SettingsTab = props => {
                 
             </Collapse>
 
-            <ListItem button onClick={handleClick}>
+            <ListItem button onClick={() => handleMenu('categories')}>
                 <ListItemText primary="Categories" />
-                {open ? <ExpandLess /> : <ExpandMore />}
+                {isMenuOpen('categories') ? <ExpandLess /> : <ExpandMore />}
             </ListItem>
 
-            <ListItem button onClick={handleClick}>
+            <ListItem button onClick={() => handleMenu('tags')}>
                 <ListItemText primary="Tags" />
-                {open ? <ExpandLess /> : <ExpandMore />}
+                {isMenuOpen('tags') ? <ExpandLess /> : <ExpandMore />}
             </ListItem>
+            <Collapse in={isMenuOpen('tags')} timeout="auto" unmountOnExit>
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="demo-mutiple-chip-label">{ post.tags && post.tags.length ? 'Selected' : 'Choose' } Tags</InputLabel>
+                    <Select
+                        labelId="demo-mutiple-chip-label"
+                        id="demo-mutiple-chip"
+                        multiple
+                        value={post.tags ? post.tags : []}
+                        onChange={event => handleChange(event, 'tags')}
+                        input={<Input id="select-multiple-chip" />}
+                        renderValue={(selectedTags) => (
+                            <div className={classes.chips}>
+                                {selectedTags.map((tag) => (
+                                    <Chip key={tag.id} label={tag.name} className={classes.chip}
+                                          onDelete={() => handleUpdate('tags', post.tags.filter((t) => t.id !== tag.id))}
+                                          deleteIcon={<CancelIcon onMouseDown={(event) => event.stopPropagation()} />} />
+                                ))}
+                            </div>
+                        )}
+                    >
+                        {props.allTags && props.allTags.map((tag) => (
+                            <MenuItem key={tag.id} value={tag}>
+                                {tag.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            </Collapse>
         </List>
     )
 };

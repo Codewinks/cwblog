@@ -18,7 +18,8 @@ type Post struct {
 	CreatedAt     string `json:"created_at"`
 	UpdatedAt     string `json:"updated_at"`
 	DeletedAt     string `json:"deleted_at,omitempty"`
-	User          User   `json:"user"`
+	Tag           *[]Tag `json:"tags" json_object:"id"`
+	User          *User  `json:"user" foreign_key:"user_id"`
 }
 
 //User model

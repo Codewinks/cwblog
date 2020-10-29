@@ -101,7 +101,7 @@ const Permalink = () => {
             handleUpdate('slug', slug)
         }
         // eslint-disable-next-line
-    }, [post]);
+    }, [post.title]);
 
     function handleToggleEdit() {
         setToggleEdit(toggle => !toggle);

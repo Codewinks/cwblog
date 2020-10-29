@@ -51,7 +51,7 @@ func Routes(r chi.Router, db *cworm.DB) chi.Router {
 
 //List handler returns all users in JSON format.
 func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
-	users, err := cw.DB.Get(&models.User{})
+	users, err := cw.DB.NewQuery().Get(&models.User{})
 	if err != nil {
 		panic(err)
 	}
@@ -67,7 +67,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	exists, err := cw.DB.Where("email", "=", data.User.Email).Exists(models.User{})
+	exists, err := cw.DB.NewQuery().Where("email", "=", data.User.Email).Exists(models.User{})
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
@@ -78,7 +78,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := cw.DB.New(data.User)
+	user, err := cw.DB.NewQuery().Create(data.User)
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
@@ -109,7 +109,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	user = data.User
 
-	cw.DB.Save(user)
+	cw.DB.NewQuery().Save(user)
 
 	render.JSON(w, r, user)
 }
@@ -117,7 +117,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 //Delete handler deletes a user by the provided {userId}
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(userKey).(models.User)
-	cw.DB.Delete(user)
+	cw.DB.NewQuery().Delete(user)
 
 	render.JSON(w, r, user)
 }
@@ -129,9 +129,9 @@ func (cw *Handler) UserCtx(next http.Handler) http.Handler {
 		var err error
 
 		if userId := chi.URLParam(r, "userId"); userId != "" {
-			err = cw.DB.Where("id", "=", userId).First(&user)
+			err = cw.DB.NewQuery().Where("id", "=", userId).First(&user)
 		} else if userEmail := chi.URLParam(r, "userEmail"); userEmail != "" {
-			err = cw.DB.Where("email", "=", userEmail).First(&user)
+			err = cw.DB.NewQuery().Where("email", "=", userEmail).First(&user)
 		} else {
 			render.Render(w, r, core.ErrNotFound)
 			return

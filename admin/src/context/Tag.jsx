@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useApp } from './App'
-import { useAuth0 } from "../context/Auth0";
+import { useAuth0 } from './Auth0';
+import {ALERT_ERROR, ALERT_SUCCESS} from "./App";
 
 export const TagContext = React.createContext()
 export const useTag = () => useContext(TagContext)
@@ -42,9 +43,12 @@ export const TagProvider = ({ history, children }) => {
         setLoading(true)
         try {
             const data = await request('get', `/v1/tags/`)
+            console.log(data)
             setTags(data)
+
+            return data
         } catch (error) {
-            showAlert('error', error.message)
+            showAlert(ALERT_ERROR, error.message)
         } finally {
             setLoading(false)
         }
@@ -56,7 +60,7 @@ export const TagProvider = ({ history, children }) => {
             const data = await request('get', `/v1/tags/${tagId}`)
             setTag(data)
         } catch (error) {
-            showAlert('error', error.message)
+            showAlert(ALERT_ERROR, error.message)
         } finally {
             setLoading(false)
         }
@@ -71,9 +75,9 @@ export const TagProvider = ({ history, children }) => {
             history.push(`/tags`)
             await listTags()
             
-            showAlert('success', `Tag successfully ${tag.id ? 'saved' : 'created'}.`, 5000)
+            showAlert(ALERT_SUCCESS, `Tag ${tag.id ? 'saved' : 'created'}.`, 5000)
         } catch (error) {
-            showAlert('error', error.message)
+            showAlert(ALERT_ERROR, error.message)
         } finally {
             setLoading(false)
         }
@@ -87,9 +91,9 @@ export const TagProvider = ({ history, children }) => {
             setTag(emptyTag)
             await listTags()
             
-            showAlert('success', `Tag successfully deleted.`, 5000)
+            showAlert(ALERT_SUCCESS, `Tag deleted.`, 5000)
         } catch (error) {
-            showAlert('error', error.message)
+            showAlert(ALERT_ERROR, error.message)
         } finally {
             setLoading(false)
         }

@@ -53,7 +53,7 @@ func (cw *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	var exists bool
 	var err error
 
-	exists, err = cw.DB.Where("id", "=", result["sub"]).Exists(&user)
+	exists, err = cw.DB.NewQuery().Where("id", "=", result["sub"]).Exists(&user)
 
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
@@ -66,7 +66,7 @@ func (cw *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		user.FirstName = result["given_name"].(string)
 		user.LastName = result["family_name"].(string)
 		user.Avatar = result["picture"].(string)
-		_, err := cw.DB.New(user)
+		_, err := cw.DB.NewQuery().Create(user)
 		if err != nil {
 			render.Render(w, r, core.ErrInvalidRequest(err))
 			return

@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useApp } from './App'
-import { useAuth0 } from "../context/Auth0";
+import { useAuth0 } from "./Auth0";
 
 export const PostContext = React.createContext();
 export const usePost = () => useContext(PostContext);
@@ -21,6 +21,8 @@ export const PostProvider = ({ history, children }) => {
         published_at: null,
         updated_at: null,
         created_at: null,
+        tags: [],
+        categories: [],
     }
 
     const [post, setPost] = useState({...emptyPost});
@@ -53,9 +55,8 @@ export const PostProvider = ({ history, children }) => {
         handleUpdate(key, event.target.value, callback)
     }
 
-    const newPost = () => {
-        setPost({...emptyPost})
-    }
+    const handlePost = (data) => setPost({...emptyPost, ...data})
+    const newPost = () => setPost({...emptyPost})
 
     const listPosts = async () => {
         setLoading(true);
@@ -73,9 +74,14 @@ export const PostProvider = ({ history, children }) => {
         setLoading(true);
         try {
             const data = await request('get', `/v1/posts/${postId}`)
-            setPost(data);
+            handlePost(data);
         } catch (error) {
-            showAlert('error', error.message)
+            history.push(`/posts`)
+            if(error.status_code === 404){
+                showAlert('error', `Unable to find post with the ID: ${postId}`)
+            }else {
+                showAlert('error', error.message)
+            }
         } finally {
             setLoading(false);
         }
@@ -84,8 +90,13 @@ export const PostProvider = ({ history, children }) => {
     const savePost = async () => {
         setLoading(true);
         try {
-            const data = await request(post.id ? 'put' : 'post', `/v1/posts/${post.id ? post.id : ''}`, {...post} )
-            setPost(data);
+            if(post.tags.length){
+                post.tags = post.tags.map((v) => v.id)
+            }
+            console.log('savePOst', post)
+            const data = await request(post.id ? 'put' : 'post', `/v1/posts/${post.id ? post.id : ''}`, {...post})
+            console.log('after savePOst', data)
+            handlePost(data);
 
             if(!post.id){
                 history.push(`/posts/${data.id}`)

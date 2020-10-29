@@ -11,6 +11,8 @@ CREATE TABLE `posts` (
   `status` varchar(11) NOT NULL,
   `sort` int(11) NOT NULL DEFAULT 0,
   `comment_status` tinyint(1) NOT NULL DEFAULT 1,
+  `tags` json NULL,
+  `categories` json NULL,
   `published_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

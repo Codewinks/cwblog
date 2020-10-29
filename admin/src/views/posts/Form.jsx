@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { usePost } from '../../context/Post'
+import { useTag } from '../../context/Tag'
 
 import Permalink from "./components/Permalink";
 import SettingsTab from "./components/SettingsTab"
@@ -62,6 +63,7 @@ const useStyles = makeStyles(theme => ({
 
 const PostForm = ({ match }) => {
     const { post, loading, setLoading, newPost, savePost, getPost, deletePost, handleChange, handleUpdate } = usePost();
+    const { listTags } = useTag();
     const classes = useStyles();
     const anchorRef = React.useRef(null);
 
@@ -72,20 +74,27 @@ const PostForm = ({ match }) => {
     const [config, setConfig] = useState({
         tab: 0
     })
+    const [allTags, setAllTags] = React.useState([]);
     const postId = match.params.postId;
 
     useEffect(() => {
+        async function fetchTags() {
+            setAllTags(await listTags())
+        }
+
+        fetchTags();
+
         if (!postId) {
             newPost();
             setLoading(false);
             return
         }
 
-        async function fetchData() {
+        async function fetchPost() {
             await getPost(postId)
         }
 
-        fetchData();
+        fetchPost();
 
         // eslint-disable-next-line
     }, [postId])
@@ -214,7 +223,7 @@ const PostForm = ({ match }) => {
                                 <Tab label="Settings" className={classes.tab} />
                                 <Tab label="Block" className={classes.tab} />
                             </Tabs>
-                            {config.tab === 0 && <SettingsTab post={post} dropdown={settingsDropdown} clearDropdown={clearDropdown}/>}
+                            {config.tab === 0 && <SettingsTab post={post} allTags={allTags} dropdown={settingsDropdown} clearDropdown={clearDropdown}/>}
                             {config.tab === 1 && <div>Item Two</div>}
                             {config.tab === 2 && <div>Item Three</div>}
                         </Paper>

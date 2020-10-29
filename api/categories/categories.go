@@ -49,7 +49,7 @@ func Routes(r chi.Router, db *cworm.DB) chi.Router {
 
 //List handler returns all categories in JSON format.
 func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
-	categories, err := cw.DB.Get(&models.Category{})
+	categories, err := cw.DB.NewQuery().Get(&models.Category{})
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +65,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	exists, err := cw.DB.Where("slug", "=", data.Category.Slug).Exists(models.Category{})
+	exists, err := cw.DB.NewQuery().Where("slug", "=", data.Category.Slug).Exists(models.Category{})
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
@@ -76,7 +76,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	category, err := cw.DB.New(data.Category)
+	category, err := cw.DB.NewQuery().Create(data.Category)
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
@@ -111,7 +111,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	category = data.Category
 
-	cw.DB.Save(category)
+	cw.DB.NewQuery().Save(category)
 
 	render.JSON(w, r, category)
 }
@@ -120,7 +120,7 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	category := r.Context().Value(categoryKey).(*models.Category)
 
-	cw.DB.Delete(category)
+	cw.DB.NewQuery().Delete(category)
 
 	render.JSON(w, r, category)
 }
@@ -132,9 +132,9 @@ func (cw *Handler) CategoryCtx(next http.Handler) http.Handler {
 		var err error
 
 		if categoryId := chi.URLParam(r, "categoryId"); categoryId != "" {
-			err = cw.DB.Where("id", "=", categoryId).First(&category)
+			err = cw.DB.NewQuery().Where("id", "=", categoryId).First(&category)
 		} else if categorySlug := chi.URLParam(r, "categorySlug"); categorySlug != "" {
-			err = cw.DB.Where("slug", "=", categorySlug).First(&category)
+			err = cw.DB.NewQuery().Where("slug", "=", categorySlug).First(&category)
 		} else {
 			render.Render(w, r, core.ErrNotFound)
 			return

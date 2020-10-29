@@ -12,6 +12,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Chip from '@material-ui/core/Chip';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -30,6 +31,9 @@ const useStyles = makeStyles(theme => ({
         position: 'absolute',
         top: theme.spacing(12),
         right: theme.spacing(3),
+    },
+    chip: {
+        margin: 2,
     },
     cursor: {
         cursor: 'pointer'
@@ -127,13 +131,18 @@ const PostList = ({history}) => {
                                                     <Link to={`/posts/${row.id}?preview=1`} target="_blank" rel="noopener noreferrer">Preview</Link>
                                                 )}
                                                 {row.status === 'published' && (
-                                                    <Link to={`/posts/${row.id}`} target="_blank" rel="noopener noreferrer">View</Link>                                                    
+                                                    <Link to={`/posts/${row.id}`} target="_blank" rel="noopener noreferrer">View</Link>
                                                 )}
                                             </Box>
                                         </TableCell>
                                         <TableCell className={classes.cell}>{row.user.first_name}</TableCell>
                                         <TableCell align="right" className={classes.cell}></TableCell>
-                                        <TableCell align="right" className={classes.cell}>—</TableCell>
+                                        <TableCell align="right" className={classes.cell}>
+                                            {!row.tags ? '—' : null }
+                                            {row.tags && row.tags.length > 0 && row.tags.map(tag => (
+                                                <Chip size="small" className={classes.chip} label={tag.name} key={tag.id}/>
+                                            ))}
+                                        </TableCell>
                                         <TableCell align="right" className={classes.cell}>—</TableCell>
                                         <TableCell className={`${classes.cell} nowrap`}>
                                             <div className={classes.capitalize}>{row.status === 'published' ? 'Published' : 'Last Modified' }</div>
@@ -150,8 +159,7 @@ const PostList = ({history}) => {
                 title="Are you sure you want to delete this post?"
                 content="The post will no longer be published and marked for deletion."
                 action="Delete"
-                callback={() => deletePost(confirmDelete)}
-            ></ConfirmDialog>
+                callback={() => deletePost(confirmDelete)} />
         </>
     );
 };

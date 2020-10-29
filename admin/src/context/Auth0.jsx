@@ -1,17 +1,26 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import createAuth0Client from "@auth0/auth0-spa-js";
 import config from "../api_config.json";
 
 const DEFAULT_REDIRECT_CALLBACK = () =>
     window.history.replaceState({}, document.title, window.location.pathname);
 
+class ErrorResponse extends Error {
+    constructor(response, data = {}) {
+        super();
+        this.response = response;
+        this.status_code = response.status;
+        this.message = 'error' in data ? data.error : 'A request error has occurred.';
+    }
+}
+
 export const Auth0Context = React.createContext();
 export const useAuth0 = () => useContext(Auth0Context);
 export const Auth0Provider = ({
-    children,
-    onRedirectCallback = DEFAULT_REDIRECT_CALLBACK,
-    ...initOptions
-}) => {
+                                  children,
+                                  onRedirectCallback = DEFAULT_REDIRECT_CALLBACK,
+                                  ...initOptions
+                              }) => {
     const [isAuthenticated, setIsAuthenticated] = useState();
     const [user, setUser] = useState();
     const [auth0Client, setAuth0] = useState();
@@ -24,7 +33,7 @@ export const Auth0Provider = ({
             setAuth0(auth0FromHook);
 
             if (window.location.search.includes("code=")) {
-                const { appState } = await auth0FromHook.handleRedirectCallback();
+                const {appState} = await auth0FromHook.handleRedirectCallback();
                 onRedirectCallback(appState);
             }
 
@@ -38,7 +47,7 @@ export const Auth0Provider = ({
             if (isAuthenticated) {
                 // const user = await auth0FromHook.getUser();
                 const user = await request('post', '/v1/auth/login', {}, auth0FromHook)
-                setUser(user);                
+                setUser(user);
             }
 
             setLoading(false);
@@ -50,6 +59,7 @@ export const Auth0Provider = ({
     const request = async (method, endpoint, params = {}, client = null) => {
         client = client ? client : auth0Client;
         const token = await client.getTokenSilently();
+        console.log(`Bearer ${token}`);
         const response = await fetch(`${config.apiUrl}${endpoint}`, {
             method: method,
             headers: {
@@ -59,12 +69,19 @@ export const Auth0Provider = ({
             body: Object.entries(params).length ? JSON.stringify(params) : null
         });
 
-        const data = await response.json();
+        let data = {};
+        try {
+            data = await response.json();
 
-        if (!response.ok)
-            throw new Error(data.error);
+            if (!response.ok) {
+                throw new Error();
+            }
 
-        return data
+            return data;
+        } catch (e) {
+            throw new ErrorResponse(response, data);
+        }
+
     }
 
     const loginWithPopup = async (params = {}) => {
@@ -89,7 +106,7 @@ export const Auth0Provider = ({
         setUser(user);
         setLoading(false);
     };
-    
+
     return (
         <Auth0Context.Provider
             value={{

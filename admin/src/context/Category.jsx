@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useApp } from './App'
-import { useAuth0 } from "../context/Auth0";
+import { useAuth0 } from "./Auth0";
 
 export const CategoryContext = React.createContext();
 export const useCategory = () => useContext(CategoryContext);
@@ -78,7 +78,7 @@ export const CategoryProvider = ({ history, children }) => {
             await request(category.id ? 'put' : 'post', `/v1/categories/${category.id ? category.id : ''}`, {...category} )
 
             setCategory(emptyCategory);
-            history.push(`/tags`)
+            history.push(`/categories`)
             await listCategories()
 
             showAlert('success', `Category successfully ${category.id ? 'saved' : 'created'}.`, 5000)
