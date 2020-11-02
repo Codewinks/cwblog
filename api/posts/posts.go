@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/codewinks/cworm"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/render"
-
 	"github.com/codewinks/cwblog/api/models"
 	"github.com/codewinks/cwblog/core"
 	"github.com/codewinks/cwblog/middleware"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/render"
+	"github.com/go-pg/pg/v10"
+	"github.com/go-pg/pg/v10/orm"
 )
 
 type key int
@@ -25,9 +25,10 @@ const (
 type Handler core.Handler
 
 //Routes consists of the route method declarations for Posts.
-func Routes(r chi.Router, db *cworm.DB) chi.Router {
+func Routes(r chi.Router, db *pg.DB) chi.Router {
 	cw := &Handler{DB: db}
 	r.Route("/posts", func(r chi.Router) {
+		r.Use(cw.Init)
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.IsAuthenticated)
 			r.Get("/", cw.List)
@@ -47,12 +48,18 @@ func Routes(r chi.Router, db *cworm.DB) chi.Router {
 	return r
 }
 
+//Init handler registers models
+func (cw *Handler) Init(next http.Handler) http.Handler {
+	orm.RegisterTable((*models.PostsTags)(nil))
+	return next
+}
+
 //List handler returns all posts in JSON format.
 func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
-	posts, err := cw.DB.NewQuery().Join(models.User{}, models.Tag{}).Get(&models.Post{})
+	var posts []models.Post
+	err := cw.DB.Model(&posts).Relation("User").Relation("Tags").Select()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
-		return
 	}
 
 	render.JSON(w, r, posts)
@@ -66,18 +73,32 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	exists, err := cw.DB.NewQuery().Where("slug", "=", data.Post.Slug).Exists(models.Post{})
+	// TODO: Put current user into middleware? Will eventually be re-used in other spots to obtain the current user ID.
+	var currentUser models.User
+	currentUid :=  r.Context().Value(middleware.UidKey).(string)
+	err := cw.DB.Model(&currentUser).Where("uid = ?", currentUid).First()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
+	post := data.Post
+	exists, err := cw.DB.Model(post).Where("slug = ?", post.Slug).Exists()
 	if exists {
 		render.Render(w, r, core.ErrConflict(errors.New("Post already exists with that slug.")))
 		return
 	}
 
-	post, err := cw.DB.NewQuery().Create(data.Post)
+	post.UserId = currentUser.Id
+	queryTx := func(cw *Handler) error {
+		return cw.DB.RunInTransaction(r.Context(), func(tx *pg.Tx) error {
+			cw.Tx = tx
+			_, err = tx.Model(post).Insert()
+			err = InsertOrUpdateTags(tx, post)
+			return err
+		})
+	}
+	err = queryTx(cw)
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
@@ -90,7 +111,6 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 
 //Get handler returns a post by the provided {postId}
 func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("-----")
 	post := r.Context().Value(postKey).(*models.Post)
 
 	if post == nil {
@@ -105,6 +125,12 @@ func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	post := r.Context().Value(postKey).(*models.Post)
 
+	err := cw.DB.Model(post).WherePK().Select()
+	if err != nil {
+		render.Render(w, r, core.ErrInvalidRequest(err))
+		return
+	}
+
 	data := &PostRequest{Post: post}
 	if err := render.Bind(r, data); err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
@@ -113,7 +139,25 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	post = data.Post
 
-	cw.DB.NewQuery().Save(post)
+
+	queryTx := func(cw *Handler) error {
+		return cw.DB.RunInTransaction(r.Context(), func(tx *pg.Tx) error {
+			_, err = tx.Model(post).WherePK().Update()
+			err = InsertOrUpdateTags(tx, post)
+			return err
+		})
+	}
+	err = queryTx(cw)
+	if err != nil {
+		render.Render(w, r, core.ErrInvalidRequest(err))
+		return
+	}
+
+	err = cw.DB.Model(post).WherePK().Select()
+	if err != nil {
+		render.Render(w, r, core.ErrInvalidRequest(err))
+		return
+	}
 
 	render.JSON(w, r, post)
 }
@@ -121,7 +165,12 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 //Delete handler deletes a post by the provided {postId}
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	post := r.Context().Value(postKey).(*models.Post)
-	cw.DB.NewQuery().Delete(post)
+
+	_, err := cw.DB.Model(post).WherePK().Delete()
+	if err != nil {
+		render.Render(w, r, core.ErrInvalidRequest(err))
+		return
+	}
 
 	render.JSON(w, r, post)
 }
@@ -129,13 +178,16 @@ func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 //PostCtx handler loads a post by either {postId} or {postSlug}
 func (cw *Handler) PostCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var post models.Post
+		post := &models.Post {
+			Id: chi.URLParam(r, "postId"),
+			Slug: chi.URLParam(r, "postSlug"),
+		}
 		var err error
 
-		if postId := chi.URLParam(r, "postId"); postId != "" {
-			err = cw.DB.NewQuery().Where("id", "=", postId).First(&post)
-		} else if postSlug := chi.URLParam(r, "postSlug"); postSlug != "" {
-			err = cw.DB.NewQuery().Where("slug", "=", postSlug).First(&post)
+		if post.Id != "" {
+			err = cw.DB.Model(post).Relation("User").Relation("Tags").WherePK().Select()
+		} else if post.Slug != "" {
+			err = cw.DB.Model(post).Relation("User").Relation("Tags").Where("slug = ?", post.Slug).First()
 		} else {
 			render.Render(w, r, core.ErrNotFound)
 			return
@@ -146,7 +198,30 @@ func (cw *Handler) PostCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), postKey, &post)
+		ctx := context.WithValue(r.Context(), postKey, post)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func  InsertOrUpdateTags(tx *pg.Tx, post *models.Post) error {
+	var postsTags []models.PostsTags
+
+	//TODO: Remove tags that arent' in the slice
+	for i := 0; i < len(post.Tags); i++ {
+		postsTags = append(postsTags, models.PostsTags{
+			PostId: post.Id,
+			TagId: post.Tags[i].Id,
+			Sort: post.Tags[i].Sort,
+		})
+	}
+
+	if len(postsTags) > 0 {
+		fmt.Printf("LENPOSTTAGS %#v\n", postsTags)
+		_, err := tx.Model(&postsTags).OnConflict("(post_id, tag_id) DO UPDATE").Insert()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

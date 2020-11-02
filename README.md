@@ -11,7 +11,7 @@ Under development. cwBLOG is a free and open-source content management system.
 ## Getting Started
 
 ### Features
-* [x] API – Built with GoLang using [cwORM](https://github.com/codewinks/cworm)
+* [x] API – Built with GoLang using go-chi and go-pg
 * [x] Admin – Built with React (Development)
 * [ ] Blog – Frontend (TBD)
 

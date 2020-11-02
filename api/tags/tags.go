@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/codewinks/cworm"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
+	"github.com/go-pg/pg/v10"
 
 	"github.com/codewinks/cwblog/api/models"
 	"github.com/codewinks/cwblog/core"
@@ -25,7 +25,7 @@ const (
 type Handler core.Handler
 
 //Routes consists of the route method declarations for Tags.
-func Routes(r chi.Router, db *cworm.DB) chi.Router {
+func Routes(r chi.Router, db *pg.DB) chi.Router {
 	cw := &Handler{DB: db}
 	r.Route("/tags", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
@@ -49,10 +49,10 @@ func Routes(r chi.Router, db *cworm.DB) chi.Router {
 
 //List handler returns all tags in JSON format.
 func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
-	tags, err := cw.DB.NewQuery().Get(&models.Tag{})
+	var tags []models.Tag
+	err := cw.DB.Model(&tags).Select()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
-		return
 	}
 
 	render.JSON(w, r, tags)
@@ -66,7 +66,8 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	exists, err := cw.DB.NewQuery().Where("slug", "=", data.Tag.Slug).Exists(models.Tag{})
+	var tag models.Tag
+	exists, err := cw.DB.Model(&tag).Where("slug = ?", data.Tag.Slug).Exists()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
@@ -77,7 +78,7 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tag, err := cw.DB.NewQuery().Create(data.Tag)
+	_, err = cw.DB.Model(data.Tag).Insert()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
@@ -105,6 +106,12 @@ func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	tag := r.Context().Value(tagKey).(*models.Tag)
 
+	err := cw.DB.Model(tag).WherePK().Select()
+	if err != nil {
+		render.Render(w, r, core.ErrInvalidRequest(err))
+		return
+	}
+
 	data := &TagRequest{Tag: tag}
 	if err := render.Bind(r, data); err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
@@ -113,7 +120,17 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	tag = data.Tag
 
-	cw.DB.NewQuery().Save(tag)
+	_, err = cw.DB.Model(tag).WherePK().Update()
+	if err != nil {
+		render.Render(w, r, core.ErrInvalidRequest(err))
+		return
+	}
+
+	err = cw.DB.Model(tag).WherePK().Select()
+	if err != nil {
+		render.Render(w, r, core.ErrInvalidRequest(err))
+		return
+	}
 
 	render.JSON(w, r, tag)
 }
@@ -122,7 +139,11 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	tag := r.Context().Value(tagKey).(*models.Tag)
 
-	cw.DB.NewQuery().Delete(tag)
+	_, err := cw.DB.Model(tag).WherePK().Delete()
+	if err != nil {
+		render.Render(w, r, core.ErrInvalidRequest(err))
+		return
+	}
 
 	render.JSON(w, r, tag)
 }
@@ -134,9 +155,9 @@ func (cw *Handler) TagCtx(next http.Handler) http.Handler {
 		var err error
 
 		if tagId := chi.URLParam(r, "tagId"); tagId != "" {
-			err = cw.DB.NewQuery().Where("id", "=", tagId).First(&tag)
+			err = cw.DB.Model(&tag).Where("id = ?", tagId).First()
 		} else if tagSlug := chi.URLParam(r, "tagSlug"); tagSlug != "" {
-			err = cw.DB.NewQuery().Where("slug", "=", tagSlug).First(&tag)
+			err = cw.DB.Model(&tag).Where("slug = ?", tagSlug).First()
 		} else {
 			render.Render(w, r, core.ErrNotFound)
 			return

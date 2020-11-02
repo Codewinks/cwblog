@@ -3,15 +3,16 @@ package core
 import (
 	"net/http"
 
-	"github.com/codewinks/cworm"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
+	"github.com/go-pg/pg/v10"
 )
 
 //Handler consists of the DB connection and Routes
 type Handler struct {
-	DB     *cworm.DB
+	DB     *pg.DB
 	Routes *chi.Mux
+	Tx     *pg.Tx
 }
 
 //ErrResponse contains error information

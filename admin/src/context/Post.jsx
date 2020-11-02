@@ -90,9 +90,6 @@ export const PostProvider = ({ history, children }) => {
     const savePost = async () => {
         setLoading(true);
         try {
-            if(post.tags.length){
-                post.tags = post.tags.map((v) => v.id)
-            }
             console.log('savePOst', post)
             const data = await request(post.id ? 'put' : 'post', `/v1/posts/${post.id ? post.id : ''}`, {...post})
             console.log('after savePOst', data)

@@ -18,13 +18,14 @@ type Post struct {
 	CreatedAt     string `json:"created_at"`
 	UpdatedAt     string `json:"updated_at"`
 	DeletedAt     string `json:"deleted_at,omitempty"`
-	Tag           *[]Tag `json:"tags" json_object:"id"`
-	User          *User  `json:"user" foreign_key:"user_id"`
+	Tags          []Tag  `json:"tags" pg:"many2many:posts_tags"`
+	User          User   `json:"user" pg:"rel:has-one"`
 }
 
 //User model
 type User struct {
 	Id        string `json:"id"`
+	Uid       string `json:"uid"`
 	FirstName string `json:"first_name" binding:"required"`
 	LastName  string `json:"last_name" binding:"required"`
 	Nickname  string `json:"nickname"`
@@ -54,6 +55,13 @@ type Tag struct {
 	Name        string `json:"name" binding:"required"`
 	Slug        string `json:"slug" binding:"required"`
 	Description string `json:"description"`
+	Sort        int    `json:"sort,omitempty"`
 	CreatedAt   string `json:"created_at"`
 	UpdatedAt   string `json:"updated_at"`
+}
+
+type PostsTags struct {
+	PostId string
+	TagId  string
+	Sort   int
 }

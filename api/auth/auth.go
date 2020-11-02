@@ -11,17 +11,18 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
+	"github.com/go-pg/pg/v10"
+
 	"github.com/codewinks/cwblog/api/models"
 	"github.com/codewinks/cwblog/core"
 	"github.com/codewinks/cwblog/middleware"
-	"github.com/codewinks/cworm"
 )
 
 //Handler consists of the DB connection and Routes
 type Handler core.Handler
 
 //Routes consists of the route method declarations for Auth.
-func Routes(r chi.Router, db *cworm.DB) chi.Router {
+func Routes(r chi.Router, db *pg.DB) chi.Router {
 	cw := &Handler{DB: db}
 	r.Route("/auth", func(r chi.Router) {
 		r.Use(middleware.IsAuthenticated)
@@ -47,26 +48,35 @@ func (cw *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	body, _ := ioutil.ReadAll(res.Body)
 
 	var result map[string]interface{}
-	json.Unmarshal([]byte(body), &result)
+	err := json.Unmarshal([]byte(body), &result)
+	if err != nil {
+		render.Render(w, r, core.ErrInvalidRequest(err))
+		return
+	}
 
 	var user models.User
-	var exists bool
-	var err error
-
-	exists, err = cw.DB.NewQuery().Where("id", "=", result["sub"]).Exists(&user)
-
+	exists, err := cw.DB.Model(&user).Where("uid = ?", result["sub"]).Exists()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
 	if !exists {
-		user.Id = result["sub"].(string)
-		user.Email = result["email"].(string)
-		user.FirstName = result["given_name"].(string)
-		user.LastName = result["family_name"].(string)
-		user.Avatar = result["picture"].(string)
-		_, err := cw.DB.NewQuery().Create(user)
+		user := &models.User{
+			Uid: result["sub"].(string),
+			Email: result["email"].(string),
+			FirstName: result["given_name"].(string),
+			LastName: result["family_name"].(string),
+			Avatar: result["picture"].(string),
+		}
+
+		_, err := cw.DB.Model(user).Insert()
+		if err != nil {
+			render.Render(w, r, core.ErrInvalidRequest(err))
+			return
+		}
+	}else{
+		err = cw.DB.Model(&user).Where("uid = ?", result["sub"]).First()
 		if err != nil {
 			render.Render(w, r, core.ErrInvalidRequest(err))
 			return
@@ -76,22 +86,6 @@ func (cw *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
 	w.Write(body)
-	// url :=
-
-	// payload := strings.NewReader(fmt.Sprintf("{\"client_id\":\"%s\",\"client_secret\":\"%s\",\"audience\":\"%s\",\"grant_type\":\"client_credentials\"}", os.Getenv("AUTH0_CLIENT_ID"), os.Getenv("AUTH0_CLIENT_SECRET"), os.Getenv("AUTH0_AUDIENCE")))
-
-	// req, _ := http.NewRequest("POST", url, payload)
-
-	// req.Header.Add("content-type", "application/json")
-
-	// res, _ := http.DefaultClient.Do(req)
-
-	// defer res.Body.Close()
-	// body, _ := ioutil.ReadAll(res.Body)
-
-	// w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	// w.WriteHeader(200)
-	// w.Write(body)
 }
 
 //Logout handler – Unfinished

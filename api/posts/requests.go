@@ -2,12 +2,12 @@ package posts
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
 
 	"github.com/codewinks/cwblog/api/models"
-	"github.com/codewinks/cwblog/middleware"
 	"github.com/google/uuid"
 )
 
@@ -31,12 +31,12 @@ func (p *PostRequest) Bind(r *http.Request) error {
 		return errors.New("Missing post title")
 	}
 
-	if p.Post.UserId == "" {
-		p.Post.UserId = r.Context().Value(middleware.UserIdKey).(string)
-	}
-
 	if p.Post.Slug == "" {
 		p.Post.Slug = slugify(p.Post.Title)
+	}
+
+	if len(p.Post.Tags) > 0 {
+		fmt.Printf("TAGS: %#v\n", p.Post.Tags)
 	}
 
 	return nil

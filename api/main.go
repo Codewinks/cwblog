@@ -2,6 +2,7 @@ package main
 
 import (
 	"compress/flate"
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,16 +14,18 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
 
+	"github.com/go-pg/pg/v10"
+	//"github.com/go-pg/pg/v10/orm"
 	"github.com/codewinks/cwblog/api/auth"
 	"github.com/codewinks/cwblog/api/categories"
 	"github.com/codewinks/cwblog/api/posts"
 	"github.com/codewinks/cwblog/api/tags"
-	"github.com/codewinks/cwblog/api/users"
-	"github.com/codewinks/cworm"
+	//"github.com/codewinks/cwblog/api/users"
+	//"github.com/codewinks/cworm"
 )
 
 //Routes consists of the main route method declarations.
-func Routes(db *cworm.DB) *chi.Mux {
+func Routes(db *pg.DB) *chi.Mux {
 	router := chi.NewRouter()
 
 	corsOptions := cors.New(cors.Options{
@@ -47,7 +50,7 @@ func Routes(db *cworm.DB) *chi.Mux {
 	router.Route("/v1", func(r chi.Router) {
 		auth.Routes(r, db)
 		posts.Routes(r, db)
-		users.Routes(r, db)
+		//users.Routes(r, db)
 		categories.Routes(r, db)
 		tags.Routes(r, db)
 	})
@@ -70,12 +73,18 @@ func main() {
 		panic("Error loading .env file")
 	}
 
-	db, err := cworm.Connect(os.Getenv("DB_CONNECTION"), os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_DATABASE"))
-	if err != nil {
+	db := pg.Connect(&pg.Options{
+		Addr:     fmt.Sprintf("%s:%s",os.Getenv("DB_HOST"), os.Getenv("DB_PORT")),
+		User: os.Getenv("DB_USERNAME"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Database:  os.Getenv("DB_DATABASE"),
+	})
+	defer db.Close()
+
+	ctx := context.Background()
+	if err := db.Ping(ctx); err != nil {
 		panic(fmt.Sprintf("Failed to connect to database: %s", err))
 	}
-
-	defer db.DB.Close()
 
 	router := Routes(db)
 

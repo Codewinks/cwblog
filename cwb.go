@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/codewinks/cworm"
+	"github.com/codewinks/cwblog/database"
 	"github.com/codewinks/go-colors"
 	"github.com/codewinks/godotenv"
 )
@@ -31,13 +31,7 @@ func main() {
 	case "-h":
 		showHelp()
 	case "migrate":
-		if len(cmd) == 1 {
-			run = cmd[0]
-		} else {
-			run = cmd[1]
-		}
-
-		if msg, err = cworm.Migrate(run); err != nil {
+		if msg, err = database.Migrate(os.Args); err != nil {
 			fmt.Println(colors.Red(err.Error()))
 			break
 		}
@@ -57,14 +51,14 @@ func main() {
 		run = cmd[1]
 		name := os.Args[2]
 
-		if msg, err = cworm.Make(run, name); err != nil {
+		if msg, err = database.Make(run, name); err != nil {
 			fmt.Println(colors.Red(err.Error()))
 			break
 		}
 
 		print(msg)
 	default:
-		colors.Red(fmt.Sprintf("Command \"%s\" is not defined", cmd[0]))
+		colors.Red(fmt.Sprintf("Command \"%s\" is not defined", cmd))
 		showHelp()
 	}
 
@@ -83,9 +77,9 @@ func showHelp() {
   %[2]smigrate%[1]s
     %[3]smigrate%[1]s		Run the database migrations
     %[3]smigrate:fresh%[1]s	Drop all tables and re-run all migrations
-    %[3]smigrate:refresh%[1]s	Reset and re-run all migrations		(coming soon)
-    %[3]smigrate:reset%[1]s	Rollback all database migrations	(coming soon)
-    %[3]smigrate:rollback%[1]s	Rollback the last database migration	(coming soon)
+    %[3]smigrate:refresh%[1]s	Reset and re-run all migrations
+    %[3]smigrate:reset%[1]s	Rollback all database migrations
+    %[3]smigrate:rollback%[1]s	Rollback the last database migration
     %[3]smigrate:status%[1]s	Show the status of each migration
 	
   %[2]smake%[1]s

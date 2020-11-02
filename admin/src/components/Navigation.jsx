@@ -186,7 +186,7 @@ const Navigation = (props) => {
     function toggleDrawer() {
         setOpen(toggle => !toggle);
     }
-    
+
     function openMenu(event, key) {
         setMenu({ target: event.currentTarget, key: key });
     }

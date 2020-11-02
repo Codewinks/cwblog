@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
+import Fade from '@material-ui/core/Fade';
 
 function arrowGenerator(color) {
     return {
@@ -78,6 +79,7 @@ const ArrowTooltip = (props) => {
 
     return (
         <Tooltip
+            TransitionComponent={Fade} TransitionProps={{ timeout: 200 }}
             PopperProps={{
                 popperOptions: {
                     modifiers: {

@@ -277,22 +277,26 @@ const SettingsTab = props => {
                         multiple
                         value={post.tags ? post.tags : []}
                         onChange={event => handleChange(event, 'tags')}
-                        input={<Input id="select-multiple-chip" />}
+                        input={<Input id="select-multiple-chip"/>}
                         renderValue={(selectedTags) => (
                             <div className={classes.chips}>
                                 {selectedTags.map((tag) => (
                                     <Chip key={tag.id} label={tag.name} className={classes.chip}
                                           onDelete={() => handleUpdate('tags', post.tags.filter((t) => t.id !== tag.id))}
-                                          deleteIcon={<CancelIcon onMouseDown={(event) => event.stopPropagation()} />} />
+                                          deleteIcon={<CancelIcon onMouseDown={(event) => event.stopPropagation()}/>}/>
                                 ))}
                             </div>
                         )}
                     >
-                        {props.allTags && props.allTags.map((tag) => (
-                            <MenuItem key={tag.id} value={tag}>
-                                {tag.name}
-                            </MenuItem>
-                        ))}
+                        {props.allTags && props.allTags.length ?
+                            props.allTags && props.allTags.map((tag) => (
+                                <MenuItem key={tag.id} value={tag}>
+                                    {tag.name}
+                                </MenuItem>
+                            ))
+                            : (
+                                <MenuItem disabled={true}>No tags found.</MenuItem>
+                            )}
                     </Select>
                 </FormControl>
             </Collapse>

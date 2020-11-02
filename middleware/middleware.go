@@ -14,9 +14,9 @@ import (
 
 type key int
 
-//UserIdKey is the context key for the user id.
+//UidKey is the context key for the user id.
 const (
-	UserIdKey key = iota
+	UidKey key = iota
 )
 
 //Response ...
@@ -74,9 +74,8 @@ func IsAuthenticated(next http.Handler) http.Handler {
 			return
 		}
 
-		// next.ServeHTTP(w, r)
-		userID := r.Context().Value("user").(*jwt.Token).Claims.(jwt.MapClaims)["sub"]
-		ctx := context.WithValue(r.Context(), UserIdKey, userID)
+		result := r.Context().Value("user").(*jwt.Token).Claims.(jwt.MapClaims)
+		ctx := context.WithValue(r.Context(), UidKey, result["sub"])
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
