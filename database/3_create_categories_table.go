@@ -12,11 +12,12 @@ func init() {
 				name varchar(250) NOT NULL,
 				slug varchar(250) NOT NULL,
 				description text NULL DEFAULT NULL,
-				parent_category_id uuid NULL DEFAULT NULL,
+				parent_id uuid NULL DEFAULT NULL,
 				visibility varchar(11) NOT NULL,
+				sort int NULL DEFAULT 0,
 				created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 				updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-				UNIQUE (slug, parent_category_id)
+				UNIQUE (slug, parent_id)
 			);
 		`)
 	}, func(db migrations.DB) error {

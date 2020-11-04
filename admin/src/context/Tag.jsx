@@ -43,9 +43,7 @@ export const TagProvider = ({ history, children }) => {
         setLoading(true)
         try {
             const data = await request('get', `/v1/tags/`)
-            console.log(data)
             setTags(data)
-
             return data
         } catch (error) {
             showAlert(ALERT_ERROR, error.message)

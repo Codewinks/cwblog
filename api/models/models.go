@@ -2,24 +2,25 @@ package models
 
 //Post model
 type Post struct {
-	Id            string `json:"id"`
-	UserId        string `json:"user_id"`
-	Title         string `json:"title" binding:"required"`
-	Content       string `json:"content"`
-	Excerpt       string `json:"excerpt" binding:"max=255"`
-	Slug          string `json:"slug" binding:"required,max=200"`
-	Password      string `json:"password"`
-	Format        string `json:"format" binding:"exists"`
-	Visibility    string `json:"visibility" binding:"exists"`
-	Sort          int    `json:"sort"`
-	CommentStatus int    `json:"comment_status" binding:"exists"`
-	Status        string `json:"status" binding:"exists"`
-	PublishedAt   string `json:"published_at"`
-	CreatedAt     string `json:"created_at"`
-	UpdatedAt     string `json:"updated_at"`
-	DeletedAt     string `json:"deleted_at,omitempty"`
-	Tags          []Tag  `json:"tags" pg:"many2many:posts_tags"`
-	User          User   `json:"user" pg:"rel:has-one"`
+	Id            string     `json:"id"`
+	UserId        string     `json:"user_id"`
+	Title         string     `json:"title" binding:"required"`
+	Content       string     `json:"content"`
+	Excerpt       string     `json:"excerpt" binding:"max=255"`
+	Slug          string     `json:"slug" binding:"required,max=200"`
+	Password      string     `json:"password"`
+	Format        string     `json:"format" binding:"exists"`
+	Visibility    string     `json:"visibility" binding:"exists"`
+	Sort          int        `json:"sort"`
+	CommentStatus int        `json:"comment_status" binding:"exists"`
+	Status        string     `json:"status" binding:"exists"`
+	PublishedAt   string     `json:"published_at"`
+	CreatedAt     string     `json:"created_at"`
+	UpdatedAt     string     `json:"updated_at"`
+	DeletedAt     string     `json:"deleted_at,omitempty"`
+	Tags          []Tag      `json:"tags" pg:"many2many:posts_tags"`
+	Categories    []Category `json:"categories" pg:"many2many:posts_categories"`
+	User          User       `json:"user" pg:"rel:has-one"`
 }
 
 //User model
@@ -39,14 +40,16 @@ type User struct {
 
 //Category model
 type Category struct {
-	Id               string `json:"id"`
-	Name             string `json:"name" binding:"required"`
-	Slug             string `json:"slug" binding:"required"`
-	Description      string `json:"description"`
-	ParentCategoryId string `json:"parent_category_id"`
-	Visibility       string `json:"visibility"`
-	CreatedAt        string `json:"created_at"`
-	UpdatedAt        string `json:"updated_at"`
+	Id            string     `json:"id"`
+	Name          string     `json:"name" binding:"required"`
+	Slug          string     `json:"slug" binding:"required"`
+	Description   string     `json:"description"`
+	ParentId      string     `json:"parent_id"`
+	Visibility    string     `json:"visibility"`
+	Sort          int        `json:"sort,omitempty"`
+	CreatedAt     string     `json:"created_at"`
+	UpdatedAt     string     `json:"updated_at"`
+	SubCategories []Category `json:"sub_categories" pg:"rel:has-many,join_fk:parent_id"`
 }
 
 //Tag model
@@ -64,4 +67,10 @@ type PostsTags struct {
 	PostId string
 	TagId  string
 	Sort   int
+}
+
+type PostsCategories struct {
+	PostId     string
+	CategoryId string
+	Sort       int
 }

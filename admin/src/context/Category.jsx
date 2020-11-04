@@ -15,8 +15,10 @@ export const CategoryProvider = ({ history, children }) => {
         name: null,
         slug: null,
         description: null,
-        parent_category_id: null,
+        parent_id: null,
+        depth: 0,
         visibility: 'public',
+        sub_categories: [],
     }
 
     const [category, setCategory] = useState(emptyCategory);
@@ -48,16 +50,36 @@ export const CategoryProvider = ({ history, children }) => {
         setCategory(emptyCategory);
     }
 
-    const listCategories = async () => {
+    const listCategories = async (map=false) => {
         setLoading(true);
         try {
-            const data = await request('get', `/v1/categories/`)
-            setCategories(data);
+            let data = await request('get', `/v1/categories/`)
+            if(map) {
+                data = mapCategories(data)
+            }
+            setCategories(data)
+            return data
         } catch (error) {
             showAlert('error', error.message)
         } finally {
             setLoading(false);
         }
+    }
+
+    function mapCategories(cats, categoryList = [], depth= 0){
+        if(!cats){
+            return categoryList
+        }
+
+        cats.forEach(cat => {
+            cat.depth = depth;
+            categoryList.push(cat);
+            if(cat.sub_categories && cat.sub_categories.length > 0){
+                categoryList = mapCategories(cat.sub_categories, categoryList, depth + 1);
+            }
+        })
+
+        return categoryList;
     }
 
     const getCategory = async (categoryId) => {
@@ -75,9 +97,8 @@ export const CategoryProvider = ({ history, children }) => {
     const saveCategory = async () => {
         setLoading(true);
         try {
-            await request(category.id ? 'put' : 'post', `/v1/categories/${category.id ? category.id : ''}`, {...category} )
-
-            setCategory(emptyCategory);
+            const data = await request(category.id ? 'put' : 'post', `/v1/categories/${category.id ? category.id : ''}`, {...category} )
+            setCategory(data);
             history.push(`/categories`)
             await listCategories()
 

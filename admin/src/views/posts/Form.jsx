@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { usePost } from '../../context/Post'
 import { useTag } from '../../context/Tag'
-
+import { useCategory } from '../../context/Category'
 import Permalink from "./components/Permalink";
 import SettingsTab from "./components/SettingsTab"
-
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -20,9 +19,7 @@ import MenuList from '@material-ui/core/MenuList';
 import TextField from '@material-ui/core/TextField';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-
 import ConfirmDialog from "../../components/ConfirmDialog";
-
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -64,6 +61,7 @@ const useStyles = makeStyles(theme => ({
 const PostForm = ({ match }) => {
     const { post, loading, setLoading, newPost, savePost, getPost, deletePost, handleChange, handleUpdate } = usePost();
     const { listTags } = useTag();
+    const { listCategories } = useCategory();
     const classes = useStyles();
     const anchorRef = React.useRef(null);
 
@@ -75,14 +73,16 @@ const PostForm = ({ match }) => {
         tab: 0
     })
     const [allTags, setAllTags] = React.useState([]);
+    const [allCategories, setAllCategories] = React.useState([]);
     const postId = match.params.postId;
 
     useEffect(() => {
-        async function fetchTags() {
+        async function loadStuff() {
             setAllTags(await listTags())
+            setAllCategories(await listCategories(true))
         }
 
-        fetchTags();
+        loadStuff();
 
         if (!postId) {
             newPost();
@@ -223,7 +223,7 @@ const PostForm = ({ match }) => {
                                 <Tab label="Settings" className={classes.tab} />
                                 <Tab label="Block" className={classes.tab} />
                             </Tabs>
-                            {config.tab === 0 && <SettingsTab post={post} allTags={allTags} dropdown={settingsDropdown} clearDropdown={clearDropdown}/>}
+                            {config.tab === 0 && <SettingsTab post={post} allTags={allTags} allCategories={allCategories} dropdown={settingsDropdown} clearDropdown={clearDropdown}/>}
                             {config.tab === 1 && <div>Item Two</div>}
                             {config.tab === 2 && <div>Item Three</div>}
                         </Paper>

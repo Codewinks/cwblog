@@ -2,8 +2,8 @@ import React from "react";
 import clsx from 'clsx';
 
 import { fade, makeStyles, useTheme } from '@material-ui/core/styles';
-import { useAuth0 } from "../context/Auth0";
-import { Link } from "react-router-dom";
+import { useAuth0 } from '../context/Auth0';
+import { Link, useLocation } from 'react-router-dom';
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -173,10 +173,20 @@ const useStyles = makeStyles(theme => ({
         color: 'inherit',
         minWidth: '40px'
     },
+    navActive: {
+        backgroundColor: 'rgba(255,255,255,0.2)',
+    },
+    subNavActive:{
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        '& .MuiTypography-root': {
+            fontWeight: 'bold'
+        }
+    }
 }));
 
-const Navigation = (props) => {
+const Navigation = () => {
     const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+    const location = useLocation();
 
     const classes = useStyles();
     const theme = useTheme();
@@ -193,6 +203,10 @@ const Navigation = (props) => {
 
     function closeMenu(event) {
         setMenu({ target: null, key: null });
+    }
+
+    function isNavActiveCssClass(paths, cssClass){
+        return paths.includes(location.pathname) ? cssClass : null;
     }
 
     return (
@@ -334,17 +348,17 @@ const Navigation = (props) => {
                     <ArrowTooltip placement="right-start" interactive disableHoverListener={open}
                         title={
                             <List disablePadding>
-                                <ListItem button to="/posts" component={Link}>
+                                <ListItem button to="/posts" component={Link} className={isNavActiveCssClass(['/posts'], classes.subNavActive)}>
                                     <ListItemText primary="All Posts" /></ListItem>
-                                <ListItem button to="/posts/create" component={Link}>
+                                <ListItem button to="/posts/create" component={Link} className={isNavActiveCssClass(['/posts/create'], classes.subNavActive)}>
                                     <ListItemText primary="Add New" /></ListItem>
-                                <ListItem button to="/categories" component={Link}>
+                                <ListItem button to="/categories" component={Link} className={isNavActiveCssClass(['/categories'], classes.subNavActive)}>
                                     <ListItemText primary="Categories" /></ListItem>
-                                <ListItem button to="/tags" component={Link}>
+                                <ListItem button to="/tags" component={Link} className={isNavActiveCssClass(['/tags'], classes.subNavActive)}>
                                     <ListItemText primary="Tags" /></ListItem>
                             </List>
                         }>
-                        <ListItem button to="/posts" component={Link}>
+                        <ListItem button to="/posts" component={Link} className={isNavActiveCssClass(['/posts', '/posts/create', '/categories', '/tags'], classes.navActive)}>
                             <ListItemIcon className={classes.navIcon}><LibraryBooksIcon /></ListItemIcon>
                             <ListItemText primary="Posts" />
                         </ListItem>
@@ -352,16 +366,16 @@ const Navigation = (props) => {
 
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <List disablePadding className={classes.navNested}>
-                            <ListItem button to="/posts" component={Link}>
+                            <ListItem button to="/posts" component={Link} className={isNavActiveCssClass(['/posts'], classes.subNavActive)}>
                                 <ListItemText primary="All Posts" />
                             </ListItem>
-                            <ListItem button to="/posts/create" component={Link}>
+                            <ListItem button to="/posts/create" component={Link} className={isNavActiveCssClass(['/posts/create'], classes.subNavActive)}>
                                 <ListItemText primary="Add New" />
                             </ListItem>
-                            <ListItem button to="/categories" component={Link}>
+                            <ListItem button to="/categories" component={Link} className={isNavActiveCssClass(['/categories'], classes.subNavActive)}>
                                 <ListItemText primary="Categories" />
                             </ListItem>
-                            <ListItem button to="/tags" component={Link}>
+                            <ListItem button to="/tags" component={Link} className={isNavActiveCssClass(['/tags'], classes.subNavActive)}>
                                 <ListItemText primary="Tags" />
                             </ListItem>
                         </List>

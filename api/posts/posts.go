@@ -51,13 +51,14 @@ func Routes(r chi.Router, db *pg.DB) chi.Router {
 //Init handler registers models
 func (cw *Handler) Init(next http.Handler) http.Handler {
 	orm.RegisterTable((*models.PostsTags)(nil))
+	orm.RegisterTable((*models.PostsCategories)(nil))
 	return next
 }
 
 //List handler returns all posts in JSON format.
 func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
 	var posts []models.Post
-	err := cw.DB.Model(&posts).Relation("User").Relation("Tags").Select()
+	err := cw.DB.Model(&posts).Relation("User").Relation("Tags").Relation("Categories").Select()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 	}
@@ -94,7 +95,14 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		return cw.DB.RunInTransaction(r.Context(), func(tx *pg.Tx) error {
 			cw.Tx = tx
 			_, err = tx.Model(post).Insert()
+			if err != nil {
+				return err
+			}
 			err = InsertOrUpdateTags(tx, post)
+			if err != nil {
+				return err
+			}
+			err = InsertOrUpdateCategories(tx, post)
 			return err
 		})
 	}
@@ -139,18 +147,35 @@ func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	post = data.Post
 
-
-	queryTx := func(cw *Handler) error {
-		return cw.DB.RunInTransaction(r.Context(), func(tx *pg.Tx) error {
-			_, err = tx.Model(post).WherePK().Update()
-			err = InsertOrUpdateTags(tx, post)
-			return err
-		})
-	}
-	err = queryTx(cw)
+	tx, err := cw.DB.Begin()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
+	}
+
+	_, err = tx.Model(post).WherePK().Update()
+	if err != nil {
+		tx.Rollback()
+		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
+	}
+
+	err = InsertOrUpdateTags(tx, post)
+	if err != nil {
+		tx.Rollback()
+		render.Render(w, r, core.ErrInvalidRequest(err))
+		return
+	}
+
+	err = InsertOrUpdateCategories(tx, post)
+	if err != nil {
+		tx.Rollback()
+		render.Render(w, r, core.ErrInvalidRequest(err))
+		return
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		render.Render(w, r, core.ErrInvalidRequest(err))
 	}
 
 	err = cw.DB.Model(post).WherePK().Select()
@@ -185,9 +210,9 @@ func (cw *Handler) PostCtx(next http.Handler) http.Handler {
 		var err error
 
 		if post.Id != "" {
-			err = cw.DB.Model(post).Relation("User").Relation("Tags").WherePK().Select()
+			err = cw.DB.Model(post).Relation("User").Relation("Tags").Relation("Categories").WherePK().Select()
 		} else if post.Slug != "" {
-			err = cw.DB.Model(post).Relation("User").Relation("Tags").Where("slug = ?", post.Slug).First()
+			err = cw.DB.Model(post).Relation("User").Relation("Tags").Relation("Categories").Where("slug = ?", post.Slug).First()
 		} else {
 			render.Render(w, r, core.ErrNotFound)
 			return
@@ -215,9 +240,44 @@ func  InsertOrUpdateTags(tx *pg.Tx, post *models.Post) error {
 		})
 	}
 
+	//TODO: Refactor to not use delete all and delete only ones that are no longer attached
+	_, err := tx.Model(&postsTags).Where("post_id = ?", post.Id).Delete()
+	if err != nil {
+		return err
+	}
+
 	if len(postsTags) > 0 {
 		fmt.Printf("LENPOSTTAGS %#v\n", postsTags)
 		_, err := tx.Model(&postsTags).OnConflict("(post_id, tag_id) DO UPDATE").Insert()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func  InsertOrUpdateCategories(tx *pg.Tx, post *models.Post) error {
+	var postsCategories []models.PostsCategories
+
+	//TODO: Remove tags that arent' in the slice
+	for i := 0; i < len(post.Categories); i++ {
+		postsCategories = append(postsCategories, models.PostsCategories{
+			PostId: post.Id,
+			CategoryId: post.Categories[i].Id,
+			Sort: post.Categories[i].Sort,
+		})
+	}
+
+	//TODO: Refactor to not use delete all and delete only ones that are no longer attached
+	_, err := tx.Model(&postsCategories).Where("post_id = ?", post.Id).Delete()
+	if err != nil {
+		return err
+	}
+
+	if len(postsCategories) > 0 {
+		fmt.Printf("LENPOSTCATEGORIES %#v\n", postsCategories)
+		_, err := tx.Model(&postsCategories).OnConflict("(post_id, category_id) DO UPDATE").Insert()
 		if err != nil {
 			return err
 		}

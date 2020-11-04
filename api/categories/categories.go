@@ -50,7 +50,7 @@ func Routes(r chi.Router, db *pg.DB) chi.Router {
 //List handler returns all categories in JSON format.
 func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
 	var categories []models.Category
-	err := cw.DB.Model(&categories).Select()
+	err := cw.DB.Model(&categories).Relation("SubCategories.SubCategories.SubCategories").Where("parent_id is NULL").Select()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 	}
@@ -105,18 +105,16 @@ func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	category := r.Context().Value(categoryKey).(*models.Category)
 
-	err := cw.DB.Model(category).WherePK().Select()
-	if err != nil {
-		render.Render(w, r, core.ErrInvalidRequest(err))
-		return
-	}
+	// TODO: For some reason render.Bind does not fill in "nil" value for parent id
+	update := models.Category{}
 
-	data := &CategoryRequest{Category: category}
+	data := &CategoryRequest{Category: &update}
 	if err := render.Bind(r, data); err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
+	var err error
 	category = data.Category
 
 	_, err = cw.DB.Model(category).WherePK().Update()

@@ -23,12 +23,12 @@ Under development. cwBLOG is a free and open-source content management system.
 - [x] DB Migrations
     - [x] `migrate`             – Run the database migrations
     - [x] `migrate:fresh`       – Drop all tables and re-run all migrations
-    - [ ] `migrate:refresh`     – Reset and re-run all migrations         (coming soon)
-    - [ ] `migrate:reset`       – Rollback all database migrations        (coming soon)
-    - [ ] `migrate:rollback`    – Rollback the last database migration    (coming soon)
+    - [x] `migrate:refresh`     – Reset and re-run all migrations
+    - [x] `migrate:reset`       – Rollback all database migrations
+    - [x] `migrate:rollback`    – Rollback the last database migration
     - [x] `migrate:status`      – Show the status of each migration
 - [x] API
-    - [x] [cwORM](https://github.com/codewinks/cworm) Integration
+    - [x] [go-pg](https://github.com/go-pg/pg) Integration
     - [x] Posts CRUD Endpoints
         - [ ] Multi-error responses
     - [x] Users CRUD Endpoints
@@ -43,7 +43,7 @@ Under development. cwBLOG is a free and open-source content management system.
     - [ ] Dashboard with statistics
     - [x] Post CRUD/API Integration
         - [x] Error handler
-        - [ ] Choose category/tag from create/edit post
+        - [x] Choose category/tag from create/edit post
         - [ ] New category/tag from create/edit post
         - [ ] Add Pagination
         - [ ] JS Validation

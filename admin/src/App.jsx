@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from './context/App'
 import { useAuth0 } from "./context/Auth0";
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -48,6 +48,18 @@ function App() {
   const classes = useStyles();
   const { loading, isAuthenticated } = useAuth0();
 
+  const theme = createMuiTheme({
+    palette: {
+      primary: {
+        main: '#004f67',
+      },
+      secondary: {
+        main: '#0aa2d0',
+        contrastText: '#ffffff'
+      },
+    },
+  });
+
   if (loading) {
     return "Loading...";
   }
@@ -59,19 +71,20 @@ function App() {
   }
 
   return (
-    <div className={classes.root}>
+      <ThemeProvider theme={theme}>
+      <div className={classes.root}>
       <Alert variant={alert.variant} message={alert.message} autoHideDuration={alert.autoHideDuration} onClose={hideAlert}/>
       <BrowserRouter>
         <CssBaseline />
-        <Navigation/>
+        <Navigation />
 
         <main className={classes.content}>
           <div className={classes.toolbar} />
           <Switch>
             <Route path="/" exact component={Dashboard} />
-            <PrivateRoute exact path="/posts/create" render={p => (<TagProvider {...p}><PostProvider {...p}><PostForm {...p}/></PostProvider></TagProvider>)} />
-            <PrivateRoute exact path="/posts/:postId" render={p => (<TagProvider {...p}><PostProvider {...p}><PostForm {...p}/></PostProvider></TagProvider>)} />
-            <PrivateRoute exact path="/posts" render={p => (<PostProvider {...p}><PostList {...p}/></PostProvider>)} />
+            <PrivateRoute exact path="/posts/create" render={p => (<CategoryProvider><TagProvider><PostProvider {...p}><PostForm {...p}/></PostProvider></TagProvider></CategoryProvider>)} />
+            <PrivateRoute exact path="/posts/:postId" render={p => (<CategoryProvider><TagProvider><PostProvider {...p}><PostForm {...p}/></PostProvider></TagProvider></CategoryProvider>)} />
+            <PrivateRoute exact path="/posts" render={p => (<CategoryProvider><TagProvider><PostProvider {...p}><PostList {...p}/></PostProvider></TagProvider></CategoryProvider>)} />
             <PrivateRoute exact path="/tags/:tagId" render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
             <PrivateRoute exact path="/tags" render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
             <PrivateRoute exact path="/categories/:categoryId" render={p => (<CategoryProvider {...p}><CategoryList {...p}/></CategoryProvider>)} />
@@ -82,6 +95,7 @@ function App() {
         </main>
       </BrowserRouter>
     </div>
+      </ThemeProvider>
   );
 }
 

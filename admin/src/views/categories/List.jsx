@@ -14,8 +14,10 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import ConfirmDialog from "../../components/ConfirmDialog";
-
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { default as highlightParse } from 'autosuggest-highlight/parse';
+import { default as highlightMatch }from 'autosuggest-highlight/match';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -50,27 +52,28 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const CategoryList = ({match, history}) => {
-    const { category, categories, loading, listCategories, getCategory, newCategory, saveCategory, deleteCategory, handleChange } = useCategory();
+    const { category, categories, loading, listCategories, getCategory, newCategory, saveCategory, deleteCategory, handleChange, handleUpdate } = useCategory();
     const [confirmDelete, setConfirmDelete] = React.useState(false);
     const classes = useStyles();
     const categoryId = match.params.categoryId;
 
     useEffect(() => {
+        async function fetchCategories() {
+            await listCategories(true)
+        }
+        fetchCategories();
+
+
         if (categoryId) {
             async function fetchData() {
                 getCategory(categoryId)
             }
 
-            fetchData();            
+            fetchData();
             return
         }
-        
-        newCategory();
-        async function fetchData() {
-            await listCategories()
-        }
 
-        fetchData();
+        newCategory();
         // eslint-disable-next-line
     }, [categoryId]);
 
@@ -104,6 +107,38 @@ const CategoryList = ({match, history}) => {
                             // error={true}
                             // helperText="Post slug is required."
                         />
+
+                    <Autocomplete
+                        options={categories ? categories : []}
+                        getOptionLabel={(cid) => {
+                            const cat = categories.find(c => c.id === cid)
+                            return cat ? cat.name : '' }}
+                        getOptionSelected={() => {
+                            const cat = categories.find(c => c.id === category.parent_id)
+                            return !!cat }}
+                        value={category.parent_id}
+                        renderOption={(c, {inputValue}) => {
+                            const matches = highlightMatch(c.name, inputValue);
+                            const parts = highlightParse(c.name, matches);
+
+                            return (
+                                <React.Fragment key={c.id}>
+                                    {'—'.repeat(c.depth)} {c.depth ? <>&nbsp;</> : null }
+                                    {parts.map((part, index) => (
+                                        <span key={index} className={classes.checkboxLabel} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                                            {part.text}
+                                        </span>
+                                    ))}
+                                </React.Fragment>
+                            )
+                        }}
+                        renderInput={(params) => (
+                            <TextField {...params} variant="outlined" label="Parent Category" placeholder="Choose category..." margin="normal"/>
+                        )}
+                        onChange={(event, selected) => handleUpdate('parent_id', selected ? selected.id : null)}
+                        noOptionsText="No categories found."
+                    />
+
                     <TextField
                         id="category-description"
                         label="Description"
@@ -157,7 +192,7 @@ const CategoryList = ({match, history}) => {
                                             <TableRow key={row.id}>
                                                 <TableCell component="th" scope="row">
                                                     <Box mb={0.5} fontWeight="fontWeightBold">
-                                                        <Link to={`/categories/${row.id}`}>{row.name}</Link>
+                                                        <Link to={`/categories/${row.id}`}>{'—'.repeat(row.depth)} {row.name}</Link>
                                                     </Box>
                                                     <Box className={`${classes.actions} text-grey`}>
                                                         <Link to={`/categories/${row.id}`}>Edit</Link>
@@ -179,14 +214,14 @@ const CategoryList = ({match, history}) => {
                     </Paper>
                     )}
                 </Grid>
-            </Grid>           
+            </Grid>
 
             <ConfirmDialog open={confirmDelete} onClose={() => setConfirmDelete(false)}
                 title="Are you sure you want to delete this category?"
                 content="The category will be deleted and removed from all posts."
                 action="Delete"
                 callback={() => deleteCategory(confirmDelete)}
-            ></ConfirmDialog>             
+            ></ConfirmDialog>
         </>
     );
 };
