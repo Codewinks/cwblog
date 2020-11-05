@@ -1,15 +1,17 @@
-import React, { useState, useContext } from 'react';
-import { useApp } from './App'
-import { useAuth0 } from "./Auth0";
+import React, {useContext, useState} from 'react';
+import {useApp} from './App'
+import {useAuth0} from "./Auth0";
+import {TagProvider} from "./Tag";
+import {CategoryProvider} from "./Category";
 
 export const PostContext = React.createContext();
 export const usePost = () => useContext(PostContext);
-export const PostProvider = ({ history, children }) => {
-    const { showAlert } = useApp();
-    const { request } = useAuth0();
+export const PostProvider = ({history, children}) => {
+    const {showAlert} = useApp();
+    const {request} = useAuth0();
     const [loading, setLoading] = useState(true);
     const [posts, setPosts] = useState(null);
-    
+
     const emptyPost = {
         id: null,
         title: null,
@@ -29,14 +31,18 @@ export const PostProvider = ({ history, children }) => {
 
     const options = {
         status: [
-            { value: 'draft', label: 'Draft', description: '' },
-            { value: 'published', label: 'Published', description: '' },
-            { value: 'pending', label: 'Pending Review', description: '' }
+            {value: 'draft', label: 'Draft', description: ''},
+            {value: 'published', label: 'Published', description: ''},
+            {value: 'pending', label: 'Pending Review', description: ''}
         ],
         visibility: [
-            { value: 'public', label: 'Public', description: 'Visible to everyone.' },
-            { value: 'private', label: 'Private', description: 'Only visible to site admins and editors.' },
-            { value: 'password', label: 'Password Protected', description: 'Only those with the password can view this post.' }
+            {value: 'public', label: 'Public', description: 'Visible to everyone.'},
+            {value: 'private', label: 'Private', description: 'Only visible to site admins and editors.'},
+            {
+                value: 'password',
+                label: 'Password Protected',
+                description: 'Only those with the password can view this post.'
+            }
         ]
     }
 
@@ -77,9 +83,9 @@ export const PostProvider = ({ history, children }) => {
             handlePost(data);
         } catch (error) {
             history.push(`/posts`)
-            if(error.status_code === 404){
+            if (error.status_code === 404) {
                 showAlert('error', `Unable to find post with the ID: ${postId}`)
-            }else {
+            } else {
                 showAlert('error', error.message)
             }
         } finally {
@@ -95,7 +101,7 @@ export const PostProvider = ({ history, children }) => {
             console.log('after savePOst', data)
             handlePost(data);
 
-            if(!post.id){
+            if (!post.id) {
                 history.push(`/posts/${data.id}`)
             }
 
@@ -124,22 +130,26 @@ export const PostProvider = ({ history, children }) => {
     }
 
     return (
-        <PostContext.Provider value={{
-            post,
-            posts,
-            loading,
-            options,
-            handleUpdate,
-            handleChange,
-            setLoading,
-            listPosts,
-            newPost,
-            getPost,
-            savePost,
-            setPost,
-            deletePost,
-        }}>
-            {children}
-        </PostContext.Provider>
+        <CategoryProvider>
+            <TagProvider>
+                <PostContext.Provider value={{
+                    post,
+                    posts,
+                    loading,
+                    options,
+                    handleUpdate,
+                    handleChange,
+                    setLoading,
+                    listPosts,
+                    newPost,
+                    getPost,
+                    savePost,
+                    setPost,
+                    deletePost,
+                }}>
+                    {children}
+                </PostContext.Provider>
+            </TagProvider>
+        </CategoryProvider>
     );
 }

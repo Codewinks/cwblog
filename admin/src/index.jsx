@@ -6,6 +6,8 @@ import * as serviceWorker from './serviceWorker';
 import { Auth0Provider } from "./context/Auth0";
 import { AppProvider } from './context/App';
 import config from "./auth_config.json";
+import history from './history';
+import {BrowserRouter} from "react-router-dom";
 
 // A function that routes the user to the right place
 // after login
@@ -27,9 +29,11 @@ ReactDOM.render(
         audience={config.audience}
         onRedirectCallback={onRedirectCallback}
     >
-        <AppProvider>
-            <App />
-        </AppProvider>
+        <BrowserRouter history={history}>
+            <AppProvider>
+                <App />
+            </AppProvider>
+        </BrowserRouter>
     </Auth0Provider>,
     document.getElementById("root")
 );

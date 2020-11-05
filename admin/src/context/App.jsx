@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, {useContext, useState} from 'react';
 
 export const AppContext = React.createContext();
 export const useApp = () => useContext(AppContext);
@@ -38,8 +38,17 @@ export const AppProvider = ({ children }) => {
             autoHideDuration: autoHideDuration,
         })
     }
+
     const hideAlert = () => {
-        setAlert(alertState)
+        setAlert({
+            ...alertState,
+            variant: alert.variant
+        })
+
+        const alertInterval = setInterval(() => {
+            setAlert(alertState)
+            clearInterval(alertInterval);
+        }, 500)
     }
 
     return (

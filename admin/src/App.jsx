@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import { useApp } from './context/App'
 import { useAuth0 } from "./context/Auth0";
 import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { Route, Switch, useLocation } from "react-router-dom";
+import history from './history';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 
@@ -44,9 +45,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function App() {
-  const { alert, hideAlert } = useApp();
   const classes = useStyles();
+  const { alert, showAlert, hideAlert } = useApp();
   const { loading, isAuthenticated } = useAuth0();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
 
   const theme = createMuiTheme({
     palette: {
@@ -60,41 +63,50 @@ function App() {
     },
   });
 
-  if (loading) {
-    return "Loading...";
-  }
+  useEffect(() =>{
+    if(query.get('error') && query.get('error_description')){
+      history.push('/');
+      showAlert('error', query.get('error_description'))
+    }
+    // eslint-disable-next-line
+  }, [location])
 
-  if (!isAuthenticated) {
+  // if (loading) {
+  //   return "Loading...";
+  // }
+
+  if (loading || !isAuthenticated) {
     return (
-      <Login />
+        <ThemeProvider theme={theme}>
+            <Alert variant={alert.variant} message={alert.message} autoHideDuration={alert.autoHideDuration} onClose={hideAlert}/>
+            <Login />
+        </ThemeProvider>
     );
   }
 
   return (
       <ThemeProvider theme={theme}>
-      <div className={classes.root}>
-      <Alert variant={alert.variant} message={alert.message} autoHideDuration={alert.autoHideDuration} onClose={hideAlert}/>
-      <BrowserRouter>
-        <CssBaseline />
-        <Navigation />
+        <div className={classes.root}>
+          <Alert variant={alert.variant} message={alert.message} autoHideDuration={alert.autoHideDuration} onClose={hideAlert}/>
+          <CssBaseline />
+          <Navigation />
 
-        <main className={classes.content}>
-          <div className={classes.toolbar} />
-          <Switch>
-            <Route path="/" exact component={Dashboard} />
-            <PrivateRoute exact path="/posts/create" render={p => (<CategoryProvider><TagProvider><PostProvider {...p}><PostForm {...p}/></PostProvider></TagProvider></CategoryProvider>)} />
-            <PrivateRoute exact path="/posts/:postId" render={p => (<CategoryProvider><TagProvider><PostProvider {...p}><PostForm {...p}/></PostProvider></TagProvider></CategoryProvider>)} />
-            <PrivateRoute exact path="/posts" render={p => (<CategoryProvider><TagProvider><PostProvider {...p}><PostList {...p}/></PostProvider></TagProvider></CategoryProvider>)} />
-            <PrivateRoute exact path="/tags/:tagId" render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
-            <PrivateRoute exact path="/tags" render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
-            <PrivateRoute exact path="/categories/:categoryId" render={p => (<CategoryProvider {...p}><CategoryList {...p}/></CategoryProvider>)} />
-            <PrivateRoute exact path="/categories" render={p => (<CategoryProvider {...p}><CategoryList {...p}/></CategoryProvider>)} />
-            <PrivateRoute exact path="/profile" component={Profile} />
-            <Route component={NoMatch} />
-          </Switch>
-        </main>
-      </BrowserRouter>
-    </div>
+          <main className={classes.content}>
+            <div className={classes.toolbar} />
+            <Switch>
+              <Route path="/" exact component={Dashboard} />
+              <PrivateRoute exact path="/posts/create" render={p => (<PostProvider {...p}><PostForm {...p}/></PostProvider>)} />
+              <PrivateRoute exact path="/posts/:postId" render={p => (<PostProvider {...p}><PostForm {...p}/></PostProvider>)} />
+              <PrivateRoute exact path="/posts" render={p => (<PostProvider {...p}><PostList {...p}/></PostProvider>)} />
+              <PrivateRoute exact path="/tags/:tagId" render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
+              <PrivateRoute exact path="/tags" render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
+              <PrivateRoute exact path="/categories/:categoryId" render={p => (<CategoryProvider {...p}><CategoryList {...p}/></CategoryProvider>)} />
+              <PrivateRoute exact path="/categories" render={p => (<CategoryProvider {...p}><CategoryList {...p}/></CategoryProvider>)} />
+              <PrivateRoute exact path="/profile" component={Profile} />
+              <Route component={NoMatch} />
+            </Switch>
+          </main>
+        </div>
       </ThemeProvider>
   );
 }

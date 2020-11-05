@@ -39,6 +39,7 @@ Under development. cwBLOG is a free and open-source content management system.
         - [x] Solution for disabled registration/signup
         - [ ] User roles admin, guest
         - [ ] Invite – Invite user/admin
+    - [ ] Create Login Splash Page
     - [x] API/Auth0 Authentication
     - [ ] Dashboard with statistics
     - [x] Post CRUD/API Integration

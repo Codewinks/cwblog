@@ -85,6 +85,7 @@ const DropdownTree = (props) => {
         }
 
         setExpanded(props.expanded());
+        // eslint-disable-next-line
     }, [props.data, props.expanded])
 
     const [nodesFiltered, setNodesFiltered] = React.useState(props.data);
