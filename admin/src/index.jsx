@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { Auth0Provider } from "./context/Auth0";
-import { AppProvider } from './context/App';
+import {Auth0Provider} from "./context/Auth0";
+import {AppProvider} from './context/App';
 import config from "./auth_config.json";
 import history from './history';
 import {BrowserRouter} from "react-router-dom";
@@ -22,19 +22,19 @@ const onRedirectCallback = appState => {
 };
 
 ReactDOM.render(
-    <Auth0Provider
-        domain={config.domain}
-        client_id={config.clientId}
-        redirect_uri={window.location.origin}
-        audience={config.audience}
-        onRedirectCallback={onRedirectCallback}
-    >
-        <BrowserRouter history={history}>
-            <AppProvider>
-                <App />
-            </AppProvider>
-        </BrowserRouter>
-    </Auth0Provider>,
+    <AppProvider>
+        <Auth0Provider
+            domain={config.domain}
+            client_id={config.clientId}
+            redirect_uri={window.location.origin}
+            audience={config.audience}
+            onRedirectCallback={onRedirectCallback}
+        >
+            <BrowserRouter history={history}>
+                <App/>
+            </BrowserRouter>
+        </Auth0Provider>
+    </AppProvider>,
     document.getElementById("root")
 );
 

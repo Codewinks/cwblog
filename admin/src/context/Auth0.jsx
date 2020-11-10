@@ -1,4 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
+import {useApp, ALERT_ERROR} from "./App";
 import createAuth0Client from "@auth0/auth0-spa-js";
 import config from "../api_config.json";
 
@@ -21,7 +22,8 @@ export const Auth0Provider = ({
                                   onRedirectCallback = DEFAULT_REDIRECT_CALLBACK,
                                   ...initOptions
                               }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState();
+    const {showAlert} = useApp();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState();
     const [auth0Client, setAuth0] = useState();
     const [loading, setLoading] = useState(true);
@@ -42,16 +44,21 @@ export const Auth0Provider = ({
             setIsAuthenticated(isAuthenticated);
             const user = await auth0FromHook.getUser();
             console.log(user)
-            console.log(isAuthenticated)
 
             if (isAuthenticated) {
                 // const user = await auth0FromHook.getUser();
-                const user = await request('post', '/v1/auth/login', {}, auth0FromHook)
-                setUser(user);
+                try {
+                    const user = await request('post', '/v1/auth/login', {}, auth0FromHook);
+                    setUser(user);
+                } catch (e){
+                    setIsAuthenticated(false);
+                    showAlert(ALERT_ERROR, 'There was a problem logging you in, please try again later.')
+                }
             }
 
             setLoading(false);
         };
+
         initAuth0();
         // eslint-disable-next-line
     }, []);
