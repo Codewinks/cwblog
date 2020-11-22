@@ -2,7 +2,7 @@ import React from "react";
 import clsx from 'clsx';
 
 import { fade, makeStyles, useTheme } from '@material-ui/core/styles';
-import { useAuth0 } from '../context/Auth0';
+import { useAuth0 } from '../../context/Auth0';
 import { Link, useLocation } from 'react-router-dom';
 
 import AppBar from '@material-ui/core/AppBar';
@@ -38,7 +38,8 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Collapse from '@material-ui/core/Collapse';
 
-import ArrowTooltip from './ArrowTooltip';
+import ArrowTooltip from '../../components/ArrowTooltip';
+import UserAvatar from "../users/components/UserAvatar";
 
 
 const drawerWidth = 180;
@@ -185,7 +186,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Navigation = () => {
-    const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+    const { currentUser, isAuthenticated, loginWithRedirect, logout } = useAuth0();
     const location = useLocation();
 
     const classes = useStyles();
@@ -251,7 +252,7 @@ const Navigation = () => {
                             onClick={event => openMenu(event, 'main')}
                             color="inherit"
                         >
-                            {user.picture ? <Avatar alt={user.name} src={user.picture} /> : <Avatar ><PersonIcon /></Avatar>}
+                            <UserAvatar user={currentUser} />
                         </IconButton>
                     </div>
                     <div className={classes.sectionMobile}>
@@ -300,7 +301,7 @@ const Navigation = () => {
                         aria-haspopup="true"
                         color="inherit"
                     >
-                        {user.picture ? <Avatar alt={user.name} src={user.picture} /> : <Avatar><PersonIcon /></Avatar>}
+                        {currentUser.picture ? <Avatar alt={currentUser.name} src={currentUser.picture} /> : <Avatar><PersonIcon /></Avatar>}
                     </IconButton>
                     <p>Profile</p>
                 </MenuItem>
@@ -380,10 +381,38 @@ const Navigation = () => {
                             </ListItem>
                         </List>
                     </Collapse>
-                    <ListItem button to="/users" component={Link}>
-                        <ListItemIcon className={classes.navIcon}><PeopleIcon /></ListItemIcon>
-                        <ListItemText primary="Users" />
-                    </ListItem>
+
+                    <ArrowTooltip placement="right-start" interactive disableHoverListener={open}
+                                  title={
+                                      <List disablePadding>
+                                          <ListItem button to="/users" component={Link} className={isNavActiveCssClass(['/users'], classes.subNavActive)}>
+                                              <ListItemText primary="All Users" /></ListItem>
+                                          <ListItem button to="/invites" component={Link} className={isNavActiveCssClass(['/invites'], classes.subNavActive)}>
+                                              <ListItemText primary="Invite Users" /></ListItem>
+                                          <ListItem button to="/roles" component={Link} className={isNavActiveCssClass(['/roles'], classes.subNavActive)}>
+                                              <ListItemText primary="Roles" /></ListItem>
+                                      </List>
+                                  }>
+                        <ListItem button to="/users" component={Link} className={isNavActiveCssClass(['/users', '/invites', '/roles'], classes.navActive)}>
+                            <ListItemIcon className={classes.navIcon}><PeopleIcon /></ListItemIcon>
+                            <ListItemText primary="Users" />
+                        </ListItem>
+                    </ArrowTooltip>
+
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                        <List disablePadding className={classes.navNested}>
+                            <ListItem button to="/users" component={Link} className={isNavActiveCssClass(['/users'], classes.subNavActive)}>
+                                <ListItemText primary="All Users" />
+                            </ListItem>
+                            <ListItem button to="/invites" component={Link} className={isNavActiveCssClass(['/invites'], classes.subNavActive)}>
+                                <ListItemText primary="Invite Users" />
+                            </ListItem>
+                            <ListItem button to="/roles" component={Link} className={isNavActiveCssClass(['/roles'], classes.subNavActive)}>
+                                <ListItemText primary="Roles" />
+                            </ListItem>
+                        </List>
+                    </Collapse>
+
                     <ListItem button to="/settings" component={Link}>
                         <ListItemIcon className={classes.navIcon}><SettingsIcon /></ListItemIcon>
                         <ListItemText primary="Settings" />

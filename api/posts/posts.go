@@ -203,11 +203,11 @@ func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 //PostCtx handler loads a post by either {postId} or {postSlug}
 func (cw *Handler) PostCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var err error
 		post := &models.Post {
 			Id: chi.URLParam(r, "postId"),
 			Slug: chi.URLParam(r, "postSlug"),
 		}
-		var err error
 
 		if post.Id != "" {
 			err = cw.DB.Model(post).Relation("User").Relation("Tags").Relation("Categories").WherePK().Select()

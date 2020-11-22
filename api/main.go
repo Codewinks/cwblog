@@ -13,15 +13,15 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
-
 	"github.com/go-pg/pg/v10"
-	//"github.com/go-pg/pg/v10/orm"
+
 	"github.com/codewinks/cwblog/api/auth"
 	"github.com/codewinks/cwblog/api/categories"
+	"github.com/codewinks/cwblog/api/invites"
 	"github.com/codewinks/cwblog/api/posts"
+	"github.com/codewinks/cwblog/api/roles"
 	"github.com/codewinks/cwblog/api/tags"
-	//"github.com/codewinks/cwblog/api/users"
-	//"github.com/codewinks/cworm"
+	"github.com/codewinks/cwblog/api/users"
 )
 
 //Routes consists of the main route method declarations.
@@ -50,9 +50,11 @@ func Routes(db *pg.DB) *chi.Mux {
 	router.Route("/v1", func(r chi.Router) {
 		auth.Routes(r, db)
 		posts.Routes(r, db)
-		//users.Routes(r, db)
+		users.Routes(r, db)
+		roles.Routes(r, db)
 		categories.Routes(r, db)
 		tags.Routes(r, db)
+		invites.Routes(r, db)
 	})
 
 	return router
@@ -60,6 +62,7 @@ func Routes(db *pg.DB) *chi.Mux {
 
 //AllowedOriginFunc validates the request origin.
 func AllowedOriginFunc(r *http.Request, origin string) bool {
+	//TODO: Move allowed origins to environment variable
 	if origin == "http://localhost:3000" {
 		return true
 	}

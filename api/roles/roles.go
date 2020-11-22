@@ -1,4 +1,4 @@
-package users
+package roles
 
 import (
 	"context"
@@ -18,149 +18,149 @@ import (
 type key int
 
 const (
-	userKey key = iota
+	roleKey key = iota
+	ROLE_SUPERADMIN = 1
+	ROLE_ADMIN = 2
+	ROLE_MODERATOR = 3
+	ROLE_EDITOR = 4
+	ROLE_GUEST = 5
 )
 
 //Handler consists of the DB connection and Routes
 type Handler core.Handler
 
-//Routes consists of the route method declarations for Users.
+//Routes consists of the route method declarations for Roles.
 func Routes(r chi.Router, db *pg.DB) chi.Router {
 	cw := &Handler{DB: db}
-	r.Route("/users", func(r chi.Router) {
+	r.Route("/roles", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.IsAuthenticated)
 			r.Get("/", cw.List)
 			r.Post("/", cw.Store)
 
-			r.Route("/{userId}", func(r chi.Router) {
-				r.Use(cw.UserCtx)
+			r.Route("/{roleId}", func(r chi.Router) {
+				r.Use(cw.RoleCtx)
 				r.Get("/", cw.Get)
 				r.Put("/", cw.Update)
 				r.Delete("/", cw.Delete)
 			})
 		})
-
-		r.With(cw.UserCtx).Get("/slug/{userSlug}", cw.Get)
 	})
 
 	return r
 }
 
-//List handler returns all users in JSON format.
+//List handler returns all roles in JSON format.
 func (cw *Handler) List(w http.ResponseWriter, r *http.Request) {
-	var users []models.User
-	err := cw.DB.Model(&users).Relation("Role").Select()
+	var roles []models.Role
+	err := cw.DB.Model(&roles).Select()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 	}
 
-	render.JSON(w, r, users)
+	render.JSON(w, r, roles)
 }
 
-//Store handler creates a new user and returns the user in JSON format.
+//Store handler creates a new role and returns the role in JSON format.
 func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
-	data := &UserRequest{}
+	data := &RoleRequest{}
 	if err := render.Bind(r, data); err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
-	var user models.User
-	exists, err := cw.DB.Model(&user).Where("email = ?", data.User.Email).Exists()
+	var role models.Role
+	exists, err := cw.DB.Model(&role).Where("name = ?", data.Role.Name).Exists()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
 	if exists {
-		render.Render(w, r, core.ErrConflict(errors.New("User already exists with that email.")))
+		render.Render(w, r, core.ErrConflict(errors.New("Role already exists with that name.")))
 		return
 	}
 
-	_, err = cw.DB.Model(data.User).Insert()
+	_, err = cw.DB.Model(data.Role).Insert()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
-	fmt.Printf("====%#v \n", user)
+	fmt.Printf("====%#v \n", role)
 
-	render.JSON(w, r, user)
+	render.JSON(w, r, role)
 }
 
-//Get handler returns a user by the provided {userId}
+//Get handler returns a role by the provided {roleId}
 func (cw *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("-----")
-	user := r.Context().Value(userKey).(*models.User)
+	role := r.Context().Value(roleKey).(*models.Role)
 
-	if user == nil {
+	if role == nil {
 		render.Render(w, r, core.ErrNotFound)
 		return
 	}
 
-	render.JSON(w, r, user)
+	render.JSON(w, r, role)
 }
 
-//Update handler updates a user by the provided {userId}
+//Update handler updates a role by the provided {roleId}
 func (cw *Handler) Update(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value(userKey).(*models.User)
+	role := r.Context().Value(roleKey).(*models.Role)
 
-	err := cw.DB.Model(user).WherePK().Select()
+	err := cw.DB.Model(role).WherePK().Select()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
-	data := &UserRequest{User: user}
+	data := &RoleRequest{Role: role}
 	if err := render.Bind(r, data); err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
-	user = data.User
+	role = data.Role
 
-	_, err = cw.DB.Model(user).WherePK().Update()
+	_, err = cw.DB.Model(role).WherePK().Update()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
-	err = cw.DB.Model(user).WherePK().Select()
+	err = cw.DB.Model(role).WherePK().Select()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
-	render.JSON(w, r, user)
+	render.JSON(w, r, role)
 }
 
-//Delete handler deletes a user by the provided {userId}
+//Delete handler deletes a role by the provided {roleId}
 func (cw *Handler) Delete(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value(userKey).(*models.User)
+	role := r.Context().Value(roleKey).(*models.Role)
 
-	_, err := cw.DB.Model(user).WherePK().Delete()
+	_, err := cw.DB.Model(role).WherePK().Delete()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
 	}
 
-	render.JSON(w, r, user)
+	render.JSON(w, r, role)
 }
 
-//UserCtx handler loads a user by either {userId} or {userSlug}
-func (cw *Handler) UserCtx(next http.Handler) http.Handler {
+//RoleCtx handler loads a role by either {roleId} or {roleSlug}
+func (cw *Handler) RoleCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var role models.Role
 		var err error
-		user := &models.User {
-			Id: chi.URLParam(r, "userId"),
-			Email: chi.URLParam(r, "userEmail"),
-		}
 
-		if user.Id != "" {
-			err = cw.DB.Model(user).Relation("Role").WherePK().Select()
-		} else if user.Email != "" {
-			err = cw.DB.Model(user).Relation("Role").Where("email = ?", user.Email).First()
+		if roleId := chi.URLParam(r, "roleId"); roleId != "" {
+			err = cw.DB.Model(&role).Where("id = ?", roleId).First()
+		} else if roleSlug := chi.URLParam(r, "roleSlug"); roleSlug != "" {
+			err = cw.DB.Model(&role).Where("slug = ?", roleSlug).First()
 		} else {
 			render.Render(w, r, core.ErrNotFound)
 			return
@@ -171,7 +171,7 @@ func (cw *Handler) UserCtx(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), userKey, user)
+		ctx := context.WithValue(r.Context(), roleKey, &role)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

@@ -24,7 +24,7 @@ export const Auth0Provider = ({
                               }) => {
     const {showAlert} = useApp();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [user, setUser] = useState();
+    const [currentUser, setCurrentUser] = useState();
     const [auth0Client, setAuth0] = useState();
     const [loading, setLoading] = useState(true);
     const [popupOpen, setPopupOpen] = useState(false);
@@ -49,10 +49,11 @@ export const Auth0Provider = ({
                 // const user = await auth0FromHook.getUser();
                 try {
                     const user = await request('post', '/v1/auth/login', {}, auth0FromHook);
-                    setUser(user);
+                    setCurrentUser(user);
                 } catch (e){
                     setIsAuthenticated(false);
-                    showAlert(ALERT_ERROR, 'There was a problem logging you in, please try again later.')
+                    showAlert(ALERT_ERROR, 'There was a problem logging you in, please try again later.');
+                    auth0FromHook.logout()
                 }
             }
 
@@ -101,7 +102,7 @@ export const Auth0Provider = ({
             setPopupOpen(false);
         }
         const user = await auth0Client.getUser();
-        setUser(user);
+        setCurrentUser(user);
         setIsAuthenticated(true);
     };
 
@@ -110,7 +111,7 @@ export const Auth0Provider = ({
         await auth0Client.handleRedirectCallback();
         const user = await auth0Client.getUser();
         setIsAuthenticated(true);
-        setUser(user);
+        setCurrentUser(user);
         setLoading(false);
     };
 
@@ -118,7 +119,7 @@ export const Auth0Provider = ({
         <Auth0Context.Provider
             value={{
                 isAuthenticated,
-                user,
+                currentUser,
                 loading,
                 popupOpen,
                 loginWithPopup,

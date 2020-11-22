@@ -6,41 +6,37 @@ import { Route, Switch, useLocation } from "react-router-dom";
 import history from './history';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
-
-import Navigation from "./components/Navigation";
-
+import Navigation from "./views/common/Navigation";
 import Login from "./views/auth/Login";
 import Dashboard from "./views/Dashboard";
 import NoMatch from "./views/errors/NoMatch";
 import Profile from "./views/Profile";
 import TagList from "./views/tags/List";
 import CategoryList from "./views/categories/List";
+import UserList from "./views/users/List";
+import RoleList from "./views/roles/List";
 import PostList from "./views/posts/List";
 import PostForm from "./views/posts/Form";
 import PrivateRoute from "./components/PrivateRoute";
 import Alert from "./components/Alert";
-
 import { PostProvider } from './context/Post'
 import { TagProvider } from './context/Tag'
 import { CategoryProvider } from './context/Category'
+import { UserProvider } from './context/User'
+import { RoleProvider } from "./context/Role";
 
 
 import './App.css';
+import {InviteProvider} from "./context/Invite";
+import InviteList from "./views/invites/List";
 
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
   },
-  toolbar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: '0 8px',
-    ...theme.mixins.toolbar,
-  },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+    padding: theme.spacing(11, 4, 6, 4),
   },
 }));
 
@@ -71,10 +67,6 @@ function App() {
     // eslint-disable-next-line
   }, [location])
 
-  // if (loading) {
-  //   return "Loading...";
-  // }
-
   if (loading || !isAuthenticated) {
     return (
         <ThemeProvider theme={theme}>
@@ -92,7 +84,6 @@ function App() {
           <Navigation />
 
           <main className={classes.content}>
-            <div className={classes.toolbar} />
             <Switch>
               <Route path="/" exact component={Dashboard} />
               <PrivateRoute exact path="/posts/create" render={p => (<PostProvider {...p}><PostForm {...p}/></PostProvider>)} />
@@ -102,6 +93,11 @@ function App() {
               <PrivateRoute exact path="/tags" render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
               <PrivateRoute exact path="/categories/:categoryId" render={p => (<CategoryProvider {...p}><CategoryList {...p}/></CategoryProvider>)} />
               <PrivateRoute exact path="/categories" render={p => (<CategoryProvider {...p}><CategoryList {...p}/></CategoryProvider>)} />
+              <PrivateRoute exact path="/users" render={p => (<UserProvider {...p}><UserList {...p}/></UserProvider>)} />
+              <PrivateRoute exact path="/users/:userId" render={p => (<UserProvider {...p}><UserList {...p}/></UserProvider>)} />
+              <PrivateRoute exact path="/roles/:roleId" render={p => (<RoleProvider {...p}><RoleList {...p}/></RoleProvider>)} />
+              <PrivateRoute exact path="/roles" render={p => (<RoleProvider {...p}><RoleList {...p}/></RoleProvider>)} />
+              <PrivateRoute exact path="/invites" render={p => (<InviteProvider {...p}><InviteList {...p}/></InviteProvider>)} />
               <PrivateRoute exact path="/profile" component={Profile} />
               <Route component={NoMatch} />
             </Switch>

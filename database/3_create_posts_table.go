@@ -3,7 +3,7 @@ package database
 import "github.com/go-pg/migrations/v8"
 
 func init() {
-	migration := "2_create_posts_table.go"
+	migration := "3_create_posts_table.go"
 
 	migrations.MustRegisterTx(func(db migrations.DB) error {
 		return migrateUp(db, migration, `

@@ -45,13 +45,11 @@ func IsAuthenticated(next http.Handler) http.Handler {
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 			// Verify 'aud' claim
 			aud := os.Getenv("AUTH0_AUDIENCE")
-			checkAud := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
-			if !checkAud {
+			if checkAud := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false); !checkAud {
 				return token, errors.New("Invalid audience")
 			}
 			// Verify 'iss' claim
 			iss := fmt.Sprintf("https://%s/", os.Getenv("AUTH0_DOMAIN"))
-
 			checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
 			if !checkIss {
 				return token, errors.New("Invalid issuer")

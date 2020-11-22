@@ -23,19 +23,42 @@ type Post struct {
 	User          User       `json:"user" pg:"rel:has-one"`
 }
 
-//User model
-type User struct {
+//Role model
+type Role struct {
+	Id          int                    `json:"id"`
+	Name        string                 `json:"name" binding:"required"`
+	Meta        map[string]interface{} `json:"meta"`
+	Permissions map[string]interface{} `json:"permissions"`
+	CreatedAt   string                 `json:"created_at"`
+	UpdatedAt   string                 `json:"updated_at"`
+}
+
+//Invite model
+type Invite struct {
 	Id        string `json:"id"`
-	Uid       string `json:"uid"`
-	FirstName string `json:"first_name" binding:"required"`
-	LastName  string `json:"last_name" binding:"required"`
-	Nickname  string `json:"nickname"`
 	Email     string `json:"email" binding:"required"`
-	Avatar    string `json:"avatar"`
-	Timezone  string `json:"timezone"`
-	Role      string `json:"role"`
+	RoleId    int    `json:"role_id"`
+	ExpiresAt string `json:"expires_at"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
+	Role      Role   `json:"role" pg:"rel:has-one"`
+}
+
+//User model
+type User struct {
+	Id            string `json:"id"`
+	Uid           string `json:"uid"`
+	FirstName     string `json:"first_name" binding:"required"`
+	LastName      string `json:"last_name" binding:"required"`
+	Nickname      string `json:"nickname"`
+	Email         string `json:"email" binding:"required"`
+	Avatar        string `json:"avatar"`
+	Timezone      string `json:"timezone"`
+	RoleId        int    `json:"role_id"`
+	EmailVerified bool   `json:"email_verified"`
+	CreatedAt     string `json:"created_at"`
+	UpdatedAt     string `json:"updated_at"`
+	Role          Role   `json:"role" pg:"rel:has-one"`
 }
 
 //Category model
