@@ -97,6 +97,7 @@ function App() {
               <PrivateRoute exact path="/users/:userId" render={p => (<UserProvider {...p}><UserList {...p}/></UserProvider>)} />
               <PrivateRoute exact path="/roles/:roleId" render={p => (<RoleProvider {...p}><RoleList {...p}/></RoleProvider>)} />
               <PrivateRoute exact path="/roles" render={p => (<RoleProvider {...p}><RoleList {...p}/></RoleProvider>)} />
+              <PrivateRoute exact path="/invites/:inviteId" render={p => (<InviteProvider {...p}><InviteList {...p}/></InviteProvider>)} />
               <PrivateRoute exact path="/invites" render={p => (<InviteProvider {...p}><InviteList {...p}/></InviteProvider>)} />
               <PrivateRoute exact path="/profile" component={Profile} />
               <Route component={NoMatch} />

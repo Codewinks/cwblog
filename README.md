@@ -37,8 +37,7 @@ Under development. cwBLOG is a free and open-source content management system.
     - [x] Auth0 Login Integration
         - [x] Register – Create user on API
         - [x] Solution for disabled registration/signup
-        - [ ] User roles admin, guest
-        - [ ] Invite – Invite user/admin
+        - [x] Invite – Invite user/admin
     - [ ] Create Login Splash Page
     - [x] API/Auth0 Authentication
     - [ ] Dashboard with statistics
@@ -56,7 +55,7 @@ Under development. cwBLOG is a free and open-source content management system.
     - [x] Tags CRUD/API Integration
     - [ ] User CRUD/API Integration (Auth0 Integration)
         - [x] Create user in database on successful login
-        - [ ] Manage users/roles
+        - [x] Manage users/roles
         - [ ] Manage roles/permissions
     - [ ] Media library
     - [ ] Add notifications feature for new announcements and site activity

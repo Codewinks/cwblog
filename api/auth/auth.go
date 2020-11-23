@@ -68,7 +68,7 @@ func (cw *Handler) Check(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: Add check here against "invites" table, then return status back to rule. Update rule allow signups for email
 	var invite models.Invite
-	exists, err := cw.DB.Model(&invite).Where("email = ?", data.Email).Exists()
+	exists, err := cw.DB.Model(&invite).Where("email = ?", data.Email).Where("expires_at > NOW()").Exists()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))
 		return
@@ -144,7 +144,21 @@ func (cw *Handler) Login(w http.ResponseWriter, r *http.Request) {
 			RoleId: roleId,
 		}
 
-		_, err = cw.DB.Model(user).Insert()
+		queryTx := func(cw *Handler) error {
+			return cw.DB.RunInTransaction(r.Context(), func(tx *pg.Tx) error {
+				cw.Tx = tx
+				_, err = tx.Model(user).Insert()
+				if err != nil {
+					return err
+				}
+
+				var invite models.Invite
+				_, err := cw.DB.Model(&invite).Where("email = ?", user.Email).Delete()
+				return err
+			})
+		}
+
+		err = queryTx(cw)
 		if err != nil {
 			fmt.Println(err)
 			render.Render(w, r, core.ErrInvalidRequest(err))

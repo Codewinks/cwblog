@@ -58,6 +58,7 @@ export const InviteProvider = ({ history, children }) => {
         try {
             const data = await request('get', `/v1/invites/${inviteId}`)
             setInvite(data)
+            return data;
         } catch (error) {
             showAlert(ALERT_ERROR, error.message)
         } finally {

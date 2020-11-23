@@ -22,6 +22,10 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import {useRole} from "../../context/Role";
 import Chip from "@material-ui/core/Chip";
+import {DateTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
+import { utcToZonedTime } from 'date-fns-tz';
+import { parseFromTimeZone } from 'date-fns-timezone';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -56,17 +60,21 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const InviteList = ({match, history}) => {
-    const { invite, invites, loading, listInvites, getInvite, newInvite, saveInvite, deleteInvite, handleChange } = useInvite();
+    const { invite, invites, loading, listInvites, getInvite, newInvite, saveInvite, deleteInvite, handleUpdate, handleChange } = useInvite();
     const {roles, listRoles} = useRole();
     const [confirmDelete, setConfirmDelete] = React.useState(false);
+    const [open, setOpen] = React.useState(false);
+    const [expiresAt, setExpiresAt] = React.useState(null);
     const classes = useStyles();
     const inviteId = match.params.inviteId;
+    const dateFns = new DateFnsUtils();
 
     useEffect(() => {
         if (inviteId) {
             async function fetchData() {
-                getInvite(inviteId)
+                let current = await getInvite(inviteId)
                 await listRoles()
+                setExpiresAt(parseFromTimeZone(current.expires_at, {timeZone: 'UTC'}))
             }
 
             fetchData();
@@ -74,6 +82,7 @@ const InviteList = ({match, history}) => {
         }
 
         newInvite();
+        setExpiresAt(null);
         async function fetchData() {
             await listInvites()
             await listRoles()
@@ -82,6 +91,16 @@ const InviteList = ({match, history}) => {
         fetchData();
         // eslint-disable-next-line
     }, [inviteId]);
+
+    const handleExpiresAtChange = (v) => {
+        setExpiresAt(v);
+
+        if (v) {
+            v = dateFns.format(utcToZonedTime(v, 'UTC'), 'yyyy-MM-dd HH:mm');
+        }
+
+        handleUpdate('expires_at', v);
+    }
 
     return (
         <>
@@ -119,6 +138,30 @@ const InviteList = ({match, history}) => {
                                 <MenuItem key={row.id} value={row.id}>{row.name}</MenuItem>
                             ))}
                         </Select>
+                    </FormControl>
+
+                    <FormControl variant="outlined"
+                                 margin="normal"
+                                 fullWidth className={classes.formControl}>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <DateTimePicker
+                                label="Expires At"
+                                inputVariant="outlined"
+                                open={open}
+                                onOpen={() => setOpen(true)}
+                                onClose={() => setOpen(false)}
+                                value={expiresAt}
+                                onChange={handleExpiresAtChange}
+                                clearable={true}
+                                className={classes.publishedAtPicker}
+                                okLabel="Ok"
+                                disablePast
+                                format="MMM d, yyyy h:mma"
+                                onAccept={(e) => {
+                                    console.log(e)
+                                }}
+                            />
+                        </MuiPickersUtilsProvider>
                     </FormControl>
 
                     { inviteId && (
@@ -175,6 +218,10 @@ const InviteList = ({match, history}) => {
                                                     <TableCell>
                                                         { /* TODO: Add color coding to different role chips */ }
                                                         <Chip size="small" label={row.role.name}/>
+                                                    </TableCell>
+                                                    <TableCell align="right">
+                                                        {/*{ row.expires_at ? row.expires_at : '—' }*/}
+                                                        { row.expires_at ? dateFns.format(parseFromTimeZone(row.expires_at, {timeZone: 'UTC'}), 'MMM d, yyyy h:mma') : '—' }
                                                     </TableCell>
                                                 </TableRow>
                                             ))}

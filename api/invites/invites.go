@@ -76,6 +76,18 @@ func (cw *Handler) Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var user models.User
+	exists, err = cw.DB.Model(&user).Where("email = ?", invite.Email).Exists()
+	if err != nil {
+		render.Render(w, r, core.ErrInvalidRequest(err))
+		return
+	}
+
+	if exists {
+		render.Render(w, r, core.ErrConflict(errors.New("User with that email already has an account.")))
+		return
+	}
+
 	_, err = cw.DB.Model(invite).Insert()
 	if err != nil {
 		render.Render(w, r, core.ErrInvalidRequest(err))

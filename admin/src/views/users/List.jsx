@@ -232,10 +232,6 @@ const UserList = ({match, history}) => {
                                                                               className="pointer text-danger">Delete</Link>
                                                                     </>
                                                                 ) : null}
-                                                                <Box display="inline" px={0.65}>|</Box>
-                                                                {/* TODO: Update to view user profile on frontend? */}
-                                                                <Link to={`/users/${row.id}`} target="_blank"
-                                                                      rel="noopener noreferrer">View</Link>
                                                             </Box>
                                                         </Box>
                                                     </TableCell>
