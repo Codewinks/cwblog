@@ -37,6 +37,7 @@ import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Collapse from '@material-ui/core/Collapse';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import ArrowTooltip from '../../components/ArrowTooltip';
 import UserAvatar from "../users/components/UserAvatar";
@@ -319,7 +320,7 @@ const Navigation = () => {
                 onClose={closeMenu}
             >
                 {isAuthenticated ? [
-                    <MenuItem onClick={closeMenu} component={Link} to="/profile" key="profile">Profile</MenuItem>,
+                    <MenuItem onClick={closeMenu} component={Link} to={`/users/${currentUser.id}`} key="profile">Profile</MenuItem>,
                     <MenuItem onClick={() => logout()} key="logout">Logout</MenuItem>
                 ] :
                     <MenuItem onClick={() => loginWithRedirect({})}>Login</MenuItem>
@@ -341,10 +342,12 @@ const Navigation = () => {
             >
                 <div className={classes.toolbar}></div>
                 <List>
-                    <ListItem button to="/" component={Link}>
-                        <ListItemIcon className={classes.navIcon}><DashboardIcon /></ListItemIcon>
-                        <ListItemText primary="Dashboard" />
-                    </ListItem>
+                    <Tooltip title="Dashboard" placement="right" arrow disableHoverListener={open}>
+                        <ListItem button to="/" component={Link}>
+                                <ListItemIcon className={classes.navIcon}><DashboardIcon /></ListItemIcon>
+                                <ListItemText primary="Dashboard" />
+                        </ListItem>
+                    </Tooltip>
 
                     <ArrowTooltip placement="right-start" interactive disableHoverListener={open}
                         title={
@@ -413,10 +416,12 @@ const Navigation = () => {
                         </List>
                     </Collapse>
 
-                    <ListItem button to="/settings" component={Link}>
-                        <ListItemIcon className={classes.navIcon}><SettingsIcon /></ListItemIcon>
-                        <ListItemText primary="Settings" />
-                    </ListItem>
+                    <Tooltip title="Settings" placement="right" arrow disableHoverListener={open}>
+                        <ListItem button to="/settings" component={Link}>
+                            <ListItemIcon className={classes.navIcon}><SettingsIcon /></ListItemIcon>
+                            <ListItemText primary="Settings" />
+                        </ListItem>
+                    </Tooltip>
                 </List>
                 <Divider />
                 <div className={classes.drawerBg}></div>

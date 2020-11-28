@@ -162,8 +162,6 @@ const RoleList = ({match, history}) => {
                                                             <Link to={`/roles/${row.id}`}>Edit</Link>
                                                             <Box display="inline" px={0.65}>|</Box>
                                                             <Link to="#" onClick={() => setConfirmDelete(row.id)} className="pointer text-danger">Delete</Link>
-                                                            <Box display="inline" px={0.65}>|</Box>
-                                                            <Link to={`/roles/${row.id}`} target="_blank" rel="noopener noreferrer">View</Link>
                                                         </Box>
                                                     </TableCell>
                                                     <TableCell align="right">0</TableCell>

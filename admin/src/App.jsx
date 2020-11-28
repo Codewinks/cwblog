@@ -10,7 +10,6 @@ import Navigation from "./views/common/Navigation";
 import Login from "./views/auth/Login";
 import Dashboard from "./views/Dashboard";
 import NoMatch from "./views/errors/NoMatch";
-import Profile from "./views/Profile";
 import TagList from "./views/tags/List";
 import CategoryList from "./views/categories/List";
 import UserList from "./views/users/List";
@@ -99,7 +98,7 @@ function App() {
               <PrivateRoute exact path="/roles" render={p => (<RoleProvider {...p}><RoleList {...p}/></RoleProvider>)} />
               <PrivateRoute exact path="/invites/:inviteId" render={p => (<InviteProvider {...p}><InviteList {...p}/></InviteProvider>)} />
               <PrivateRoute exact path="/invites" render={p => (<InviteProvider {...p}><InviteList {...p}/></InviteProvider>)} />
-              <PrivateRoute exact path="/profile" component={Profile} />
+              <PrivateRoute exact path="/profile" render={p => (<UserProvider {...p}><UserList {...p}/></UserProvider>)} />
               <Route component={NoMatch} />
             </Switch>
           </main>

@@ -66,7 +66,8 @@ const UserList = ({match, history}) => {
     const {roles, listRoles} = useRole();
     const [confirmDelete, setConfirmDelete] = React.useState(false);
     const classes = useStyles();
-    const userId = match.params.userId;
+    const isProfile = match.path === '/profile';
+    const userId = isProfile ? currentUser.id : match.params.userId;
 
     useEffect(() => {
         if (userId) {
@@ -95,13 +96,13 @@ const UserList = ({match, history}) => {
                 <Button variant="contained" color="primary" to="/users/invite" component={Link}>Invite New User</Button>
             </div>
             <Typography variant="h4" gutterBottom>
-                Users
+                { isProfile ? 'My Profile' : 'Users' }
             </Typography>
             <Grid container spacing={4} className={classes.wrapper}>
                 {userId && (
                     <Grid item className={classes.leftCol}>
                         <Typography variant="h6">
-                            Edit User
+                            { isProfile ? 'Edit Profile' : 'Edit User' }
                         </Typography>
                         <Chip size="small" label={`UID: ${user.uid}`}/>
                         <TextField id="user-first-name"

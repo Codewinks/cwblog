@@ -157,6 +157,7 @@ const InviteList = ({match, history}) => {
                                 okLabel="Ok"
                                 disablePast
                                 format="MMM d, yyyy h:mma"
+                                minDateMessage="This invite has expired."
                                 onAccept={(e) => {
                                     console.log(e)
                                 }}
@@ -211,8 +212,6 @@ const InviteList = ({match, history}) => {
                                                             <Link to={`/invites/${row.id}`}>Edit</Link>
                                                             <Box display="inline" px={0.65}>|</Box>
                                                             <Link to="#" onClick={() => setConfirmDelete(row.id)} className="pointer text-danger">Delete</Link>
-                                                            <Box display="inline" px={0.65}>|</Box>
-                                                            <Link to={`/invites/${row.id}`} target="_blank" rel="noopener noreferrer">View</Link>
                                                         </Box>
                                                     </TableCell>
                                                     <TableCell>
