@@ -57,6 +57,7 @@ func IsAuthenticated(next http.Handler) http.Handler {
 
 			cert, err := getPemCert(token)
 			if err != nil {
+				fmt.Println(err)
 				panic(err.Error())
 			}
 
@@ -69,6 +70,7 @@ func IsAuthenticated(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		err := jwtMiddleware.CheckJWT(w, r)
 		if err != nil {
+			fmt.Println(err)
 			return
 		}
 

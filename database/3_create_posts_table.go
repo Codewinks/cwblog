@@ -16,6 +16,7 @@ func init() {
 				slug varchar(250) NOT NULL UNIQUE,
 				password varchar(250) NULL DEFAULT NULL,
 				format varchar(11) NOT NULL,
+				options JSON NULL,
 				visibility varchar(11) NOT NULL,
 				status varchar(11) NOT NULL,
 				sort int NULL DEFAULT 0,

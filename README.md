@@ -30,7 +30,6 @@ Under development. cwBLOG is a free and open-source content management system.
 - [x] API
     - [x] [go-pg](https://github.com/go-pg/pg) Integration
     - [x] Posts CRUD Endpoints
-        - [ ] Multi-error responses
     - [x] Users CRUD Endpoints
     - [x] Auth0 Integration
 - [ ] Admin
@@ -49,7 +48,7 @@ Under development. cwBLOG is a free and open-source content management system.
         - [ ] JS Validation
         - [ ] SEO configuration
         - [ ] SEO preview
-        - [ ] Visual content editor
+        - [x] Visual content editor
     - [ ] Page CRUD/API Integration
     - [x] Categories CRUD/API Integration
     - [x] Tags CRUD/API Integration

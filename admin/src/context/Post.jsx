@@ -20,6 +20,7 @@ export const PostProvider = ({history, children}) => {
         visibility: 'public',
         user_id: null,
         format: 'post',
+        options: {},
         published_at: null,
         updated_at: null,
         created_at: null,

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { usePost } from '../../context/Post'
-import { useTag } from '../../context/Tag'
-import { useCategory } from '../../context/Category'
+import React, {useEffect, useState} from 'react';
+import {usePost} from '../../context/Post'
+import {useTag} from '../../context/Tag'
+import {useCategory} from '../../context/Category'
 import Permalink from "./components/Permalink";
 import SettingsTab from "./components/SettingsTab"
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
@@ -23,6 +23,10 @@ import ConfirmDialog from "../../components/ConfirmDialog";
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
 import DeleteIcon from '@material-ui/icons/Delete';
+import WysiwygEditor from "../common/WysiwygEditor";
+import GridOffIcon from "@material-ui/icons/GridOff";
+import GridOnIcon from "@material-ui/icons/GridOn";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -49,22 +53,63 @@ const useStyles = makeStyles(theme => ({
         flexGrow: 1,
     },
     rightCol: {
-        width: '320px'
+        width: '320px',
+    },
+    settings: {
+        marginTop: theme.spacing(4),
     },
     tab: {
         minWidth: 0,
         width: 'auto'
+    },
+    editor: {
+        position: 'relative',
+        minHeight: '450px',
+        background: '#fff',
+        borderRadius: '8px',
+        webkitBoxShadow: '0 24px 24px -18px rgba(69,104,129,.33), 0 9px 45px 0 rgba(114,119,160,.12)',
+        boxShadow: '0 24px 24px -18px rgba(69,104,129,.33), 0 9px 45px 0 rgba(114,119,160,.12)',
+        marginTop: theme.spacing(1),
+        padding: theme.spacing(5),
+        webkitBoxSizing: 'border-box',
+        boxSizing: 'border-box',
+        '&.toggle-outline  .MuiInput-input': {
+            outline: '1px dashed rgba(170,170,170,0.7)',
+        }
+    },
+    titleInput: {
+        marginBottom: theme.spacing(3),
+        marginTop: 0,
+        '& .MuiInput-input':{
+            fontSize: '1.8rem',
+            padding: theme.spacing(1),
+            outlineOffset: '-2px',
+            '&:hover': {
+                outline: '1px solid #3b97e3',
+            },
+            '&:focus':{
+                outline: '3px solid #3b97e3 !important',
+            },
+        },
+        '& .MuiInput-underline:before, & .MuiInput-underline:after': {
+            display: 'none'
+        }
+    },
+    toggleOutline: {
+        position: 'absolute',
+        top: theme.spacing(1),
+        right: theme.spacing(1),
     }
 }));
 
-
-const PostForm = ({ match }) => {
-    const { post, loading, setLoading, newPost, savePost, getPost, deletePost, handleChange, handleUpdate } = usePost();
-    const { listTags } = useTag();
-    const { listCategories } = useCategory();
+const PostForm = ({match}) => {
+    const {post, loading, setLoading, newPost, savePost, getPost, deletePost, handleChange, handleUpdate} = usePost();
+    const {listTags} = useTag();
+    const {listCategories} = useCategory();
     const classes = useStyles();
     const anchorRef = React.useRef(null);
 
+    const [toggleOutline, setToggleOutline] = React.useState(false);
     const [toggleDropdown, setToggleDropdown] = React.useState(false);
     const [toggleSettings, setToggleSettings] = React.useState(true);
     const [settingsDropdown, setSettingsDropdown] = React.useState(false);
@@ -98,7 +143,7 @@ const PostForm = ({ match }) => {
 
         // eslint-disable-next-line
     }, [postId])
-    
+
     const handleToggleDropdown = () => {
         setToggleDropdown(toggle => !toggle);
     }
@@ -129,11 +174,11 @@ const PostForm = ({ match }) => {
         setToggleDropdown(false);
     }
 
-    const clearDropdown = () =>{
+    const clearDropdown = () => {
         setSettingsDropdown(false);
     }
 
-    if(loading){
+    if (loading) {
         return (
             <>loading...</>
         )
@@ -142,18 +187,20 @@ const PostForm = ({ match }) => {
     return (
         <>
             <div className={classes.actionBtn}>
-                { postId && (
-                    <IconButton className={classes.settingsBtn} aria-label="Delete" onClick={() => setConfirmDelete(postId)}>
-                        <DeleteIcon />
-                    </IconButton>                    
+                {postId && (
+                    <IconButton className={classes.settingsBtn} aria-label="Delete"
+                                onClick={() => setConfirmDelete(postId)}>
+                        <DeleteIcon/>
+                    </IconButton>
                 )}
                 <IconButton className={classes.settingsBtn} aria-label="Settings" onClick={handleToggleSettings}>
-                    <SettingsIcon />
+                    <SettingsIcon/>
                 </IconButton>
-                <Button variant="contained" className={classes.button} onClick={() => console.log(post)}>Preview</Button>
+                <Button variant="contained" className={classes.button}
+                        onClick={() => console.log(post)}>Preview</Button>
                 <ButtonGroup variant="contained" color="primary" aria-label="Publish">
                     <Button onClick={savePost}>
-                        {postId ? 'Update' : 'Publish Now' }
+                        {postId ? 'Update' : 'Publish Now'}
                     </Button>
                     <Button
                         ref={anchorRef}
@@ -164,11 +211,11 @@ const PostForm = ({ match }) => {
                         aria-haspopup="true"
                         onClick={handleToggleDropdown}
                     >
-                        <ArrowDropDownIcon />
+                        <ArrowDropDownIcon/>
                     </Button>
                 </ButtonGroup>
                 <Popper open={toggleDropdown} anchorEl={anchorRef.current} transition>
-                    {({ TransitionProps }) => (
+                    {({TransitionProps}) => (
                         <Fade {...TransitionProps} timeout={350}>
                             <Paper id="menu-list-grow">
                                 <ClickAwayListener onClickAway={handleClose}>
@@ -187,43 +234,51 @@ const PostForm = ({ match }) => {
                 </Popper>
             </div>
             <Typography variant="h4" gutterBottom>
-                {postId ? 'Edit' : 'Create' } Post
+                {postId ? 'Edit' : 'Create'} Post
             </Typography>
-            <Permalink />
             <Grid container spacing={3} className={classes.wrapper}>
                 <Grid item className={classes.leftCol}>
-                    <TextField
-                        id="post-title"
-                        label="Add post title"
-                        onChange={event => handleChange(event, 'title')}
-                        margin="normal"
-                        fullWidth
-                        variant="outlined"
-                        value={post.title ? post.title : ""}
-                        // error={true}
-                        // helperText="Post title is required."
-                    />
-                    <TextField
-                        id="post-content"
-                        label="Start writing your post content here"
-                        onChange={event => handleChange(event, 'content')}
-                        multiline
-                        rows="4"
-                        margin="normal"
-                        fullWidth
-                        variant="outlined"
-                        value={post.content ? post.content : ""}
-                    />
+                    <Permalink/>
+                    <div className={`${classes.editor} ${toggleOutline ? 'toggle-outline' : null}`}>
+                        <Tooltip title="View Components" placement="bottom">
+                            <IconButton aria-label="Toggle View Components"
+                                        className={classes.toggleOutline}
+                                        size="small"
+                                        onClick={() => setToggleOutline(!toggleOutline)}>
+                                {toggleOutline ? <GridOffIcon fontSize="small"/> : <GridOnIcon fontSize="small"/>}
+                            </IconButton>
+                        </Tooltip>
+                        <TextField
+                            id="post-title"
+                            placeholder="Add post title"
+                            onChange={event => handleChange(event, 'title')}
+                            margin="normal"
+                            fullWidth
+                            value={post.title ? post.title : ""}
+                            className={classes.titleInput}
+                            // error={true}
+                            // helperText="Post title is required."
+                        />
+
+                        <WysiwygEditor
+                            postId={post.id}
+                            toggleOutline={toggleOutline}
+                            value={post.content}
+                            onChange={value => handleUpdate('content', value)}/>
+                    </div>
                 </Grid>
 
                 {toggleSettings && (
                     <Grid item className={classes.rightCol}>
-                        <Paper square>
-                            <Tabs value={config.tab} indicatorColor="primary" textColor="primary" onChange={handleChangeTab}>
-                                <Tab label="Settings" className={classes.tab} />
-                                <Tab label="Block" className={classes.tab} />
+                        <Paper square className={classes.settings}>
+                            <Tabs value={config.tab} indicatorColor="primary" textColor="primary"
+                                  onChange={handleChangeTab}>
+                                <Tab label="Settings" className={classes.tab}/>
+                                <Tab label="Block" className={classes.tab}/>
                             </Tabs>
-                            {config.tab === 0 && <SettingsTab post={post} allTags={allTags} allCategories={allCategories} dropdown={settingsDropdown} clearDropdown={clearDropdown}/>}
+                            {config.tab === 0 &&
+                            <SettingsTab post={post} allTags={allTags} allCategories={allCategories}
+                                         dropdown={settingsDropdown} clearDropdown={clearDropdown}/>}
                             {config.tab === 1 && <div>Item Two</div>}
                             {config.tab === 2 && <div>Item Three</div>}
                         </Paper>
@@ -232,10 +287,10 @@ const PostForm = ({ match }) => {
             </Grid>
 
             <ConfirmDialog open={confirmDelete} onClose={() => setConfirmDelete(false)}
-                title="Are you sure you want to delete this post?"
-                content="The post will no longer be published and marked for deletion."
-                action="Delete"
-                callback={() => deletePost(confirmDelete)}
+                           title="Are you sure you want to delete this post?"
+                           content="The post will no longer be published and marked for deletion."
+                           action="Delete"
+                           callback={() => deletePost(confirmDelete)}
             ></ConfirmDialog>
         </>
     )

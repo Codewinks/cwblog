@@ -2,25 +2,26 @@ package models
 
 //Post model
 type Post struct {
-	Id            string     `json:"id"`
-	UserId        string     `json:"user_id"`
-	Title         string     `json:"title" binding:"required"`
-	Content       string     `json:"content"`
-	Excerpt       string     `json:"excerpt" binding:"max=255"`
-	Slug          string     `json:"slug" binding:"required,max=200"`
-	Password      string     `json:"password"`
-	Format        string     `json:"format" binding:"exists"`
-	Visibility    string     `json:"visibility" binding:"exists"`
-	Sort          int        `json:"sort"`
-	CommentStatus int        `json:"comment_status" binding:"exists"`
-	Status        string     `json:"status" binding:"exists"`
-	PublishedAt   string     `json:"published_at"`
-	CreatedAt     string     `json:"created_at"`
-	UpdatedAt     string     `json:"updated_at"`
-	DeletedAt     string     `json:"deleted_at,omitempty"`
-	Tags          []Tag      `json:"tags" pg:"many2many:posts_tags"`
-	Categories    []Category `json:"categories" pg:"many2many:posts_categories"`
-	User          User       `json:"user" pg:"rel:has-one"`
+	Id            string                 `json:"id"`
+	UserId        string                 `json:"user_id"`
+	Title         string                 `json:"title" binding:"required"`
+	Content       string                 `json:"content"`
+	Excerpt       string                 `json:"excerpt" binding:"max=255"`
+	Slug          string                 `json:"slug" binding:"required,max=200"`
+	Password      string                 `json:"password"`
+	Format        string                 `json:"format" binding:"exists"`
+	Options       map[string]interface{} `json:"options"`
+	Visibility    string                 `json:"visibility" binding:"exists"`
+	Sort          int                    `json:"sort"`
+	CommentStatus int                    `json:"comment_status" binding:"exists"`
+	Status        string                 `json:"status" binding:"exists"`
+	PublishedAt   string                 `json:"published_at"`
+	CreatedAt     string                 `json:"created_at"`
+	UpdatedAt     string                 `json:"updated_at"`
+	DeletedAt     string                 `json:"deleted_at,omitempty"`
+	Tags          []Tag                  `json:"tags" pg:"many2many:posts_tags"`
+	Categories    []Category             `json:"categories" pg:"many2many:posts_categories"`
+	User          User                   `json:"user" pg:"rel:has-one"`
 }
 
 //Role model

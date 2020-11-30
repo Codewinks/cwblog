@@ -52,6 +52,7 @@ export const Auth0Provider = ({
                     setCurrentUser(user);
                 } catch (e){
                     setIsAuthenticated(false);
+                    console.error(e);
                     showAlert(ALERT_ERROR, 'There was a problem logging you in, please try again later.');
                     auth0FromHook.logout()
                 }
