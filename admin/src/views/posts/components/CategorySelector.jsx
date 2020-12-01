@@ -15,7 +15,7 @@ const CategorySelector = () => {
 
         loadStuff();
 
-    }, [])
+    }, [listCategories])
 
     const mapCategoriesToTree = (categories, categoryList = []) => {
         if (!categories || !categories.length) {

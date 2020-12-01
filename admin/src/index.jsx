@@ -8,7 +8,6 @@ import {AppProvider} from './context/App';
 import config from "./auth_config.json";
 import history from './history';
 import {BrowserRouter, Route, Switch} from "react-router-dom";
-import PrivateRoute from "./components/PrivateRoute";
 import NoMatch from "./views/errors/NoMatch";
 
 // A function that routes the user to the right place
@@ -28,7 +27,7 @@ ReactDOM.render(
         <Auth0Provider
             domain={config.domain}
             client_id={config.clientId}
-            redirect_uri={window.location.origin}
+            redirect_uri={window.location.href}
             audience={config.audience}
             onRedirectCallback={onRedirectCallback}
         >

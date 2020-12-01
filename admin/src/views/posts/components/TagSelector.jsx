@@ -15,10 +15,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import TagForm from "../../tags/components/Form";
-import Autocomplete, {createFilterOptions} from '@material-ui/lab/Autocomplete';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import AddIcon from "@material-ui/icons/Add";
-
-const filter = createFilterOptions();
 
 const useStyles = makeStyles(theme => ({
     checkbox: {
@@ -44,7 +42,7 @@ const TagSelector = () => {
         }
 
         loadStuff();
-    }, [])
+    }, [listTags])
 
 
     const handleClose = () => {
