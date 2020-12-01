@@ -7,7 +7,9 @@ import {Auth0Provider} from "./context/Auth0";
 import {AppProvider} from './context/App';
 import config from "./auth_config.json";
 import history from './history';
-import {BrowserRouter} from "react-router-dom";
+import {BrowserRouter, Route, Switch} from "react-router-dom";
+import PrivateRoute from "./components/PrivateRoute";
+import NoMatch from "./views/errors/NoMatch";
 
 // A function that routes the user to the right place
 // after login
@@ -31,7 +33,10 @@ ReactDOM.render(
             onRedirectCallback={onRedirectCallback}
         >
             <BrowserRouter history={history}>
-                <App/>
+                <Switch>
+                    <Route path="/admin" component={App} />
+                    <Route component={NoMatch} />
+                </Switch>
             </BrowserRouter>
         </Auth0Provider>
     </AppProvider>,

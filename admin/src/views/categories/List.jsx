@@ -156,7 +156,7 @@ const CategoryList = ({match, history}) => {
 
                     <div className={classes.alignRight}>
                         { categoryId && (
-                            <Button onClick={() => history.push(`/categories`)} variant="contained" aria-label="Cancel" className={classes.button}>
+                            <Button onClick={() => history.push(`/admin/categories`)} variant="contained" aria-label="Cancel" className={classes.button}>
                                 Cancel
                             </Button>
                         )}

@@ -166,7 +166,7 @@ const InviteList = ({match, history}) => {
                     </FormControl>
 
                     { inviteId && (
-                        <Button onClick={() => history.push(`/invites`)} variant="contained" aria-label="Cancel" className={classes.button}>
+                        <Button onClick={() => history.push(`/admin/invites`)} variant="contained" aria-label="Cancel" className={classes.button}>
                             Cancel
                         </Button>
                     )}

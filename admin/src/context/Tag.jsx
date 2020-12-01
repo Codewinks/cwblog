@@ -72,7 +72,7 @@ export const TagProvider = ({ history, children }) => {
             setTag(emptyTag)
 
             if (history)
-                history.push(`/tags`)
+                history.push(`/admin/tags`)
 
             await listTags()
             

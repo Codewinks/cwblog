@@ -81,7 +81,7 @@ const TagForm = ({match, history, withCancel, onSuccess}) => {
             />
             <div className={classes.alignRight}>
                 { tagId && (
-                <Button onClick={() => history.push(`/tags`)} variant="contained" aria-label="Cancel" className={classes.button}>
+                <Button onClick={() => history.push(`/admin/tags`)} variant="contained" aria-label="Cancel" className={classes.button}>
                     Cancel
                 </Button>
                 )}

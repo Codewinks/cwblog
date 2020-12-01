@@ -83,7 +83,7 @@ export const PostProvider = ({history, children}) => {
             const data = await request('get', `/v1/posts/${postId}`)
             handlePost(data);
         } catch (error) {
-            history.push(`/posts`)
+            history.push(`/admin/posts`)
             if (error.status_code === 404) {
                 showAlert('error', `Unable to find post with the ID: ${postId}`)
             } else {
@@ -103,7 +103,7 @@ export const PostProvider = ({history, children}) => {
             handlePost(data);
 
             if (!post.id) {
-                history.push(`/posts/${data.id}`)
+                history.push(`/admin/posts/${data.id}`)
             }
 
             showAlert('success', `Post successfully ${post.id ? 'saved' : 'created'}.`, 5000)
@@ -122,7 +122,7 @@ export const PostProvider = ({history, children}) => {
 
             setPost({...emptyPost});
             await listPosts()
-            history.push(`/posts`)
+            history.push(`/admin/posts`)
             showAlert('success', `Post successfully deleted.`, 5000)
         } catch (error) {
             showAlert('error', error.message)

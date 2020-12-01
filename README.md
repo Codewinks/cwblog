@@ -44,12 +44,14 @@ Under development. cwBLOG is a free and open-source content management system.
         - [x] Error handler
         - [x] Choose category/tag from create/edit post
         - [x] Add new tags from create/edit post
+        - [ ] Content versioning
         - [ ] Add Pagination
         - [ ] JS Validation
         - [ ] SEO configuration
         - [ ] SEO preview
         - [x] Visual content editor
     - [ ] Page CRUD/API Integration
+        - [ ] Visual page builder
     - [x] Categories CRUD/API Integration
     - [x] Tags CRUD/API Integration
     - [ ] User CRUD/API Integration (Auth0 Integration)

@@ -65,7 +65,7 @@ export const UserProvider = ({history, children}) => {
             const data = await request('get', `/v1/users/${userId}`)
             handleUser(data);
         } catch (error) {
-            history.push(`/users`)
+            history.push(`/admin/users`)
             if (error.status_code === 404) {
                 showAlert('error', `Unable to find user with the ID: ${userId}`)
             } else {
@@ -85,7 +85,7 @@ export const UserProvider = ({history, children}) => {
             handleUser(data);
 
             if (!user.id) {
-                history.push(`/users/${data.id}`)
+                history.push(`/admin/users/${data.id}`)
             }
 
             showAlert('success', `User successfully ${user.id ? 'saved' : 'created'}.`, 5000)
@@ -103,7 +103,7 @@ export const UserProvider = ({history, children}) => {
 
             setUser({...emptyUser});
             await listUsers()
-            history.push(`/users`)
+            history.push(`/admin/users`)
             showAlert('success', `User successfully deleted.`, 5000)
         } catch (error) {
             showAlert('error', error.message)
