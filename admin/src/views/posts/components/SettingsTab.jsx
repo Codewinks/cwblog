@@ -117,11 +117,6 @@ const SettingsTab = props => {
 
     const handlePublishedAtChange = (v) => {
         setPublishedAt(v);
-
-        if (v) {
-            v = dateFns.format(v, 'MMM d, yyyy h:mma');
-        }
-
         handleUpdate('published_at', v);
 
         if(dropdown === 'publish_on'){
@@ -138,6 +133,17 @@ const SettingsTab = props => {
             setDropdown(props.dropdown);
         }
     }, [props.dropdown])
+
+    const formatDate = (date) => {
+        let v = date;
+        if(date instanceof Date){
+            v = dateFns.format(date, 'MMM d, yyyy h:mma')
+        }else if(typeof date === 'string'){
+            v= dateFns.format(parseISO(post.published_at), 'MMM d, yyyy h:mma')
+        }
+
+        return v
+    }
 
     return (
         <List
@@ -249,7 +255,8 @@ const SettingsTab = props => {
                         <div className={classes.publishedAtContainer}>
                             <Chip
                                 size="small"
-                                label={post.published_at ? dateFns.format(parseISO(post.published_at), 'MMM d, yyyy h:mma') : 'Immediately'}
+                                // label={post.published_at ? post.published_at : 'Immediately'}
+                                label={post.published_at ? formatDate(post.published_at) : 'Immediately'}
                                 className={classes.chipDropdown}
                                 icon={<EditIcon className={classes.chipIcon}/>}
                                 onClick={event => handleDropdown(event, 'published_at')}
