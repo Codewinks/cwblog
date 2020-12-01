@@ -1,7 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {usePost} from '../../context/Post'
-import {useTag} from '../../context/Tag'
-import {useCategory} from '../../context/Category'
 import Permalink from "./components/Permalink";
 import SettingsTab from "./components/SettingsTab"
 import {makeStyles} from '@material-ui/core/styles';
@@ -65,29 +63,23 @@ const useStyles = makeStyles(theme => ({
     editor: {
         position: 'relative',
         minHeight: '450px',
-        background: '#fff',
-        borderRadius: '8px',
-        webkitBoxShadow: '0 24px 24px -18px rgba(69,104,129,.33), 0 9px 45px 0 rgba(114,119,160,.12)',
-        boxShadow: '0 24px 24px -18px rgba(69,104,129,.33), 0 9px 45px 0 rgba(114,119,160,.12)',
         marginTop: theme.spacing(1),
         padding: theme.spacing(5),
-        webkitBoxSizing: 'border-box',
-        boxSizing: 'border-box',
-        '&.toggle-outline  .MuiInput-input': {
+        '&.toggle-outline .MuiInput-input': {
             outline: '1px dashed rgba(170,170,170,0.7)',
         }
     },
     titleInput: {
         marginBottom: theme.spacing(3),
         marginTop: 0,
-        '& .MuiInput-input':{
+        '& .MuiInput-input': {
             fontSize: '1.8rem',
             padding: theme.spacing(1),
             outlineOffset: '-2px',
             '&:hover': {
                 outline: '1px solid #3b97e3',
             },
-            '&:focus':{
+            '&:focus': {
                 outline: '3px solid #3b97e3 !important',
             },
         },
@@ -104,8 +96,6 @@ const useStyles = makeStyles(theme => ({
 
 const PostForm = ({match}) => {
     const {post, loading, setLoading, newPost, savePost, getPost, deletePost, handleChange, handleUpdate} = usePost();
-    const {listTags} = useTag();
-    const {listCategories} = useCategory();
     const classes = useStyles();
     const anchorRef = React.useRef(null);
 
@@ -117,18 +107,9 @@ const PostForm = ({match}) => {
     const [config, setConfig] = useState({
         tab: 0
     })
-    const [allTags, setAllTags] = React.useState([]);
-    const [allCategories, setAllCategories] = React.useState([]);
     const postId = match.params.postId;
 
     useEffect(() => {
-        async function loadStuff() {
-            setAllTags(await listTags())
-            setAllCategories(await listCategories(true))
-        }
-
-        loadStuff();
-
         if (!postId) {
             newPost();
             setLoading(false);
@@ -174,6 +155,11 @@ const PostForm = ({match}) => {
         setToggleDropdown(false);
     }
 
+    const handlePublishOn = () => {
+        setSettingsDropdown('publish_on');
+        setToggleDropdown(false);
+    }
+
     const clearDropdown = () => {
         setSettingsDropdown(false);
     }
@@ -199,7 +185,7 @@ const PostForm = ({match}) => {
                 <Button variant="contained" className={classes.button}
                         onClick={() => console.log(post)}>Preview</Button>
                 <ButtonGroup variant="contained" color="primary" aria-label="Publish">
-                    <Button onClick={savePost}>
+                    <Button onClick={() => savePost()}>
                         {postId ? 'Update' : 'Publish Now'}
                     </Button>
                     <Button
@@ -223,7 +209,7 @@ const PostForm = ({match}) => {
                                         <MenuItem onClick={handleSaveDraft}>
                                             Save Draft
                                         </MenuItem>
-                                        <MenuItem onClick={() => setSettingsDropdown('publish_on')}>
+                                        <MenuItem onClick={handlePublishOn}>
                                             Publish on...
                                         </MenuItem>
                                     </MenuList>
@@ -239,7 +225,7 @@ const PostForm = ({match}) => {
             <Grid container spacing={3} className={classes.wrapper}>
                 <Grid item className={classes.leftCol}>
                     <Permalink/>
-                    <div className={`${classes.editor} ${toggleOutline ? 'toggle-outline' : null}`}>
+                    <Paper className={`${classes.editor} ${toggleOutline ? 'toggle-outline' : null}`}>
                         <Tooltip title="View Components" placement="bottom">
                             <IconButton aria-label="Toggle View Components"
                                         className={classes.toggleOutline}
@@ -265,20 +251,20 @@ const PostForm = ({match}) => {
                             toggleOutline={toggleOutline}
                             value={post.content}
                             onChange={value => handleUpdate('content', value)}/>
-                    </div>
+                    </Paper>
                 </Grid>
 
                 {toggleSettings && (
                     <Grid item className={classes.rightCol}>
-                        <Paper square className={classes.settings}>
+                        <Paper className={classes.settings}>
                             <Tabs value={config.tab} indicatorColor="primary" textColor="primary"
                                   onChange={handleChangeTab}>
                                 <Tab label="Settings" className={classes.tab}/>
                                 <Tab label="Block" className={classes.tab}/>
                             </Tabs>
-                            {config.tab === 0 &&
-                            <SettingsTab post={post} allTags={allTags} allCategories={allCategories}
-                                         dropdown={settingsDropdown} clearDropdown={clearDropdown}/>}
+                            {config.tab === 0 && <SettingsTab dropdown={settingsDropdown}
+                                                              clearDropdown={clearDropdown}
+                                                              savePost={savePost}/>}
                             {config.tab === 1 && <div>Item Two</div>}
                             {config.tab === 2 && <div>Item Three</div>}
                         </Paper>

@@ -47,7 +47,10 @@ const useStyles = makeStyles(theme => ({
     },
     button:{
         marginTop: theme.spacing(1),
-        marginRight: theme.spacing(2),
+        marginLeft: theme.spacing(2),
+    },
+    alignRight:{
+        textAlign: 'right'
     }
 }));
 
@@ -150,14 +153,17 @@ const CategoryList = ({match, history}) => {
                         variant="outlined"
                         value={category.description ? category.description : ""}
                     />
-                    { categoryId && (
-                    <Button onClick={() => history.push(`/categories`)} variant="contained" aria-label="Cancel" className={classes.button}>
-                        Cancel
-                    </Button>
-                    )}
-                    <Button onClick={saveCategory} variant="contained" color="primary" aria-label={categoryId ? 'Update' : 'Add New Category'} className={classes.button}>
-                        {categoryId ? 'Update' : 'Add New Category'}
-                    </Button>
+
+                    <div className={classes.alignRight}>
+                        { categoryId && (
+                            <Button onClick={() => history.push(`/categories`)} variant="contained" aria-label="Cancel" className={classes.button}>
+                                Cancel
+                            </Button>
+                        )}
+                        <Button onClick={saveCategory} variant="contained" color="primary" aria-label={categoryId ? 'Update' : 'Add New Category'} className={classes.button}>
+                            {categoryId ? 'Update' : 'Add New Category'}
+                        </Button>
+                    </div>
                 </Grid>
                 <Grid item className={classes.rightCol}>
                     { !categoryId && (

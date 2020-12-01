@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {usePost} from '../../../context/Post'
 
 import DateFnsUtils from "@date-io/date-fns";
+import { parseISO } from 'date-fns';
 import {DateTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 
 import {makeStyles} from '@material-ui/core/styles';
@@ -20,29 +21,15 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import EditIcon from '@material-ui/icons/Edit';
 
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-
 import {ClickAwayListener, Fade, Paper, Popper, Radio} from '@material-ui/core';
-import Checkbox from '@material-ui/core/Checkbox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import {default as highlightParse} from 'autosuggest-highlight/parse';
-import {default as highlightMatch} from 'autosuggest-highlight/match';
-import DropdownTree from './DropdownTree';
+import CategorySelector from "./CategorySelector";
+import TagSelector from "./TagSelector";
 
 const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
         maxWidth: 360,
         backgroundColor: theme.palette.background.paper,
-    },
-    checkbox: {
-      padding: theme.spacing(0.25)
-    },
-    checkboxLabel: {
-        fontSize: '0.875rem',
-        padding: '0 2px'
     },
     listIcon: {
         minWidth: '35px'
@@ -70,11 +57,6 @@ const useStyles = makeStyles(theme => ({
     },
     dropdown: {
         maxWidth: '300px'
-    },
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-        maxWidth: 300,
     },
     publishedAtContainer: {
         position: 'relative',
@@ -141,29 +123,15 @@ const SettingsTab = props => {
         }
 
         handleUpdate('published_at', v);
-    }
 
-    const mapCategoriesToTree = (categories, categoryList=[]) => {
-        if (!categories || !categories.length){
-            return categoryList;
+        if(dropdown === 'publish_on'){
+            props.savePost({status: 'published', published_at: v})
         }
-
-        categories.forEach(category => {
-            let children = {}
-
-            if(category.sub_categories && category.sub_categories.length){
-                children.children = mapCategoriesToTree(category.sub_categories)
-            }
-
-            categoryList.push({
-                value: category.id,
-                label: category.name,
-                ...children
-            });
-        })
-
-        return categoryList;
     }
+
+    useEffect(() => {
+        setPublishedAt(post.published_at);
+    }, [post.published_at])
 
     useEffect(() => {
         if (props.dropdown) {
@@ -281,7 +249,7 @@ const SettingsTab = props => {
                         <div className={classes.publishedAtContainer}>
                             <Chip
                                 size="small"
-                                label={post.published_at ? String(post.published_at) : 'Immediately'}
+                                label={post.published_at ? dateFns.format(parseISO(post.published_at), 'MMM d, yyyy h:mma') : 'Immediately'}
                                 className={classes.chipDropdown}
                                 icon={<EditIcon className={classes.chipIcon}/>}
                                 onClick={event => handleDropdown(event, 'published_at')}
@@ -314,27 +282,7 @@ const SettingsTab = props => {
 
             <Collapse in={isMenuOpen('categories')} timeout="auto" unmountOnExit>
                 <div className={classes.inputPadding}>
-                    <DropdownTree data={mapCategoriesToTree(props.allCategories.filter(c => !c.depth))}
-                                  checked={post.categories ? post.categories.map(c => c.id) : []}
-                                  expanded={() => {
-                                      //TODO: Clean this up.... or figure out a new way to expand selected child categories (ideally force parents to be checked)
-                                      // This only does 1 level so it doesn't work.
-                                      const checked = post.categories ? post.categories.map(c => c.id) : [];
-                                      let expanded = [];
-                                      props.allCategories.forEach(cat => {
-                                          if (checked.includes(cat.id)) {
-                                              expanded.push(cat.id);
-                                              if(cat.parent_id){
-                                                  expanded.push(cat.parent_id);
-                                              }
-                                          }
-                                      })
-
-                                      return expanded;
-                                  }}
-                                  onChange={(categories) => handleUpdate('categories', props.allCategories.filter(c => categories.includes(c.id)))}
-                                  filterBarPlaceholder="Search categories..." placeholder="Choose categories..."
-                                  noRecords="No categories found" />
+                    <CategorySelector/>
                 </div>
             </Collapse>
 
@@ -344,42 +292,7 @@ const SettingsTab = props => {
             </ListItem>
             <Collapse in={isMenuOpen('tags')} timeout="auto" unmountOnExit>
                 <div className={classes.inputPadding}>
-                    <Autocomplete
-                        multiple
-                        size="small"
-                        disableCloseOnSelect
-                        options={props.allTags ? props.allTags : []}
-                        getOptionLabel={(tag) => tag.name}
-                        getOptionSelected={(tag) => post.tags.find(t => t.id === tag.id)}
-                        value={post.tags ? post.tags : []}
-                        renderOption={(tag, {inputValue, selected}) => {
-                            const matches = highlightMatch(tag.name, inputValue);
-                            const parts = highlightParse(tag.name, matches);
-
-                            return (
-                                <>
-                                    <Checkbox
-                                        icon={<CheckBoxOutlineBlankIcon fontSize="small"/>}
-                                        checkedIcon={<CheckBoxIcon fontSize="small"/>}
-                                        checked={selected}
-                                        color="primary"
-                                        size="small"
-                                        className={classes.checkbox}
-                                    />
-                                    {parts.map((part, index) => (
-                                        <span key={index} className={classes.checkboxLabel} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-                                            {part.text}
-                                        </span>
-                                    ))}
-                                </>
-                            )
-                        }}
-                        renderInput={(params) => (
-                            <TextField {...params} variant="outlined" label="Add Tags" placeholder="Choose tags..."/>
-                        )}
-                        onChange={(event, selected) => handleUpdate('tags', selected)}
-                        noOptionsText="No tags found."
-                    />
+                    <TagSelector/>
                 </div>
             </Collapse>
         </List>

@@ -44,6 +44,8 @@ const useStyles = makeStyles(theme => ({
 
 const WysiwygEditor = ({ postId, toggleOutline, value, onChange }) => {
     const classes = useStyles();
+    // TODO: remove eslint disable when editorjs supports .destroy() (next release)
+    // eslint-disable-next-line
     const [loaded, setLoaded] = useState(null);
 
     useEffect(() => {
@@ -55,6 +57,7 @@ const WysiwygEditor = ({ postId, toggleOutline, value, onChange }) => {
         const editor = new EditorJS({
             holder: 'editor',
             // logLevel: 'ERROR',
+            logLevel: 'WARN',
             data: value ? JSON.parse(value) : {},
             // data: {},
             onReady: () => {

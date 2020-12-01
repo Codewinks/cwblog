@@ -64,16 +64,22 @@ export const TagProvider = ({ history, children }) => {
         }
     }
 
-    const saveTag = async () => {
+    const saveTag = async (callback) => {
         setLoading(true)
         try {
             await request(tag.id ? 'put' : 'post', `/v1/tags/${tag.id ? tag.id : ''}`, {...tag} )
             
             setTag(emptyTag)
-            history.push(`/tags`)
+
+            if (history)
+                history.push(`/tags`)
+
             await listTags()
             
             showAlert(ALERT_SUCCESS, `Tag ${tag.id ? 'saved' : 'created'}.`, 5000)
+            if (callback && typeof callback === "function"){
+                callback()
+            }
         } catch (error) {
             showAlert(ALERT_ERROR, error.message)
         } finally {

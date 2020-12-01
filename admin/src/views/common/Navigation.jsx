@@ -114,6 +114,9 @@ const useStyles = makeStyles(theme => ({
         padding: '0 8px',
         ...theme.mixins.toolbar,
     },
+    toolbarGutters: {
+      padding: theme.spacing(0, 2)
+    },
     title: {
         display: 'none',
         [theme.breakpoints.up('sm')]: {
@@ -214,7 +217,7 @@ const Navigation = () => {
     return (
         <>
             <AppBar position="fixed" className={clsx(classes.appBar)}>
-                <Toolbar>
+                <Toolbar disableGutters={true} className={classes.toolbarGutters}>
                     <IconButton color="inherit" aria-label="Toggle Navigation" onClick={toggleDrawer} edge="start" className={clsx(classes.menuButton)}>
                         {!open ? <MenuIcon /> : theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                     </IconButton>

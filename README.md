@@ -37,13 +37,13 @@ Under development. cwBLOG is a free and open-source content management system.
         - [x] Register – Create user on API
         - [x] Solution for disabled registration/signup
         - [x] Invite – Invite user/admin
-    - [ ] Create Login Splash Page
+    - [x] Create Login Splash Page
     - [x] API/Auth0 Authentication
     - [ ] Dashboard with statistics
     - [x] Post CRUD/API Integration
         - [x] Error handler
         - [x] Choose category/tag from create/edit post
-        - [ ] New category/tag from create/edit post
+        - [x] Add new tags from create/edit post
         - [ ] Add Pagination
         - [ ] JS Validation
         - [ ] SEO configuration

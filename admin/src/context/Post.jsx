@@ -94,11 +94,11 @@ export const PostProvider = ({history, children}) => {
         }
     }
 
-    const savePost = async () => {
+    const savePost = async (update) => {
         setLoading(true);
         try {
-            console.log('savePOst', post)
-            const data = await request(post.id ? 'put' : 'post', `/v1/posts/${post.id ? post.id : ''}`, {...post})
+            console.log('savePOst', {...post, ...update})
+            const data = await request(post.id ? 'put' : 'post', `/v1/posts/${post.id ? post.id : ''}`, {...post, ...update})
             console.log('after savePOst', data)
             handlePost(data);
 
@@ -108,6 +108,7 @@ export const PostProvider = ({history, children}) => {
 
             showAlert('success', `Post successfully ${post.id ? 'saved' : 'created'}.`, 5000)
         } catch (error) {
+            console.error(error)
             showAlert('error', error.message)
         } finally {
             setLoading(false);

@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { useTag } from '../../context/Tag'
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -11,11 +10,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import ConfirmDialog from "../../components/ConfirmDialog";
-
 import CircularProgress from '@material-ui/core/CircularProgress';
+import TagForm from "./components/Form";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -43,14 +41,10 @@ const useStyles = makeStyles(theme => ({
     rightCol: {
         flexGrow: 1
     },
-    button:{
-        marginTop: theme.spacing(1),
-        marginRight: theme.spacing(2),
-    }
 }));
 
 const TagList = ({match, history}) => {
-    const { tag, tags, loading, listTags, getTag, newTag, saveTag, deleteTag, handleChange } = useTag();
+    const { tags, loading, listTags, getTag, newTag, deleteTag } = useTag();
     const [confirmDelete, setConfirmDelete] = React.useState(false);
     const classes = useStyles();
     const tagId = match.params.tagId;
@@ -81,48 +75,7 @@ const TagList = ({match, history}) => {
             </Typography>
             <Grid container spacing={4} className={classes.wrapper}>
                 <Grid item className={classes.leftCol}>
-                    <Typography variant="h6">
-                        {tagId ? 'Edit' : 'Add New' } Tag
-                    </Typography>
-                    <TextField id="tag-name"
-                            label="Name"
-                            onChange={event => handleChange(event, 'name')}
-                            margin="normal"
-                            fullWidth
-                            variant="outlined"
-                            value={tag.name ? tag.name : ""}
-                            // error={true}
-                            // helperText="Post name is required."
-                        />
-                    <TextField id="tag-slug"
-                            label="Slug"
-                            onChange={event => handleChange(event, 'slug')}
-                            margin="normal"
-                            fullWidth
-                            variant="outlined"
-                            value={tag.slug ? tag.slug : ""}
-                            // error={true}
-                            // helperText="Post slug is required."
-                        />
-                    <TextField
-                        id="tag-description"
-                        label="Description"
-                        onChange={event => handleChange(event, 'description')}
-                        multiline
-                        rows="4"
-                        margin="normal"
-                        fullWidth
-                        variant="outlined"
-                        value={tag.description ? tag.description : ""}
-                    />
-                    { tagId && (
-                    <Button onClick={() => history.push(`/tags`)} variant="contained" aria-label="Cancel" className={classes.button}>
-                        Cancel
-                    </Button>
-                    )}
-                    <Button onClick={saveTag} variant="contained" color="primary" aria-label={tagId ? 'Update' : 'Add New Tag'} className={classes.button}>
-                        {tagId ? 'Update' : 'Add New Tag'}
-                    </Button>
+                    <TagForm match={match} history={history}/>
                 </Grid>
                 <Grid item className={classes.rightCol}>
                     { !tagId && (
