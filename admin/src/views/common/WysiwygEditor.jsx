@@ -1,163 +1,175 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import EditorJS from '@editorjs/editorjs';
-import List from '@editorjs/list';
-import RawTool from '@editorjs/raw';
-import Table from '@editorjs/table';
-import Checklist from '@editorjs/checklist';
-import LinkTool from '@editorjs/link';
-import ImageTool from '@editorjs/image';
-import Embed from '@editorjs/embed';
-import Quote from '@editorjs/quote';
-import InlineCode from '@editorjs/inline-code';
-import Underline from '@editorjs/underline';
-import CodeTool from '@editorjs/code';
-import Delimiter from '@editorjs/delimiter';
-
-// import Header from 'editorjs-header-with-anchor';
-import Header from './editorjs/Header';
-import Paragraph from 'editorjs-paragraph-with-alignment';
-import DragDrop from 'editorjs-drag-drop';
-import Undo from 'editorjs-undo';
+import grapesjs from 'grapesjs';
+import 'grapesjs-preset-webpage';
+import 'grapesjs/dist/css/grapes.min.css';
+import 'grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css';
+import componentCodeEditor from 'grapesjs-component-code-editor';
+import parserPostCSS from 'grapesjs-parser-postcss';
+import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.css';
+import Backbone from 'backbone';
+const $ = Backbone.$;
 
 const useStyles = makeStyles(theme => ({
     editor: {
-        '& .ce-block__content, & .ce-toolbar__content': {
-            maxWidth: '100%',
+        '& .gjs-cv-canvas, & .gjs-pn-views-container': {
+            transition: 'width 250ms ease-in-out'
         },
-        '&.toggle-outline .ce-block .ce-block__content': {
-            outline: '1px dashed rgba(170,170,170,0.7)',
+        '&:not(:hover) .gjs-cv-canvas': {
+            width: '100%!important',
         },
-        '& .ce-block .ce-block__content': {
-            padding: theme.spacing(0, 1),
-            outlineOffset: '-2px',
+        '&:not(:hover) .gjs-pn-views-container': {
+            width: '0%!important',
         },
-        '& .ce-block:hover .ce-block__content': {
-            outline: '1px solid #3b97e3',
+        '& .gjs-pn-views': {
+            border: '0'
         },
-        '& .ce-block.ce-block--focused':{
-            outline: '3px solid #3b97e3 !important',
-            outlineOffset: '-3px',
+        '& .row': {
+            display: 'flex',
+            padding: 0,
+            width: 'auto',
         }
-    },
+    }
 }));
 
-const WysiwygEditor = ({ postId, toggleOutline, value, onChange }) => {
+const WysiwygEditor = ({postId, html, css, handleUpdate}) => {
     const classes = useStyles();
-    // TODO: remove eslint disable when editorjs supports .destroy() (next release)
-    // eslint-disable-next-line
-    const [loaded, setLoaded] = useState(null);
 
     useEffect(() => {
-        const ejs = document.querySelector(`#editor .codex-editor`)
-        if (ejs)
-            ejs.remove();
-        // loaded.destroy();
-
-        const editor = new EditorJS({
-            holder: 'editor',
-            // logLevel: 'ERROR',
-            logLevel: 'WARN',
-            data: value ? JSON.parse(value) : {},
-            // data: {},
-            onReady: () => {
-                try {
-                    new Undo({editor});
-                    new DragDrop(editor);
-                    setLoaded(editor);
-                }catch(err){
-                    console.error(err);
+        const editor = grapesjs.init({
+            container: '#editor',
+            showOffsets: true,
+            components: html,
+            style: css,
+            storageManager: { type: null },
+            protectedCss: '',
+            plugins: [
+                'gjs-preset-webpage',
+                componentCodeEditor,
+                parserPostCSS,
+            ],
+            pluginsOpts: {
+                'gjs-preset-webpage': {
+                    navbarOpts: false,
+                },
+                'grapesjs-component-code-editor': {
+                    /* Test here your options  */
                 }
             },
-            onChange: () => {
-                triggerOnChange(editor);
-            },
-            placeholder: 'Start writing your post content here...',
-            tools: {
-                underline: Underline,
-                header: {
-                    class: Header,
-                    inlineToolbar: ['link']
-                },
-                linkTool: {
-                    class: LinkTool,
-                    config: {
-                        endpoint: 'http://localhost:8008/fetchUrl', // Your backend endpoint for url data fetching
-                    }
-                },
-                image: {
-                    class: ImageTool,
-                    config: {
-                        endpoints: {
-                            byFile: 'http://localhost:8008/uploadFile', // Your backend file uploader endpoint
-                            byUrl: 'http://localhost:8008/fetchUrl', // Your endpoint that provides uploading by Url
-                        }
-                    }
-                },
-                list: {
-                    class: List,
-                    inlineToolbar: true
-                },
-                checklist: {
-                    class: Checklist,
-                    inlineToolbar: true,
-                },
-                table: {
-                    class: Table,
-                    inlineToolbar: true,
-                    config: {
-                        rows: 2,
-                        cols: 3,
-                    },
-                },
-                quote: {
-                    class: Quote,
-                    inlineToolbar: true,
-                    // shortcut: 'CMD+SHIFT+O',
-                    config: {
-                        quotePlaceholder: 'Enter a quote',
-                        captionPlaceholder: 'Quote\'s author',
-                    },
-                },
-                delimiter: Delimiter,
-                code: CodeTool,
-                raw: RawTool,
-                embed: {
-                    class: Embed,
-                    config: {
-                        services: {
-                            youtube: true,
-                            coub: true
-                        }
-                    }
-                },
-                inlineCode: {
-                    class: InlineCode,
-                    shortcut: 'CMD+SHIFT+M',
-                },
-                paragraph: {
-                    class: Paragraph,
-                    inlineToolbar: true,
-                },
+            canvas: {
+                styles: [
+                    'https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css'
+                ],
+                scripts: [
+                    'https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js'
+                ],
             }
         });
 
+        const pn = editor.Panels
+        const panelViews = pn.addPanel({
+            id: "views"
+        });
+
+        panelViews.get("buttons").add([
+            {
+                attributes: {
+                    title: "Open Code"
+                },
+                className: "fa fa-file-code-o",
+                command: "open-code",
+                togglable: true,
+                id: "open-code"
+            }
+        ]);
+
+        const cmdm = editor.Commands
+        cmdm.add('edit-code', {
+            run: function run(editor, sender) {
+                const _this = this;
+                sender && sender.set && sender.set('active', 0);
+                const config = editor.getConfig();
+                const modal = editor.Modal;
+                const pfx = config.stylePrefix;
+                this.cm = editor.CodeManager || null;
+
+                if (!this.$editors) {
+                    const oHtmlEd = this.buildEditor('htmlmixed', 'hopscotch', 'HTML');
+                    const oCsslEd = this.buildEditor('css', 'hopscotch', 'CSS');
+                    this.htmlEditor = oHtmlEd.el;
+                    this.cssEditor = oCsslEd.el;
+                    const $editors = $("<div class=\"".concat(pfx, "edit-code-dl\"></div>"));
+                    const btnEdit = document.createElement('button');
+                    btnEdit.innerHTML = 'Save'
+                    btnEdit.className =  `${pfx}btn-prim`
+                    btnEdit.setAttribute('style', 'margin-top: 10px');
+                    btnEdit.onclick = async function() {
+                        const html = _this.htmlEditor.editor.getValue()
+                        const css = _this.cssEditor.editor.getValue()
+                        console.log('save html', html)
+                        editor.setComponents(html.trim())
+                        editor.setStyle(css)
+                        handleUpdate(['html', 'css'], [html.trim(), css.trim()]);
+                        modal.close()
+                    }
+
+                    $editors.append(oHtmlEd.$el).append(oCsslEd.$el).append(btnEdit);
+                    this.$editors = $editors;
+
+                }
+
+                modal.open({
+                    title: 'Edit Code',
+                    content: this.$editors
+                }).getModel().once('change:open', function () {
+                    return editor.stopCommand(_this.id);
+                });
+
+                this.htmlEditor.setContent(editor.getHtml());
+                this.cssEditor.setContent(editor.getCss());
+            },
+            buildEditor: function buildEditor(codeName, theme, label) {
+                const input = document.createElement('textarea');
+                !this.codeMirror && (this.codeMirror = this.cm.getViewer('CodeMirror'));
+                const el = this.codeMirror.clone().set({
+                    label: label,
+                    codeName: codeName,
+                    theme: theme,
+                    input: input,
+                    readOnly: 0,
+                    lineWrapping: 1,
+                    // indentUnit: 3,
+                    // indentWithTabs: true
+                });
+                const $el = new this.cm.EditorView({
+                    model: el,
+                    config: this.cm.getConfig()
+                }).render().$el;
+                el.init(input);
+                return {
+                    el: el,
+                    $el: $el
+                };
+            }
+        })
+
+        pn.addButton('options',
+            [
+                {
+                    id: 'edit',
+                    className: 'fa fa-edit',
+                    command: 'edit-code',
+                    attributes: {
+                        title: 'Edit Code'
+                    }
+                }
+            ]
+        )
         // eslint-disable-next-line
     }, [postId])
 
-    const triggerOnChange = (editor) => {
-        editor.save().then((savedData) =>{
-            if( onChange && typeof onChange === "function"){
-                onChange(JSON.stringify(savedData))
-            }
-            console.log('[DataChanged]', savedData);
-        }).catch((error) =>{
-            console.log("[EditorJS Error]", error)
-        })
-    }
-
     return (
-        <div id="editor" className={`${classes.editor} ${toggleOutline ? 'toggle-outline' : null}`}/>
+        <div id="editor" className={classes.editor}/>
     )
 };
 

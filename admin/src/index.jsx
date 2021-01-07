@@ -2,12 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import AppPreview from './AppPreview';
 import * as serviceWorker from './serviceWorker';
 import {Auth0Provider} from "./context/Auth0";
 import {AppProvider} from './context/App';
 import config from "./auth_config.json";
 import history from './history';
-import {BrowserRouter, Route, Switch} from "react-router-dom";
+import {Router, Route, Switch} from "react-router-dom";
 import NoMatch from "./views/errors/NoMatch";
 
 // A function that routes the user to the right place
@@ -27,16 +28,17 @@ ReactDOM.render(
         <Auth0Provider
             domain={config.domain}
             client_id={config.clientId}
-            redirect_uri={window.location.href}
+            redirect_uri={window.location.origin}
             audience={config.audience}
             onRedirectCallback={onRedirectCallback}
         >
-            <BrowserRouter history={history}>
+            <Router history={history}>
                 <Switch>
-                    <Route path="/admin" component={App} />
+                    <Route path="/preview" component={AppPreview} />
+                    <Route path="/" component={App} />
                     <Route component={NoMatch} />
                 </Switch>
-            </BrowserRouter>
+            </Router>
         </Auth0Provider>
     </AppProvider>,
     document.getElementById("root")

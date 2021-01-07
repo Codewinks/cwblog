@@ -76,7 +76,7 @@ export const RoleProvider = ({ history, children }) => {
             await request(role.id ? 'put' : 'post', `/v1/roles/${role.id ? role.id : ''}`, {...role} )
             
             setRole(emptyRole)
-            history.push(`/admin/roles`)
+            history.push(`/roles`)
             await listRoles()
             
             showAlert(ALERT_SUCCESS, `Role ${role.id ? 'saved' : 'created'}.`, 5000)

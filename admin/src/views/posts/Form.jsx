@@ -22,9 +22,6 @@ import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
 import DeleteIcon from '@material-ui/icons/Delete';
 import WysiwygEditor from "../common/WysiwygEditor";
-import GridOffIcon from "@material-ui/icons/GridOff";
-import GridOnIcon from "@material-ui/icons/GridOn";
-import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -87,11 +84,6 @@ const useStyles = makeStyles(theme => ({
             display: 'none'
         }
     },
-    toggleOutline: {
-        position: 'absolute',
-        top: theme.spacing(1),
-        right: theme.spacing(1),
-    }
 }));
 
 const PostForm = ({match}) => {
@@ -99,7 +91,6 @@ const PostForm = ({match}) => {
     const classes = useStyles();
     const anchorRef = React.useRef(null);
 
-    const [toggleOutline, setToggleOutline] = React.useState(false);
     const [toggleDropdown, setToggleDropdown] = React.useState(false);
     const [toggleSettings, setToggleSettings] = React.useState(true);
     const [settingsDropdown, setSettingsDropdown] = React.useState(false);
@@ -109,11 +100,15 @@ const PostForm = ({match}) => {
     })
     const postId = match.params.postId;
 
+    const [didMount, setDidMount] = useState(false);
+
     useEffect(() => {
+        setDidMount(true);
         if (!postId) {
             newPost();
             setLoading(false);
-            return
+
+            return () => setDidMount(false);
         }
 
         async function fetchPost() {
@@ -122,8 +117,14 @@ const PostForm = ({match}) => {
 
         fetchPost();
 
+        return () => setDidMount(false);
+
         // eslint-disable-next-line
     }, [postId])
+
+    if(!didMount) {
+        return null;
+    }
 
     const handleToggleDropdown = () => {
         setToggleDropdown(toggle => !toggle);
@@ -225,15 +226,7 @@ const PostForm = ({match}) => {
             <Grid container spacing={3} className={classes.wrapper}>
                 <Grid item className={classes.leftCol}>
                     <Permalink/>
-                    <Paper className={`${classes.editor} ${toggleOutline ? 'toggle-outline' : null}`}>
-                        <Tooltip title="View Components" placement="bottom">
-                            <IconButton aria-label="Toggle View Components"
-                                        className={classes.toggleOutline}
-                                        size="small"
-                                        onClick={() => setToggleOutline(!toggleOutline)}>
-                                {toggleOutline ? <GridOffIcon fontSize="small"/> : <GridOnIcon fontSize="small"/>}
-                            </IconButton>
-                        </Tooltip>
+                    <Paper className={classes.editor}>
                         <TextField
                             id="post-title"
                             placeholder="Add post title"
@@ -248,9 +241,9 @@ const PostForm = ({match}) => {
 
                         <WysiwygEditor
                             postId={post.id}
-                            toggleOutline={toggleOutline}
-                            value={post.content}
-                            onChange={value => handleUpdate('content', value)}/>
+                            html={post.html}
+                            css={post.css}
+                            handleUpdate={handleUpdate}/>
                     </Paper>
                 </Grid>
 

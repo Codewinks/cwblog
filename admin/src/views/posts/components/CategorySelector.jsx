@@ -15,7 +15,8 @@ const CategorySelector = () => {
 
         loadStuff();
 
-    }, [listCategories])
+        // eslint-disable-next-line
+    }, [])
 
     const mapCategoriesToTree = (categories, categoryList = []) => {
         if (!categories || !categories.length) {

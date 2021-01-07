@@ -42,8 +42,8 @@ export const Auth0Provider = ({
             const isAuthenticated = await auth0FromHook.isAuthenticated();
 
             setIsAuthenticated(isAuthenticated);
-            const user = await auth0FromHook.getUser();
-            console.log(user)
+            // const user = await auth0FromHook.getUser();
+            // console.log(user)
 
             if (isAuthenticated) {
                 // const user = await auth0FromHook.getUser();
@@ -68,7 +68,7 @@ export const Auth0Provider = ({
     const request = async (method, endpoint, params = {}, client = null) => {
         client = client ? client : auth0Client;
         const token = await client.getTokenSilently();
-        console.log(`Bearer ${token}`);
+        // console.log(`Bearer ${token}`);
         const response = await fetch(`${config.apiUrl}${endpoint}`, {
             method: method,
             headers: {

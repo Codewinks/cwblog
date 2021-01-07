@@ -124,16 +124,6 @@ const SettingsTab = props => {
         }
     }
 
-    useEffect(() => {
-        setPublishedAt(post.published_at);
-    }, [post.published_at])
-
-    useEffect(() => {
-        if (props.dropdown) {
-            setDropdown(props.dropdown);
-        }
-    }, [props.dropdown])
-
     const formatDate = (date) => {
         let v = date;
         if(date instanceof Date){
@@ -144,6 +134,16 @@ const SettingsTab = props => {
 
         return v
     }
+
+    useEffect(() => {
+        setPublishedAt(post.published_at);
+    }, [post.published_at])
+
+    useEffect(() => {
+        if (props.dropdown) {
+            setDropdown(props.dropdown);
+        }
+    }, [props.dropdown])
 
     return (
         <List

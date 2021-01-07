@@ -16,11 +16,15 @@ export const PostProvider = ({history, children}) => {
         id: null,
         title: null,
         slug: null,
+        html: null,
+        css: null,
         status: 'draft',
         visibility: 'public',
         user_id: null,
         format: 'post',
-        options: {},
+        options: {
+            disableAutoSlug: false
+        },
         published_at: null,
         updated_at: null,
         created_at: null,
@@ -48,10 +52,18 @@ export const PostProvider = ({history, children}) => {
     }
 
     const handleUpdate = (key, value, callback) => {
-        setPost({
-            ...post,
-            [key]: value
-        })
+        //TODO: for post.options - check if value is Object type and update object vs rewriting
+        console.log('handleUpdate', key, value);
+        let updatedPost = {...post}
+        if (!Array.isArray(key) && !Array.isArray(value)) {
+            updatedPost[key] = value;
+        } else if (key.length === value.length) {
+            key.map((k, i) => {
+                updatedPost[k] = value[i];
+            })
+        }
+
+        setPost(updatedPost);
 
         if (callback !== undefined) {
             callback()
@@ -83,7 +95,7 @@ export const PostProvider = ({history, children}) => {
             const data = await request('get', `/v1/posts/${postId}`)
             handlePost(data);
         } catch (error) {
-            history.push(`/admin/posts`)
+            history.push(`/posts`)
             if (error.status_code === 404) {
                 showAlert('error', `Unable to find post with the ID: ${postId}`)
             } else {
@@ -103,7 +115,7 @@ export const PostProvider = ({history, children}) => {
             handlePost(data);
 
             if (!post.id) {
-                history.push(`/admin/posts/${data.id}`)
+                history.push(`/posts/${data.id}`)
             }
 
             showAlert('success', `Post successfully ${post.id ? 'saved' : 'created'}.`, 5000)
@@ -122,7 +134,7 @@ export const PostProvider = ({history, children}) => {
 
             setPost({...emptyPost});
             await listPosts()
-            history.push(`/admin/posts`)
+            history.push(`/posts`)
             showAlert('success', `Post successfully deleted.`, 5000)
         } catch (error) {
             showAlert('error', error.message)

@@ -73,7 +73,7 @@ export const InviteProvider = ({ history, children }) => {
             await request(invite.id ? 'put' : 'post', `/v1/invites/${invite.id ? invite.id : ''}`, {...invite} )
             
             setInvite(emptyInvite)
-            history.push(`/admin/invites`)
+            history.push(`/invites`)
             await listInvites()
             
             showAlert(ALERT_SUCCESS, `Invite ${invite.id ? 'saved' : 'created'}.`, 5000)

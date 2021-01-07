@@ -41,6 +41,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import ArrowTooltip from '../../components/ArrowTooltip';
 import UserAvatar from "../users/components/UserAvatar";
+import BookIcon from "@material-ui/icons/Book";
 
 
 const drawerWidth = 180;
@@ -323,7 +324,7 @@ const Navigation = () => {
                 onClose={closeMenu}
             >
                 {isAuthenticated ? [
-                    <MenuItem onClick={closeMenu} component={Link} to={`/admin/users/${currentUser.id}`} key="profile">Profile</MenuItem>,
+                    <MenuItem onClick={closeMenu} component={Link} to={`/users/${currentUser.id}`} key="profile">Profile</MenuItem>,
                     <MenuItem onClick={() => logout()} key="logout">Logout</MenuItem>
                 ] :
                     <MenuItem onClick={() => loginWithRedirect({})}>Login</MenuItem>
@@ -346,43 +347,69 @@ const Navigation = () => {
                 <div className={classes.toolbar}></div>
                 <List>
                     <Tooltip title="Dashboard" placement="right" arrow disableHoverListener={open}>
-                        <ListItem button to="/admin" component={Link}>
+                        <ListItem button to="" component={Link}>
                                 <ListItemIcon className={classes.navIcon}><DashboardIcon /></ListItemIcon>
                                 <ListItemText primary="Dashboard" />
                         </ListItem>
                     </Tooltip>
 
                     <ArrowTooltip placement="right-start" interactive disableHoverListener={open}
+                                  title={
+                                      <List disablePadding>
+                                          <ListItem button to="/pages" component={Link} className={isNavActiveCssClass(['/pages'], classes.subNavActive)}>
+                                              <ListItemText primary="All Pages" /></ListItem>
+                                          <ListItem button to="/pages/create" component={Link} className={isNavActiveCssClass(['/pages/create'], classes.subNavActive)}>
+                                              <ListItemText primary="Add New" /></ListItem>
+                                      </List>
+                                  }>
+                        <ListItem button to="/pages" component={Link} className={isNavActiveCssClass(['/pages', '/pages/create', '/categories', '/tags'], classes.navActive)}>
+                            <ListItemIcon className={classes.navIcon}><LibraryBooksIcon /></ListItemIcon>
+                            <ListItemText primary="Pages" />
+                        </ListItem>
+                    </ArrowTooltip>
+
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                        <List disablePadding className={classes.navNested}>
+                            <ListItem button to="/pages" component={Link} className={isNavActiveCssClass(['/pages'], classes.subNavActive)}>
+                                <ListItemText primary="All Pages" />
+                            </ListItem>
+                            <ListItem button to="/pages/create" component={Link} className={isNavActiveCssClass(['/pages/create'], classes.subNavActive)}>
+                                <ListItemText primary="Add New" />
+                            </ListItem>
+                        </List>
+                    </Collapse>
+
+                    <ArrowTooltip placement="right-start" interactive disableHoverListener={open}
                         title={
                             <List disablePadding>
-                                <ListItem button to="/admin/posts" component={Link} className={isNavActiveCssClass(['/posts'], classes.subNavActive)}>
+                                <ListItem button to="/posts" component={Link} className={isNavActiveCssClass(['/posts'], classes.subNavActive)}>
                                     <ListItemText primary="All Posts" /></ListItem>
-                                <ListItem button to="/admin/posts/create" component={Link} className={isNavActiveCssClass(['/posts/create'], classes.subNavActive)}>
+                                <ListItem button to="/posts/create" component={Link} className={isNavActiveCssClass(['/posts/create'], classes.subNavActive)}>
                                     <ListItemText primary="Add New" /></ListItem>
-                                <ListItem button to="/admin/categories" component={Link} className={isNavActiveCssClass(['/categories'], classes.subNavActive)}>
+                                <ListItem button to="/categories" component={Link} className={isNavActiveCssClass(['/categories'], classes.subNavActive)}>
                                     <ListItemText primary="Categories" /></ListItem>
-                                <ListItem button to="/admin/tags" component={Link} className={isNavActiveCssClass(['/tags'], classes.subNavActive)}>
+                                <ListItem button to="/tags" component={Link} className={isNavActiveCssClass(['/tags'], classes.subNavActive)}>
                                     <ListItemText primary="Tags" /></ListItem>
                             </List>
                         }>
-                        <ListItem button to="/admin/posts" component={Link} className={isNavActiveCssClass(['/posts', '/posts/create', '/categories', '/tags'], classes.navActive)}>
-                            <ListItemIcon className={classes.navIcon}><LibraryBooksIcon /></ListItemIcon>
+                        <ListItem button to="/posts" component={Link} className={isNavActiveCssClass(['/posts', '/posts/create', '/categories', '/tags'], classes.navActive)}>
+                            <ListItemIcon className={classes.navIcon}><BookIcon /></ListItemIcon>
                             <ListItemText primary="Posts" />
                         </ListItem>
                     </ArrowTooltip>
 
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <List disablePadding className={classes.navNested}>
-                            <ListItem button to="/admin/posts" component={Link} className={isNavActiveCssClass(['/posts'], classes.subNavActive)}>
+                            <ListItem button to="/posts" component={Link} className={isNavActiveCssClass(['/posts'], classes.subNavActive)}>
                                 <ListItemText primary="All Posts" />
                             </ListItem>
-                            <ListItem button to="/admin/posts/create" component={Link} className={isNavActiveCssClass(['/posts/create'], classes.subNavActive)}>
+                            <ListItem button to="/posts/create" component={Link} className={isNavActiveCssClass(['/posts/create'], classes.subNavActive)}>
                                 <ListItemText primary="Add New" />
                             </ListItem>
-                            <ListItem button to="/admin/categories" component={Link} className={isNavActiveCssClass(['/categories'], classes.subNavActive)}>
+                            <ListItem button to="/categories" component={Link} className={isNavActiveCssClass(['/categories'], classes.subNavActive)}>
                                 <ListItemText primary="Categories" />
                             </ListItem>
-                            <ListItem button to="/admin/tags" component={Link} className={isNavActiveCssClass(['/tags'], classes.subNavActive)}>
+                            <ListItem button to="/tags" component={Link} className={isNavActiveCssClass(['/tags'], classes.subNavActive)}>
                                 <ListItemText primary="Tags" />
                             </ListItem>
                         </List>
@@ -391,15 +418,15 @@ const Navigation = () => {
                     <ArrowTooltip placement="right-start" interactive disableHoverListener={open}
                                   title={
                                       <List disablePadding>
-                                          <ListItem button to="/admin/users" component={Link} className={isNavActiveCssClass(['/users'], classes.subNavActive)}>
+                                          <ListItem button to="/users" component={Link} className={isNavActiveCssClass(['/users'], classes.subNavActive)}>
                                               <ListItemText primary="All Users" /></ListItem>
-                                          <ListItem button to="/admin/invites" component={Link} className={isNavActiveCssClass(['/invites'], classes.subNavActive)}>
+                                          <ListItem button to="/invites" component={Link} className={isNavActiveCssClass(['/invites'], classes.subNavActive)}>
                                               <ListItemText primary="Invite Users" /></ListItem>
-                                          <ListItem button to="/admin/roles" component={Link} className={isNavActiveCssClass(['/roles'], classes.subNavActive)}>
+                                          <ListItem button to="/roles" component={Link} className={isNavActiveCssClass(['/roles'], classes.subNavActive)}>
                                               <ListItemText primary="Roles" /></ListItem>
                                       </List>
                                   }>
-                        <ListItem button to="/admin/users" component={Link} className={isNavActiveCssClass(['/users', '/invites', '/roles'], classes.navActive)}>
+                        <ListItem button to="/users" component={Link} className={isNavActiveCssClass(['/users', '/invites', '/roles'], classes.navActive)}>
                             <ListItemIcon className={classes.navIcon}><PeopleIcon /></ListItemIcon>
                             <ListItemText primary="Users" />
                         </ListItem>
@@ -407,20 +434,20 @@ const Navigation = () => {
 
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <List disablePadding className={classes.navNested}>
-                            <ListItem button to="/admin/users" component={Link} className={isNavActiveCssClass(['/users'], classes.subNavActive)}>
+                            <ListItem button to="/users" component={Link} className={isNavActiveCssClass(['/users'], classes.subNavActive)}>
                                 <ListItemText primary="All Users" />
                             </ListItem>
-                            <ListItem button to="/admin/invites" component={Link} className={isNavActiveCssClass(['/invites'], classes.subNavActive)}>
+                            <ListItem button to="/invites" component={Link} className={isNavActiveCssClass(['/invites'], classes.subNavActive)}>
                                 <ListItemText primary="Invite Users" />
                             </ListItem>
-                            <ListItem button to="/admin/roles" component={Link} className={isNavActiveCssClass(['/roles'], classes.subNavActive)}>
+                            <ListItem button to="/roles" component={Link} className={isNavActiveCssClass(['/roles'], classes.subNavActive)}>
                                 <ListItemText primary="Roles" />
                             </ListItem>
                         </List>
                     </Collapse>
 
                     <Tooltip title="Settings" placement="right" arrow disableHoverListener={open}>
-                        <ListItem button to="/admin/settings" component={Link}>
+                        <ListItem button to="/settings" component={Link}>
                             <ListItemIcon className={classes.navIcon}><SettingsIcon /></ListItemIcon>
                             <ListItemText primary="Settings" />
                         </ListItem>

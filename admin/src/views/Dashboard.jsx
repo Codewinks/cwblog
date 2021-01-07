@@ -1,38 +1,93 @@
 import React from "react";
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import { Alert } from '@material-ui/lab';
+import Grid from "@material-ui/core/Grid";
+import Accordion from "@material-ui/core/Accordion";
+import MuiAccordionSummary  from "@material-ui/core/AccordionSummary";
+import {ChatBubble, ExpandMore, LibraryBooks, Book} from "@material-ui/icons";
+import MuiAccordionDetails from "@material-ui/core/AccordionDetails";
+import { Link } from 'react-router-dom';
 
+const useStyles = makeStyles((theme) => ({
+    alert: {
+        marginBottom: theme.spacing(2),
+        borderLeft: '4px solid #ff9800',
+    },
+    link:{
+        display: 'inline-flex',
+        alignItems: 'center',
+        lineHeight: 1.5,
+        '& .MuiSvgIcon-root':{
+            marginRight: theme.spacing(0.5)
+        }
+    },
+    item:{
+        display: 'flex',
+        alignItems: 'center',
+    }
+}));
+
+const AccordionDetails = withStyles((theme) => ({
+    root: {
+        padding: theme.spacing(2),
+        margin: 0,
+    },
+}))(MuiAccordionDetails);
+
+const AccordionSummary = withStyles((theme) => ({
+    root: {
+        borderBottom: '1px solid rgba(0, 0, 0, .125)',
+        marginBottom: -1,
+        minHeight: 56,
+        '&$expanded': {
+            minHeight: 56,
+        },
+    },
+    content: {
+        '&$expanded': {
+            margin: '12px 0',
+        },
+    },
+    expanded: {},
+}))(MuiAccordionSummary);
 
 const Dashboard = () => {
-  return (
-    <>
-      <Typography variant="h4" gutterBottom>
-        Dashboard
-      </Typography>
-      <Typography paragraph>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-        ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
-        facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
-        gravida rutrum quisque non tellus. Convallis convallis tellus id interdum velit laoreet id
-        donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-        adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra nibh cras.
-        Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis
-        imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue eget
-        arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem
-        donec massa sapien faucibus et molestie ac.
+    const classes = useStyles();
+
+    return (
+        <>
+            <Alert severity="warning" className={classes.alert}>
+                There is an update available! <Link to={"/"}>Please update now.</Link>
+            </Alert>
+
+            <Typography variant="h4" gutterBottom>
+                Dashboard
             </Typography>
-      <Typography paragraph>
-        Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper eget nulla
-        facilisi etiam dignissim diam. Pulvinar elementum integer enim neque volutpat ac
-        tincidunt. Ornare suspendisse sed nisi lacus sed viverra tellus. Purus sit amet volutpat
-        consequat mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis risus sed
-        vulputate odio. Morbi tincidunt ornare massa eget egestas purus viverra accumsan in. In
-        hendrerit gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem et
-        tortor. Habitant morbi tristique senectus et. Adipiscing elit duis tristique sollicitudin
-        nibh sit. Ornare aenean euismod elementum nisi quis eleifend. Commodo viverra maecenas
-        accumsan lacus vel facilisis. Nulla posuere sollicitudin aliquam ultrices sagittis orci a.
-            </Typography>
-    </>
-  );
+            <Grid container spacing={4}>
+                <Grid item md={6}>
+                    <Accordion defaultExpanded={true}>
+                        <AccordionSummary expandIcon={<ExpandMore />}>
+                            <Typography variant="h6">Quick Stats</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Grid container spacing={2}>
+                                <Grid item md={6} className={classes.item}>
+                                    <Link to={"/posts"} className={classes.link}><Book fontSize="small" /> 12 Posts</Link>
+                                </Grid>
+                                <Grid item md={6} className={classes.item}>
+                                    <Link to={"/pages"} className={classes.link}><LibraryBooks fontSize="small" /> 5 Pages</Link>
+                                </Grid>
+                                <Grid item md={6} className={classes.item}>
+                                    <Link to={"/"} className={classes.link}><ChatBubble fontSize="small" /> 0 Comments</Link>
+                                </Grid>
+                            </Grid>
+                        </AccordionDetails>
+                    </Accordion>
+                </Grid>
+            </Grid>
+        </>
+    );
 };
 
 export default Dashboard;

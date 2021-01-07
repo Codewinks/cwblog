@@ -117,7 +117,7 @@ const RoleList = ({match, history}) => {
                         value={role.permissions ? JSON.stringify(role.permissions) : ""}
                     />
                     { roleId && (
-                        <Button onClick={() => history.push(`/admin/roles`)} variant="contained" aria-label="Cancel" className={classes.button}>
+                        <Button onClick={() => history.push(`/roles`)} variant="contained" aria-label="Cancel" className={classes.button}>
                             Cancel
                         </Button>
                     )}

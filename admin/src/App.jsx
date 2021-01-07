@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useApp } from './context/App'
 import { useAuth0 } from "./context/Auth0";
 import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import { Route, Switch, useLocation, useRouteMatch} from "react-router-dom";
+import { Route, Switch, useLocation } from "react-router-dom";
 import history from './history';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -24,10 +24,10 @@ import { CategoryProvider } from './context/Category'
 import { UserProvider } from './context/User'
 import { RoleProvider } from "./context/Role";
 
-
 import './App.css';
 import {InviteProvider} from "./context/Invite";
 import InviteList from "./views/invites/List";
+import Upload from "./routes/Upload";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(11, 4, 6, 4),
+    padding: theme.spacing(12, 4, 6, 4),
   },
 }));
 
@@ -45,7 +45,6 @@ function App() {
   const { loading, isAuthenticated } = useAuth0();
   const location = useLocation();
   const query = new URLSearchParams(location.search);
-  const match = useRouteMatch();
 
   const theme = createMuiTheme({
     palette: {
@@ -71,7 +70,7 @@ function App() {
 
   useEffect(() =>{
     if(query.get('error') && query.get('error_description')){
-      history.push('/admin');
+      history.push('/');
       showAlert('error', query.get('error_description'))
     }
     // eslint-disable-next-line
@@ -95,21 +94,22 @@ function App() {
 
           <main className={classes.content}>
               <Switch>
-                  <Route path={match.path} exact component={Dashboard} />
-                  <PrivateRoute exact path={`${match.path}/posts/create`} render={p => (<PostProvider {...p}><PostForm {...p}/></PostProvider>)} />
-                  <PrivateRoute exact path={`${match.path}/posts/:postId`} render={p => (<PostProvider {...p}><PostForm {...p}/></PostProvider>)} />
-                  <PrivateRoute exact path={`${match.path}/posts`} render={p => (<PostProvider {...p}><PostList {...p}/></PostProvider>)} />
-                  <PrivateRoute exact path={`${match.path}/tags/:tagId`} render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
-                  <PrivateRoute exact path={`${match.path}/tags`} render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
-                  <PrivateRoute exact path={`${match.path}/categories/:categoryId`} render={p => (<CategoryProvider {...p}><CategoryList {...p}/></CategoryProvider>)} />
-                  <PrivateRoute exact path={`${match.path}/categories`} render={p => (<CategoryProvider {...p}><CategoryList {...p}/></CategoryProvider>)} />
-                  <PrivateRoute exact path={`${match.path}/users`} render={p => (<UserProvider {...p}><UserList {...p}/></UserProvider>)} />
-                  <PrivateRoute exact path={`${match.path}/users/:userId`} render={p => (<UserProvider {...p}><UserList {...p}/></UserProvider>)} />
-                  <PrivateRoute exact path={`${match.path}/roles/:roleId`} render={p => (<RoleProvider {...p}><RoleList {...p}/></RoleProvider>)} />
-                  <PrivateRoute exact path={`${match.path}/roles`} render={p => (<RoleProvider {...p}><RoleList {...p}/></RoleProvider>)} />
-                  <PrivateRoute exact path={`${match.path}/invites/:inviteId`} render={p => (<InviteProvider {...p}><InviteList {...p}/></InviteProvider>)} />
-                  <PrivateRoute exact path={`${match.path}/invites`} render={p => (<InviteProvider {...p}><InviteList {...p}/></InviteProvider>)} />
-                  <PrivateRoute exact path={`${match.path}/profile`} render={p => (<UserProvider {...p}><UserList {...p}/></UserProvider>)} />
+                  <PrivateRoute exact path='/' component={Dashboard} />
+                  <PrivateRoute exact path='/posts/create' render={p => (<PostProvider {...p}><PostForm {...p}/></PostProvider>)} />
+                  <PrivateRoute exact path='/posts/:postId' render={p => (<PostProvider {...p}><PostForm {...p}/></PostProvider>)} />
+                  <PrivateRoute exact path='/posts' render={p => (<PostProvider {...p}><PostList {...p}/></PostProvider>)} />
+                  <PrivateRoute exact path='/tags/:tagId' render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
+                  <PrivateRoute exact path='/tags' render={p => (<TagProvider {...p}><TagList {...p}/></TagProvider>)} />
+                  <PrivateRoute exact path='/categories/:categoryId' render={p => (<CategoryProvider {...p}><CategoryList {...p}/></CategoryProvider>)} />
+                  <PrivateRoute exact path='/categories' render={p => (<CategoryProvider {...p}><CategoryList {...p}/></CategoryProvider>)} />
+                  <PrivateRoute exact path='/users' render={p => (<UserProvider {...p}><UserList {...p}/></UserProvider>)} />
+                  <PrivateRoute exact path='/users/:userId' render={p => (<UserProvider {...p}><UserList {...p}/></UserProvider>)} />
+                  <PrivateRoute exact path='/roles/:roleId' render={p => (<RoleProvider {...p}><RoleList {...p}/></RoleProvider>)} />
+                  <PrivateRoute exact path='/roles' render={p => (<RoleProvider {...p}><RoleList {...p}/></RoleProvider>)} />
+                  <PrivateRoute exact path='/invites/:inviteId' render={p => (<InviteProvider {...p}><InviteList {...p}/></InviteProvider>)} />
+                  <PrivateRoute exact path='/invites' render={p => (<InviteProvider {...p}><InviteList {...p}/></InviteProvider>)} />
+                  <PrivateRoute exact path='/profile' render={p => (<UserProvider {...p}><UserList {...p}/></UserProvider>)} />
+                  <PrivateRoute exact path='/upload' component={Upload}/>
                   <Route component={NoMatch} />
               </Switch>
           </main>

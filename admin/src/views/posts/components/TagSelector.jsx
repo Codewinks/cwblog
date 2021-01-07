@@ -42,7 +42,9 @@ const TagSelector = () => {
         }
 
         loadStuff();
-    }, [listTags])
+
+        // eslint-disable-next-line
+    }, [])
 
 
     const handleClose = () => {

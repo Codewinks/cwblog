@@ -145,7 +145,7 @@ const PostList = ({history}) => {
                                         </TableCell>
                                         <TableCell align="right" className={classes.cell}>—</TableCell>
                                         <TableCell className={`${classes.cell} nowrap`}>
-                                            <div className={classes.capitalize}>{row.status === 'published' ? 'Published' : 'Last Modified' }</div>
+                                            <div className={classes.capitalize}>{row.status === 'published' ? 'Published On' : 'Last Modified' }</div>
                                             <div className="text-muted">{row.published_at ? row.published_at : row.updated_at}</div>
                                         </TableCell>
                                     </TableRow>

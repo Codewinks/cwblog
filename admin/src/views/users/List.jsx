@@ -172,7 +172,7 @@ const UserList = ({match, history}) => {
                             </Select>
                         </FormControl>
                         {userId && (
-                            <Button onClick={() => history.push(`/admin/users`)} variant="contained" aria-label="Cancel"
+                            <Button onClick={() => history.push(`/users`)} variant="contained" aria-label="Cancel"
                                     className={classes.button}>
                                 Cancel
                             </Button>

@@ -11,8 +11,8 @@ import (
 
 	"github.com/codewinks/cwblog/api/mailer"
 	"github.com/codewinks/cwblog/api/models"
-	"github.com/codewinks/cwblog/core"
-	"github.com/codewinks/cwblog/middleware"
+	"github.com/codewinks/cwblog/api/core"
+	"github.com/codewinks/cwblog/api/middleware"
 )
 
 type key int

@@ -5,7 +5,8 @@ type Post struct {
 	Id            string                 `json:"id"`
 	UserId        string                 `json:"user_id"`
 	Title         string                 `json:"title" binding:"required"`
-	Content       string                 `json:"content"`
+	Html          string                 `json:"html"`
+	Css           string                 `json:"css"`
 	Excerpt       string                 `json:"excerpt" binding:"max=255"`
 	Slug          string                 `json:"slug" binding:"required,max=200"`
 	Password      string                 `json:"password"`

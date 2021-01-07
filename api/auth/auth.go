@@ -17,10 +17,10 @@ import (
 	"github.com/go-chi/render"
 	"github.com/go-pg/pg/v10"
 
+	"github.com/codewinks/cwblog/api/core"
+	"github.com/codewinks/cwblog/api/middleware"
 	"github.com/codewinks/cwblog/api/models"
 	"github.com/codewinks/cwblog/api/roles"
-	"github.com/codewinks/cwblog/core"
-	"github.com/codewinks/cwblog/middleware"
 )
 
 //Handler consists of the DB connection and Routes

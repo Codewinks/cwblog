@@ -1,16 +1,16 @@
-import React, { useEffect } from "react";
-import { usePost } from '../../../context/Post'
-
-import { makeStyles } from '@material-ui/core/styles';
+import React, {useEffect} from "react";
+import {usePost} from '../../../context/Post'
+import {makeStyles} from '@material-ui/core/styles';
 import DoneIcon from '@material-ui/icons/Done';
 import EditIcon from '@material-ui/icons/Edit';
-import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
+import {Checkbox, FormControlLabel, Link} from '@material-ui/core';
+
 
 const useStyles = makeStyles(theme => {
-    var height = 32;
-    var smallHeight = 24;
-    var backgroundColor = theme.palette.type === 'light' ? theme.palette.grey[300] : theme.palette.grey[700];
+    let height = 32;
+    let smallHeight = 24;
+    let backgroundColor = theme.palette.type === 'light' ? theme.palette.grey[300] : theme.palette.grey[700];
 
     return {
         root: {
@@ -51,6 +51,15 @@ const useStyles = makeStyles(theme => {
             paddingLeft: 8,
             paddingRight: 8
         },
+        slugRoot:{
+            marginLeft: theme.spacing(1),
+        },
+        slugCheckbox: {
+            padding: theme.spacing(0.5)
+        },
+        slugLabel:{
+            fontSize: '0.8rem'
+        },
         svgIcon: {
             fill: 'currentColor',
             width: '1em',
@@ -90,27 +99,32 @@ const useStyles = makeStyles(theme => {
 const baseUrl = window.location.origin + '/';
 
 const Permalink = () => {
-    const { post, handleUpdate } = usePost();
+    const {post, handleUpdate} = usePost();
     const classes = useStyles();
     const [slug, setSlug] = React.useState('')
-    const [toggleEdit, setToggleEdit] = React.useState(false)
+    const [toggleEdit, setToggleEdit] = React.useState(false);
 
     useEffect(() => {
-        if (!toggleEdit && post) {
+        if (!toggleEdit && !Boolean(post.options?.disableAutoSlug)) {
             setSlug(slugify(post.title))
             handleUpdate('slug', slug)
+        }else{
+            setSlug(post.slug ? post.slug : '')
         }
+
         // eslint-disable-next-line
     }, [post.title]);
 
-    function handleToggleEdit() {
+    const handleToggleEdit = () => {
         setToggleEdit(toggle => !toggle);
     }
 
-    function handleChange(event) {
-        setSlug(slugify(event.target.value))
-        handleUpdate('slug', slug)
-    }
+    const handleChange = (event) => {
+        console.log('handleChange', event.target.value);
+        let updatedSlug = slugify(event.target.value)
+        setSlug(updatedSlug)
+        handleUpdate('slug', updatedSlug)
+    }``
 
     return (
         <>
@@ -119,10 +133,12 @@ const Permalink = () => {
             </Typography>
             <div role="button" tabIndex="0" className={[classes.root, classes.sizeSmall].join(' ')}>
                 {!toggleEdit && (
-                    <EditIcon className={[classes.svgIcon, classes.chipIcon, classes.chipIconSmall].join(' ')} onClick={handleToggleEdit} />
+                    <EditIcon className={[classes.svgIcon, classes.chipIcon, classes.chipIconSmall].join(' ')}
+                              onClick={handleToggleEdit}/>
                 )}
                 {toggleEdit && (
-                    <DoneIcon className={[classes.svgIcon, classes.chipIcon, classes.chipIconSmall].join(' ')} onClick={handleToggleEdit} />
+                    <DoneIcon className={[classes.svgIcon, classes.chipIcon, classes.chipIconSmall].join(' ')}
+                              onClick={handleToggleEdit}/>
                 )}
                 <span className={[classes.label, classes.labelSmall].join(' ')}>
                     {!toggleEdit && (
@@ -133,11 +149,25 @@ const Permalink = () => {
                     {toggleEdit && (
                         <>
                             <span>{baseUrl}</span>
-                            <input type="text" value={slug} className={classes.input} onChange={handleChange} onBlur={handleToggleEdit} autoFocus></input>
+                            <input type="text" value={slug} className={classes.input} onChange={handleChange}
+                                   onBlur={handleToggleEdit} autoFocus/>
                         </>
                     )}
                 </span>
             </div>
+                <FormControlLabel
+                    className={classes.slugRoot}
+                    classes={{label: classes.slugLabel}}
+                    control={
+                        <Checkbox
+                            className={classes.slugCheckbox}
+                            size="small"
+                            checked={Boolean(post.options?.disableAutoSlug)}
+                            onChange={() => handleUpdate('options', {disableAutoSlug: !Boolean(post.options?.disableAutoSlug)})}
+                        />
+                    }
+                    label="Don't update slug automatically"
+                />
         </>
     )
 };
@@ -146,13 +176,14 @@ export const slugify = (v) => {
     if (!v) {
         return ''
     }
+
     v = v.replace(/^\s+|\s+$/g, ''); // trim
     v = v.toLowerCase();
 
     // remove accents, swap ñ for n, etc
-    var from = "ãàáäâẽèéëêìíïîõòóöôùúüûñç·/_,:;";
-    var to = "aaaaaeeeeeiiiiooooouuuunc------";
-    for (var i = 0, l = from.length; i < l; i++) {
+    const from = "ãàáäâẽèéëêìíïîõòóöôùúüûñç·/_,:;";
+    const to = "aaaaaeeeeeiiiiooooouuuunc------";
+    for (let i = 0, l = from.length + 1; i < l; i++) {
         v = v.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
     }
 
