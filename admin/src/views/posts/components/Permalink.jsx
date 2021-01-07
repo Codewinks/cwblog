@@ -124,7 +124,7 @@ const Permalink = () => {
         let updatedSlug = slugify(event.target.value)
         setSlug(updatedSlug)
         handleUpdate('slug', updatedSlug)
-    }``
+    }
 
     return (
         <>
