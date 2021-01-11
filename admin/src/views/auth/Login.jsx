@@ -117,7 +117,7 @@ const Login = () => {
                                 {isAuthenticated && <button onClick={() => logout()}>Log out</button>}
 
                                 <Box mt={5}>
-                                    <Copyright />
+                                    <Copyright/>
                                 </Box>
                             </>
                         )}

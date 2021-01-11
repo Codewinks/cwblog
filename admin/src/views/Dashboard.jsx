@@ -1,28 +1,28 @@
 import React from "react";
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import {makeStyles, withStyles} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { Alert } from '@material-ui/lab';
+import {Alert} from '@material-ui/lab';
 import Grid from "@material-ui/core/Grid";
 import Accordion from "@material-ui/core/Accordion";
-import MuiAccordionSummary  from "@material-ui/core/AccordionSummary";
-import {ChatBubble, ExpandMore, LibraryBooks, Book} from "@material-ui/icons";
+import MuiAccordionSummary from "@material-ui/core/AccordionSummary";
+import {Book, ChatBubble, ExpandMore, LibraryBooks} from "@material-ui/icons";
 import MuiAccordionDetails from "@material-ui/core/AccordionDetails";
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     alert: {
         marginBottom: theme.spacing(2),
         borderLeft: '4px solid #ff9800',
     },
-    link:{
+    link: {
         display: 'inline-flex',
         alignItems: 'center',
         lineHeight: 1.5,
-        '& .MuiSvgIcon-root':{
+        '& .MuiSvgIcon-root': {
             marginRight: theme.spacing(0.5)
         }
     },
-    item:{
+    item: {
         display: 'flex',
         alignItems: 'center',
     }
@@ -67,19 +67,22 @@ const Dashboard = () => {
             <Grid container spacing={4}>
                 <Grid item md={6}>
                     <Accordion defaultExpanded={true}>
-                        <AccordionSummary expandIcon={<ExpandMore />}>
+                        <AccordionSummary expandIcon={<ExpandMore/>}>
                             <Typography variant="h6">Quick Stats</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                             <Grid container spacing={2}>
                                 <Grid item md={6} className={classes.item}>
-                                    <Link to={"/posts"} className={classes.link}><Book fontSize="small" /> 12 Posts</Link>
+                                    <Link to={"/posts"} className={classes.link}><Book fontSize="small"/> 12
+                                        Posts</Link>
                                 </Grid>
                                 <Grid item md={6} className={classes.item}>
-                                    <Link to={"/pages"} className={classes.link}><LibraryBooks fontSize="small" /> 5 Pages</Link>
+                                    <Link to={"/pages"} className={classes.link}><LibraryBooks fontSize="small"/> 5
+                                        Pages</Link>
                                 </Grid>
                                 <Grid item md={6} className={classes.item}>
-                                    <Link to={"/"} className={classes.link}><ChatBubble fontSize="small" /> 0 Comments</Link>
+                                    <Link to={"/"} className={classes.link}><ChatBubble fontSize="small"/> 0
+                                        Comments</Link>
                                 </Grid>
                             </Grid>
                         </AccordionDetails>

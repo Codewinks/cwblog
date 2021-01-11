@@ -3,10 +3,10 @@ import React, {useContext, useState} from 'react';
 export const AppContext = React.createContext();
 export const useApp = () => useContext(AppContext);
 export const ALERT_SUCCESS = 'success';
-export const ALERT_WARNING= 'warning';
+export const ALERT_WARNING = 'warning';
 export const ALERT_ERROR = 'error';
 
-export const AppProvider = ({ children }) => {
+export const AppProvider = ({children}) => {
     const alertState = {
         variant: null,
         message: null,
@@ -18,7 +18,7 @@ export const AppProvider = ({ children }) => {
     const showAlert = (variant, message, autoHideDuration) => {
         let prefix;
 
-        switch(variant) {
+        switch (variant) {
             case ALERT_SUCCESS:
                 prefix = 'Success'
                 break;

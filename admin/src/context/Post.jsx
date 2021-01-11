@@ -3,6 +3,7 @@ import {useApp} from './App'
 import {useAuth0} from "./Auth0";
 import {TagProvider} from "./Tag";
 import {CategoryProvider} from "./Category";
+import {SettingProvider} from "./Setting";
 
 export const PostContext = React.createContext();
 export const usePost = () => useContext(PostContext);
@@ -58,9 +59,7 @@ export const PostProvider = ({history, children}) => {
         if (!Array.isArray(key) && !Array.isArray(value)) {
             updatedPost[key] = value;
         } else if (key.length === value.length) {
-            key.map((k, i) => {
-                updatedPost[k] = value[i];
-            })
+            key.map((k, i) => updatedPost[k] = value[i])
         }
 
         setPost(updatedPost);
@@ -98,6 +97,23 @@ export const PostProvider = ({history, children}) => {
             history.push(`/posts`)
             if (error.status_code === 404) {
                 showAlert('error', `Unable to find post with the ID: ${postId}`)
+            } else {
+                showAlert('error', error.message)
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const getPostBySlug = async (slug) => {
+        setLoading(true);
+        try {
+            const data = await request('get', `/v1/posts/slug/${slug}`);
+            handlePost(data);
+        } catch (error) {
+            history.push(`/posts`)
+            if (error.status_code === 404) {
+                showAlert('error', `Unable to find post with the SLUG: ${slug}`)
             } else {
                 showAlert('error', error.message)
             }
@@ -144,26 +160,29 @@ export const PostProvider = ({history, children}) => {
     }
 
     return (
-        <CategoryProvider>
-            <TagProvider>
-                <PostContext.Provider value={{
-                    post,
-                    posts,
-                    loading,
-                    options,
-                    handleUpdate,
-                    handleChange,
-                    setLoading,
-                    listPosts,
-                    newPost,
-                    getPost,
-                    savePost,
-                    setPost,
-                    deletePost,
-                }}>
-                    {children}
-                </PostContext.Provider>
-            </TagProvider>
-        </CategoryProvider>
+        <SettingProvider>
+            <CategoryProvider>
+                <TagProvider>
+                    <PostContext.Provider value={{
+                        post,
+                        posts,
+                        loading,
+                        options,
+                        handleUpdate,
+                        handleChange,
+                        setLoading,
+                        listPosts,
+                        newPost,
+                        getPost,
+                        getPostBySlug,
+                        savePost,
+                        setPost,
+                        deletePost,
+                    }}>
+                        {children}
+                    </PostContext.Provider>
+                </TagProvider>
+            </CategoryProvider>
+        </SettingProvider>
     );
 }

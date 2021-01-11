@@ -1,16 +1,15 @@
-import React, { useState, useContext } from 'react';
-import { useApp } from './App'
-import { useAuth0 } from './Auth0';
-import {ALERT_ERROR, ALERT_SUCCESS} from "./App";
+import React, {useContext, useState} from 'react';
+import {ALERT_ERROR, ALERT_SUCCESS, useApp} from './App'
+import {useAuth0} from './Auth0';
 
 export const TagContext = React.createContext()
 export const useTag = () => useContext(TagContext)
-export const TagProvider = ({ history, children }) => {
-    const { showAlert } = useApp()
-    const { request } = useAuth0()
+export const TagProvider = ({history, children}) => {
+    const {showAlert} = useApp()
+    const {request} = useAuth0()
     const [loading, setLoading] = useState(true)
     const [tags, setTags] = useState(null)
-    
+
     const emptyTag = {
         id: null,
         name: null,
@@ -67,17 +66,17 @@ export const TagProvider = ({ history, children }) => {
     const saveTag = async (callback) => {
         setLoading(true)
         try {
-            await request(tag.id ? 'put' : 'post', `/v1/tags/${tag.id ? tag.id : ''}`, {...tag} )
-            
+            await request(tag.id ? 'put' : 'post', `/v1/tags/${tag.id ? tag.id : ''}`, {...tag})
+
             setTag(emptyTag)
 
             if (history)
                 history.push(`/tags`)
 
             await listTags()
-            
+
             showAlert(ALERT_SUCCESS, `Tag ${tag.id ? 'saved' : 'created'}.`, 5000)
-            if (callback && typeof callback === "function"){
+            if (callback && typeof callback === "function") {
                 callback()
             }
         } catch (error) {
@@ -94,7 +93,7 @@ export const TagProvider = ({ history, children }) => {
 
             setTag(emptyTag)
             await listTags()
-            
+
             showAlert(ALERT_SUCCESS, `Tag deleted.`, 5000)
         } catch (error) {
             showAlert(ALERT_ERROR, error.message)

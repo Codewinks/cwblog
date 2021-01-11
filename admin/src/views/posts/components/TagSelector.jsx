@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     checkboxLabel: {
         fontSize: '0.875rem',
     },
-    tagBtn:{
+    tagBtn: {
         marginTop: theme.spacing(0.5)
     }
 }));
@@ -89,7 +89,7 @@ const TagSelector = () => {
             <Button
                 size="small"
                 className={`${classes.button} ${classes.tagBtn}`}
-                startIcon={<AddIcon />}
+                startIcon={<AddIcon/>}
                 onClick={() => toggleOpen(true)}
             >
                 Add new tag

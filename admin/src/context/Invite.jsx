@@ -1,17 +1,16 @@
-import React, { useState, useContext } from 'react';
-import { useApp } from './App'
-import { useAuth0 } from './Auth0';
-import {ALERT_ERROR, ALERT_SUCCESS} from "./App";
-import {RoleProvider, ROLE_GUEST} from "./Role";
+import React, {useContext, useState} from 'react';
+import {ALERT_ERROR, ALERT_SUCCESS, useApp} from './App'
+import {useAuth0} from './Auth0';
+import {ROLE_GUEST, RoleProvider} from "./Role";
 
 export const InviteContext = React.createContext()
 export const useInvite = () => useContext(InviteContext)
-export const InviteProvider = ({ history, children }) => {
-    const { showAlert } = useApp()
-    const { request } = useAuth0()
+export const InviteProvider = ({history, children}) => {
+    const {showAlert} = useApp()
+    const {request} = useAuth0()
     const [loading, setLoading] = useState(true)
     const [invites, setInvites] = useState(null)
-    
+
     const emptyInvite = {
         id: null,
         email: null,
@@ -70,12 +69,12 @@ export const InviteProvider = ({ history, children }) => {
         setLoading(true)
         try {
             console.log(invite);
-            await request(invite.id ? 'put' : 'post', `/v1/invites/${invite.id ? invite.id : ''}`, {...invite} )
-            
+            await request(invite.id ? 'put' : 'post', `/v1/invites/${invite.id ? invite.id : ''}`, {...invite})
+
             setInvite(emptyInvite)
             history.push(`/invites`)
             await listInvites()
-            
+
             showAlert(ALERT_SUCCESS, `Invite ${invite.id ? 'saved' : 'created'}.`, 5000)
         } catch (error) {
             showAlert(ALERT_ERROR, error.message)
@@ -91,7 +90,7 @@ export const InviteProvider = ({ history, children }) => {
 
             setInvite(emptyInvite)
             await listInvites()
-            
+
             showAlert(ALERT_SUCCESS, `Invite deleted.`, 5000)
         } catch (error) {
             showAlert(ALERT_ERROR, error.message)

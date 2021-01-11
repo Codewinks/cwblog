@@ -6,30 +6,30 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from "@material-ui/core/TextField";
 import IconButton from '@material-ui/core/IconButton';
 import {
-    CheckBox,
-    CheckBoxOutlined,
-    CheckBoxOutlineBlank,
     AddBox,
-    IndeterminateCheckBox,
+    CheckBox,
+    CheckBoxOutlineBlank,
+    CheckBoxOutlined,
+    Close,
     Folder,
     FolderOpen,
+    IndeterminateCheckBox,
     InsertDriveFile,
     KeyboardArrowDown,
-    KeyboardArrowRight, Close,
-
+    KeyboardArrowRight,
 } from '@material-ui/icons';
 //https://github.com/jakezatecky/react-checkbox-tree
 //https://jakezatecky.github.io/react-checkbox-tree/
 
 const useStyles = makeStyles(theme => ({
     root: {
-        '& .react-checkbox-tree':{
+        '& .react-checkbox-tree': {
             fontSize: '0.875rem',
             flexDirection: 'column',
-            '& ol ol':{
+            '& ol ol': {
                 paddingLeft: '19px'
             },
-            '& > ol':{
+            '& > ol': {
                 maxHeight: '260px',
                 overflow: 'auto',
             },
@@ -38,13 +38,13 @@ const useStyles = makeStyles(theme => ({
                 display: 'flex',
                 justifyContent: 'flex-end',
                 marginTop: theme.spacing(1),
-                '& button':{
+                '& button': {
                     display: 'flex',
                 }
             }
         },
         '& .rct-title': {
-          padding: '0 2px'
+            padding: '0 2px'
         },
         '& .rct-text': {
             display: 'flex',
@@ -64,10 +64,10 @@ const useStyles = makeStyles(theme => ({
             padding: theme.spacing(0.5),
             display: 'inline-flex'
         },
-        '& label:active, & label:hover':{
+        '& label:active, & label:hover': {
             background: 'none'
         },
-        '& .rct-text:hover':{
+        '& .rct-text:hover': {
             backgroundColor: theme.palette.action.hover
         }
     },
@@ -105,6 +105,7 @@ const DropdownTree = (props) => {
     function clearFilter() {
         filterTree('');
     }
+
     function onFilterChange(e) {
         filterTree(e.target.value);
     }
@@ -149,7 +150,7 @@ const DropdownTree = (props) => {
                     endAdornment: (
                         <InputAdornment>
                             <IconButton aria-label="Clear" onClick={clearFilter} size="small">
-                                <Close />
+                                <Close/>
                             </IconButton>
                         </InputAdornment>
                     ),
@@ -167,16 +168,16 @@ const DropdownTree = (props) => {
                 showExpandAll={true}
                 showNodeIcon={false}
                 icons={{
-                    check: <CheckBox fontSize="small" color="primary" />,
-                    uncheck: <CheckBoxOutlineBlank fontSize="small" color="action" />,
-                    halfCheck: <CheckBoxOutlined fontSize="small" color="disabled" />,
-                    expandClose: <KeyboardArrowRight fontSize="small" color="action" />,
-                    expandOpen: <KeyboardArrowDown fontSize="small" color="action" />,
-                    expandAll: <AddBox fontSize="small" color="action" />,
-                    collapseAll: <IndeterminateCheckBox fontSize="small" color="action" />,
-                    parentClose: <Folder fontSize="small" color="action" />,
-                    parentOpen: <FolderOpen fontSize="small" color="action" />,
-                    leaf: <InsertDriveFile fontSize="small" color="action" />,
+                    check: <CheckBox fontSize="small" color="primary"/>,
+                    uncheck: <CheckBoxOutlineBlank fontSize="small" color="action"/>,
+                    halfCheck: <CheckBoxOutlined fontSize="small" color="disabled"/>,
+                    expandClose: <KeyboardArrowRight fontSize="small" color="action"/>,
+                    expandOpen: <KeyboardArrowDown fontSize="small" color="action"/>,
+                    expandAll: <AddBox fontSize="small" color="action"/>,
+                    collapseAll: <IndeterminateCheckBox fontSize="small" color="action"/>,
+                    parentClose: <Folder fontSize="small" color="action"/>,
+                    parentOpen: <FolderOpen fontSize="small" color="action"/>,
+                    leaf: <InsertDriveFile fontSize="small" color="action"/>,
                 }}
             />
         </div>

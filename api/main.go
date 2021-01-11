@@ -20,6 +20,7 @@ import (
 	"github.com/codewinks/cwblog/api/invites"
 	"github.com/codewinks/cwblog/api/posts"
 	"github.com/codewinks/cwblog/api/roles"
+	"github.com/codewinks/cwblog/api/settings"
 	"github.com/codewinks/cwblog/api/tags"
 	"github.com/codewinks/cwblog/api/users"
 )
@@ -49,12 +50,13 @@ func Routes(db *pg.DB) *chi.Mux {
 
 	router.Route("/v1", func(r chi.Router) {
 		auth.Routes(r, db)
-		posts.Routes(r, db)
-		users.Routes(r, db)
-		roles.Routes(r, db)
 		categories.Routes(r, db)
-		tags.Routes(r, db)
+		settings.Routes(r, db)
 		invites.Routes(r, db)
+		posts.Routes(r, db)
+		roles.Routes(r, db)
+		tags.Routes(r, db)
+		users.Routes(r, db)
 	})
 
 	return router
@@ -77,10 +79,10 @@ func main() {
 	}
 
 	db := pg.Connect(&pg.Options{
-		Addr:     fmt.Sprintf("%s:%s",os.Getenv("DB_HOST"), os.Getenv("DB_PORT")),
-		User: os.Getenv("DB_USERNAME"),
+		Addr:     fmt.Sprintf("%s:%s", os.Getenv("DB_HOST"), os.Getenv("DB_PORT")),
+		User:     os.Getenv("DB_USERNAME"),
 		Password: os.Getenv("DB_PASSWORD"),
-		Database:  os.Getenv("DB_DATABASE"),
+		Database: os.Getenv("DB_DATABASE"),
 	})
 	defer db.Close()
 

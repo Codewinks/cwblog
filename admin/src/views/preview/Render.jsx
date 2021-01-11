@@ -1,33 +1,74 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect} from "react";
 import NoMatch from "../errors/NoMatch";
-import {useAuth0} from "../../context/Auth0";
+import {usePost} from '../../context/Post'
+import {useSetting} from "../../context/Setting";
 
 const Render = ({path}) => {
-    const [post, setPost] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const {request} = useAuth0();
+    const {post, loading, getPostBySlug} = usePost();
+    const {listSettings} = useSetting();
+    const pageSettings = ['html_head_close', 'html_body_close'];
     const parts = path.split('/');
-    const idx = parts.length-1;
+    const idx = parts.length - 1;
     const slug = parts[idx];
+    const head = document.head || document.getElementsByTagName('head')[0];
+    const body = document.body || document.getElementsByTagName('body')[0];
 
     useEffect(() => {
-        getPost(slug);
+        const fetchSettings = async () => {
+            return await listSettings(pageSettings);
+        }
+
+        fetchSettings().then((settings) => {
+            settings.forEach(setting => {
+                const values = JSON.parse(setting.value);
+                values.forEach((val) => {
+                    if (setting.key === 'html_head_close') {
+                        const elem = createElementFromHTML(val);
+                        head.append(elem);
+                    }
+                    if (setting.key === 'html_body_close') {
+                        const elem = createElementFromHTML(val);
+                        body.append(elem);
+                    }
+                })
+            })
+        });
+
+        // eslint-disable-next-line
+    }, []);
+
+    useEffect(() => {
+        async function fetchPost() {
+            await getPostBySlug(slug)
+        }
+
+        fetchPost().then(() => {
+            createAndAppendPostStyle();
+        });
 
         // eslint-disable-next-line
     }, [slug]);
 
-    const getPost = async (slug) => {
-        setLoading(true);
-        try {
-            const post = await request('get', `/v1/posts/slug/${slug}`);
-            setLoading(false);
-            setPost(post);
-        }catch(e){
-            console.error(e);
-        }
+    const createElementFromHTML = (htmlString) => {
+        let div = document.createElement('div');
+        div.innerHTML = htmlString.trim();
 
-        setLoading(false);
+        return div.firstChild;
     }
+
+    const createAndAppendPostStyle = () => {
+        if (post.css) {
+            const style = document.createElement('style');
+            style.type = 'text/css';
+            if (style.styleSheet) {
+                style.styleSheet.cssText = post.css;
+            } else {
+                style.appendChild(document.createTextNode(post.css));
+            }
+            head.append(style);
+        }
+    }
+
 
     if (loading) {
         return ('Loading...');
@@ -39,7 +80,7 @@ const Render = ({path}) => {
 
     return (
         <>
-            Render {path}
+            <div id="preview" dangerouslySetInnerHTML={{__html: post.html}}/>
         </>
     );
 };

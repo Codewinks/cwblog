@@ -3,25 +3,26 @@ a {
     color: #3f52b5;
 }
 
-a:hover{
+a:hover {
     color: #8599ff;
 }
 
-.pointer{
+.pointer {
     cursor: pointer;
 }
 
-.nowrap{
+.nowrap {
     white-space: nowrap;
 }
 
-.text-muted{
+.text-muted {
     color: #666666
 }
-.text-grey{
+
+.text-grey {
     color: #aaa;
 }
 
-.text-danger{
+.text-danger {
     color: #b70000;
 }

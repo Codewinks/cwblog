@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import { useInvite } from '../../context/Invite'
-import { makeStyles } from '@material-ui/core/styles';
-import { Link } from "react-router-dom";
+import React, {useEffect} from "react";
+import {useInvite} from '../../context/Invite'
+import {makeStyles} from '@material-ui/core/styles';
+import {Link} from "react-router-dom";
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
@@ -24,8 +24,8 @@ import {useRole} from "../../context/Role";
 import Chip from "@material-ui/core/Chip";
 import {DateTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
-import { utcToZonedTime } from 'date-fns-tz';
-import { parseFromTimeZone } from 'date-fns-timezone';
+import {utcToZonedTime} from 'date-fns-tz';
+import {parseFromTimeZone} from 'date-fns-timezone';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -53,14 +53,25 @@ const useStyles = makeStyles(theme => ({
     rightCol: {
         flexGrow: 1
     },
-    button:{
+    button: {
         marginTop: theme.spacing(1),
         marginRight: theme.spacing(2),
     }
 }));
 
 const InviteList = ({match, history}) => {
-    const { invite, invites, loading, listInvites, getInvite, newInvite, saveInvite, deleteInvite, handleUpdate, handleChange } = useInvite();
+    const {
+        invite,
+        invites,
+        loading,
+        listInvites,
+        getInvite,
+        newInvite,
+        saveInvite,
+        deleteInvite,
+        handleUpdate,
+        handleChange
+    } = useInvite();
     const {roles, listRoles} = useRole();
     const [confirmDelete, setConfirmDelete] = React.useState(false);
     const [open, setOpen] = React.useState(false);
@@ -83,6 +94,7 @@ const InviteList = ({match, history}) => {
 
         newInvite();
         setExpiresAt(null);
+
         async function fetchData() {
             await listInvites()
             await listRoles()
@@ -110,7 +122,7 @@ const InviteList = ({match, history}) => {
             <Grid container spacing={4} className={classes.wrapper}>
                 <Grid item className={classes.leftCol}>
                     <Typography variant="h6">
-                        {inviteId ? 'Edit' : 'Add New' } Invite
+                        {inviteId ? 'Edit' : 'Add New'} Invite
                     </Typography>
                     <TextField id="invite-email"
                                label="Email"
@@ -165,17 +177,19 @@ const InviteList = ({match, history}) => {
                         </MuiPickersUtilsProvider>
                     </FormControl>
 
-                    { inviteId && (
-                        <Button onClick={() => history.push(`/invites`)} variant="contained" aria-label="Cancel" className={classes.button}>
+                    {inviteId && (
+                        <Button onClick={() => history.push(`/invites`)} variant="contained" aria-label="Cancel"
+                                className={classes.button}>
                             Cancel
                         </Button>
                     )}
-                    <Button onClick={saveInvite} variant="contained" color="primary" aria-label={inviteId ? 'Update' : 'Add New Invite'} className={classes.button}>
+                    <Button onClick={saveInvite} variant="contained" color="primary"
+                            aria-label={inviteId ? 'Update' : 'Add New Invite'} className={classes.button}>
                         {inviteId ? 'Update' : 'Add New Invite'}
                     </Button>
                 </Grid>
                 <Grid item className={classes.rightCol}>
-                    { !inviteId && (
+                    {!inviteId && (
                         <Paper className={classes.root}>
                             <Table className={classes.table}>
                                 <TableHead>
@@ -189,7 +203,7 @@ const InviteList = ({match, history}) => {
                                     {loading && (
                                         <TableRow>
                                             <TableCell colSpan="100%" align="center">
-                                                <CircularProgress size={24} className={classes.progress} />
+                                                <CircularProgress size={24} className={classes.progress}/>
                                             </TableCell>
                                         </TableRow>
                                     )}
@@ -211,16 +225,17 @@ const InviteList = ({match, history}) => {
                                                         <Box className={`${classes.actions} text-grey`}>
                                                             <Link to={`/invites/${row.id}`}>Edit</Link>
                                                             <Box display="inline" px={0.65}>|</Box>
-                                                            <Link to="#" onClick={() => setConfirmDelete(row.id)} className="pointer text-danger">Delete</Link>
+                                                            <Link to="#" onClick={() => setConfirmDelete(row.id)}
+                                                                  className="pointer text-danger">Delete</Link>
                                                         </Box>
                                                     </TableCell>
                                                     <TableCell>
-                                                        { /* TODO: Add color coding to different role chips */ }
+                                                        { /* TODO: Add color coding to different role chips */}
                                                         <Chip size="small" label={row.role.name}/>
                                                     </TableCell>
                                                     <TableCell align="right">
                                                         {/*{ row.expires_at ? row.expires_at : '—' }*/}
-                                                        { row.expires_at ? dateFns.format(parseFromTimeZone(row.expires_at, {timeZone: 'UTC'}), 'MMM d, yyyy h:mma') : '—' }
+                                                        {row.expires_at ? dateFns.format(parseFromTimeZone(row.expires_at, {timeZone: 'UTC'}), 'MMM d, yyyy h:mma') : '—'}
                                                     </TableCell>
                                                 </TableRow>
                                             ))}

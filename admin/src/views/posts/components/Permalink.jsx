@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {usePost} from '../../../context/Post'
 import {makeStyles} from '@material-ui/core/styles';
 import DoneIcon from '@material-ui/icons/Done';
@@ -51,13 +51,13 @@ const useStyles = makeStyles(theme => {
             paddingLeft: 8,
             paddingRight: 8
         },
-        slugRoot:{
+        slugRoot: {
             marginLeft: theme.spacing(1),
         },
         slugCheckbox: {
             padding: theme.spacing(0.5)
         },
-        slugLabel:{
+        slugLabel: {
             fontSize: '0.8rem'
         },
         svgIcon: {
@@ -98,18 +98,21 @@ const useStyles = makeStyles(theme => {
 
 const baseUrl = window.location.origin + '/';
 
-const Permalink = () => {
+const Permalink = ({slug, setSlug}) => {
     const {post, handleUpdate} = usePost();
     const classes = useStyles();
-    const [slug, setSlug] = React.useState('')
     const [toggleEdit, setToggleEdit] = React.useState(false);
+    const [didMount, setDidMount] = useState(false);
 
     useEffect(() => {
+        if (!didMount) {
+            setSlug(post.slug);
+            return setDidMount(true);
+        }
+
         if (!toggleEdit && !Boolean(post.options?.disableAutoSlug)) {
             setSlug(slugify(post.title))
             handleUpdate('slug', slug)
-        }else{
-            setSlug(post.slug ? post.slug : '')
         }
 
         // eslint-disable-next-line
@@ -120,7 +123,6 @@ const Permalink = () => {
     }
 
     const handleChange = (event) => {
-        console.log('handleChange', event.target.value);
         let updatedSlug = slugify(event.target.value)
         setSlug(updatedSlug)
         handleUpdate('slug', updatedSlug)
@@ -155,19 +157,19 @@ const Permalink = () => {
                     )}
                 </span>
             </div>
-                <FormControlLabel
-                    className={classes.slugRoot}
-                    classes={{label: classes.slugLabel}}
-                    control={
-                        <Checkbox
-                            className={classes.slugCheckbox}
-                            size="small"
-                            checked={Boolean(post.options?.disableAutoSlug)}
-                            onChange={() => handleUpdate('options', {disableAutoSlug: !Boolean(post.options?.disableAutoSlug)})}
-                        />
-                    }
-                    label="Don't update slug automatically"
-                />
+            <FormControlLabel
+                className={classes.slugRoot}
+                classes={{label: classes.slugLabel}}
+                control={
+                    <Checkbox
+                        className={classes.slugCheckbox}
+                        size="small"
+                        checked={Boolean(post.options?.disableAutoSlug)}
+                        onChange={() => handleUpdate('options', {disableAutoSlug: !Boolean(post.options?.disableAutoSlug)})}
+                    />
+                }
+                label="Don't auto-generate slug"
+            />
         </>
     )
 };

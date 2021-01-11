@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {useTag} from '../../../context/Tag'
+import {useSetting} from '../../../context/Setting'
 import {makeStyles} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -15,74 +15,64 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const TagForm = ({match, history, withCancel, onSuccess}) => {
-    const {tag, listTags, getTag, newTag, saveTag, handleChange} = useTag();
+const SettingForm = ({match, history, withCancel, onSuccess}) => {
+    const {setting, listSettings, getSetting, newSetting, saveSetting, handleChange} = useSetting();
     const classes = useStyles();
-    const tagId = match?.params.tagId;
+    const settingId = match?.params.settingId;
 
     useEffect(() => {
-        if (tagId) {
+        if (settingId) {
             async function fetchData() {
-                getTag(tagId)
+                getSetting(settingId)
             }
 
             fetchData();
             return
         }
 
-        newTag();
+        newSetting();
 
         async function fetchData() {
-            await listTags()
+            await listSettings()
         }
 
         fetchData();
         // eslint-disable-next-line
-    }, [tagId]);
+    }, [settingId]);
 
     const handleSave = async () => {
-        await saveTag(onSuccess)
+        await saveSetting(onSuccess)
     }
 
     return (
         <>
             <Typography variant="h6">
-                {tagId ? 'Edit' : 'Add New'} Tag
+                {settingId ? 'Edit' : 'Add New'} Setting
             </Typography>
-            <TextField id="tag-name"
-                       label="Name"
-                       onChange={event => handleChange(event, 'name')}
+            <TextField id="setting-key"
+                       label="Key"
+                       onChange={event => handleChange(event, 'key')}
                        margin="normal"
                        fullWidth
                        variant="outlined"
-                       value={tag.name ? tag.name : ""}
+                       value={setting.key ? setting.key : ""}
                 // error={true}
-                // helperText="Post name is required."
-            />
-            <TextField id="tag-slug"
-                       label="Slug"
-                       onChange={event => handleChange(event, 'slug')}
-                       margin="normal"
-                       fullWidth
-                       variant="outlined"
-                       value={tag.slug ? tag.slug : ""}
-                // error={true}
-                // helperText="Post slug is required."
+                // helperText="Post key is required."
             />
             <TextField
-                id="tag-description"
-                label="Description"
-                onChange={event => handleChange(event, 'description')}
+                id="setting-value"
+                label="Value"
+                onChange={event => handleChange(event, 'value')}
                 multiline
                 rows="4"
                 margin="normal"
                 fullWidth
                 variant="outlined"
-                value={tag.description ? tag.description : ""}
+                value={setting.value ? setting.value : ""}
             />
             <div className={classes.alignRight}>
-                {tagId && (
-                    <Button onClick={() => history.push(`/tags`)} variant="contained" aria-label="Cancel"
+                {settingId && (
+                    <Button onClick={() => history.push(`/settings`)} variant="contained" aria-label="Cancel"
                             className={classes.button}>
                         Cancel
                     </Button>
@@ -95,12 +85,12 @@ const TagForm = ({match, history, withCancel, onSuccess}) => {
                 )}
 
                 <Button onClick={handleSave} variant="contained" color="primary"
-                        aria-label={tagId ? 'Update' : 'Add New Tag'} className={classes.button}>
-                    {tagId ? 'Update' : 'Add New Tag'}
+                        aria-label={settingId ? 'Update' : 'Add New Setting'} className={classes.button}>
+                    {settingId ? 'Update' : 'Add New Setting'}
                 </Button>
             </div>
         </>
     );
 };
 
-export default TagForm;
+export default SettingForm;

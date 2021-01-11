@@ -1,7 +1,6 @@
-import React, { useState, useContext } from 'react';
-import { useApp } from './App'
-import { useAuth0 } from './Auth0';
-import {ALERT_ERROR, ALERT_SUCCESS} from "./App";
+import React, {useContext, useState} from 'react';
+import {ALERT_ERROR, ALERT_SUCCESS, useApp} from './App'
+import {useAuth0} from './Auth0';
 
 export const RoleContext = React.createContext()
 export const useRole = () => useContext(RoleContext)
@@ -11,9 +10,9 @@ export const ROLE_MODERATOR = 3
 export const ROLE_EDITOR = 4
 export const ROLE_GUEST = 5
 
-export const RoleProvider = ({ history, children }) => {
-    const { showAlert } = useApp()
-    const { request } = useAuth0()
+export const RoleProvider = ({history, children}) => {
+    const {showAlert} = useApp()
+    const {request} = useAuth0()
     const [loading, setLoading] = useState(true)
     const [roles, setRoles] = useState(null)
 
@@ -73,12 +72,12 @@ export const RoleProvider = ({ history, children }) => {
     const saveRole = async () => {
         setLoading(true)
         try {
-            await request(role.id ? 'put' : 'post', `/v1/roles/${role.id ? role.id : ''}`, {...role} )
-            
+            await request(role.id ? 'put' : 'post', `/v1/roles/${role.id ? role.id : ''}`, {...role})
+
             setRole(emptyRole)
             history.push(`/roles`)
             await listRoles()
-            
+
             showAlert(ALERT_SUCCESS, `Role ${role.id ? 'saved' : 'created'}.`, 5000)
         } catch (error) {
             showAlert(ALERT_ERROR, error.message)
@@ -94,7 +93,7 @@ export const RoleProvider = ({ history, children }) => {
 
             setRole(emptyRole)
             await listRoles()
-            
+
             showAlert(ALERT_SUCCESS, `Role deleted.`, 5000)
         } catch (error) {
             showAlert(ALERT_ERROR, error.message)

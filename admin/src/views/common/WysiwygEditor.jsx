@@ -8,6 +8,8 @@ import componentCodeEditor from 'grapesjs-component-code-editor';
 import parserPostCSS from 'grapesjs-parser-postcss';
 import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.css';
 import Backbone from 'backbone';
+import {useSetting} from "../../context/Setting";
+
 const $ = Backbone.$;
 
 const useStyles = makeStyles(theme => ({
@@ -33,15 +35,45 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const WysiwygEditor = ({postId, html, css, handleUpdate}) => {
+    const {listSettings} = useSetting();
     const classes = useStyles();
+    const pageSettings = ['html_head_close', 'html_body_close'];
+    let canvasConfig = {
+        styles: [],
+        scripts: [],
+    };
 
     useEffect(() => {
+        fetchSettings().then(() => {
+            buildEditor();
+        });
+
+        // eslint-disable-next-line
+    }, [postId])
+
+    const fetchSettings = async () => {
+        const settings = await listSettings(pageSettings);
+        settings.forEach(setting => {
+            const values = JSON.parse(setting.value);
+
+            values.forEach((val) => {
+                if (val.includes('.css"')) {
+                    canvasConfig.styles.push(val.match(/href="([^"]*)/)[1])
+                }
+                if (val.includes('.js"')) {
+                    canvasConfig.scripts.push(val.match(/src="([^"]*)/)[1])
+                }
+            })
+        })
+    }
+
+    const buildEditor = () => {
         const editor = grapesjs.init({
             container: '#editor',
             showOffsets: true,
             components: html,
             style: css,
-            storageManager: { type: null },
+            storageManager: {type: null},
             protectedCss: '',
             plugins: [
                 'gjs-preset-webpage',
@@ -56,14 +88,7 @@ const WysiwygEditor = ({postId, html, css, handleUpdate}) => {
                     /* Test here your options  */
                 }
             },
-            canvas: {
-                styles: [
-                    'https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css'
-                ],
-                scripts: [
-                    'https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js'
-                ],
-            }
+            canvas: canvasConfig
         });
 
         const pn = editor.Panels
@@ -101,9 +126,9 @@ const WysiwygEditor = ({postId, html, css, handleUpdate}) => {
                     const $editors = $("<div class=\"".concat(pfx, "edit-code-dl\"></div>"));
                     const btnEdit = document.createElement('button');
                     btnEdit.innerHTML = 'Save'
-                    btnEdit.className =  `${pfx}btn-prim`
+                    btnEdit.className = `${pfx}btn-prim`
                     btnEdit.setAttribute('style', 'margin-top: 10px');
-                    btnEdit.onclick = async function() {
+                    btnEdit.onclick = async function () {
                         const html = _this.htmlEditor.editor.getValue()
                         const css = _this.cssEditor.editor.getValue()
                         console.log('save html', html)
@@ -165,8 +190,7 @@ const WysiwygEditor = ({postId, html, css, handleUpdate}) => {
                 }
             ]
         )
-        // eslint-disable-next-line
-    }, [postId])
+    }
 
     return (
         <div id="editor" className={classes.editor}/>

@@ -1,15 +1,15 @@
-import React, { useState, useContext } from 'react';
-import { useApp } from './App'
-import { useAuth0 } from "./Auth0";
+import React, {useContext, useState} from 'react';
+import {useApp} from './App'
+import {useAuth0} from "./Auth0";
 
 export const CategoryContext = React.createContext();
 export const useCategory = () => useContext(CategoryContext);
-export const CategoryProvider = ({ history, children }) => {
-    const { showAlert } = useApp();
-    const { request } = useAuth0();
+export const CategoryProvider = ({history, children}) => {
+    const {showAlert} = useApp();
+    const {request} = useAuth0();
     const [loading, setLoading] = useState(true);
     const [categories, setCategories] = useState(null);
-    
+
     const emptyCategory = {
         id: null,
         name: null,
@@ -25,9 +25,13 @@ export const CategoryProvider = ({ history, children }) => {
 
     const options = {
         visibility: [
-            { value: 'public', label: 'Public', description: 'Visible to everyone.' },
-            { value: 'private', label: 'Private', description: 'Only visible to site admins and editors.' },
-            { value: 'password', label: 'Password Protected', description: 'Only those with the password can view this post.' }
+            {value: 'public', label: 'Public', description: 'Visible to everyone.'},
+            {value: 'private', label: 'Private', description: 'Only visible to site admins and editors.'},
+            {
+                value: 'password',
+                label: 'Password Protected',
+                description: 'Only those with the password can view this post.'
+            }
         ]
     }
 
@@ -50,11 +54,11 @@ export const CategoryProvider = ({ history, children }) => {
         setCategory(emptyCategory);
     }
 
-    const listCategories = async (map=false) => {
+    const listCategories = async (map = false) => {
         setLoading(true);
         try {
             let data = await request('get', `/v1/categories/`)
-            if(map) {
+            if (map) {
                 data = mapCategories(data)
             }
             setCategories(data)
@@ -66,15 +70,15 @@ export const CategoryProvider = ({ history, children }) => {
         }
     }
 
-    function mapCategories(cats, categoryList = [], depth= 0){
-        if(!cats){
+    function mapCategories(cats, categoryList = [], depth = 0) {
+        if (!cats) {
             return categoryList
         }
 
         cats.forEach(cat => {
             cat.depth = depth;
             categoryList.push(cat);
-            if(cat.sub_categories && cat.sub_categories.length > 0){
+            if (cat.sub_categories && cat.sub_categories.length > 0) {
                 categoryList = mapCategories(cat.sub_categories, categoryList, depth + 1);
             }
         })
@@ -97,7 +101,7 @@ export const CategoryProvider = ({ history, children }) => {
     const saveCategory = async () => {
         setLoading(true);
         try {
-            const data = await request(category.id ? 'put' : 'post', `/v1/categories/${category.id ? category.id : ''}`, {...category} )
+            const data = await request(category.id ? 'put' : 'post', `/v1/categories/${category.id ? category.id : ''}`, {...category})
             setCategory(data);
             history.push(`/categories`)
             await listCategories()
@@ -115,7 +119,7 @@ export const CategoryProvider = ({ history, children }) => {
         try {
             await request('delete', `/v1/categories/${category.id ? category.id : id}`)
 
-            setCategory(emptyCategory);            
+            setCategory(emptyCategory);
             await listCategories()
 
             showAlert('success', `Category successfully deleted.`, 5000)

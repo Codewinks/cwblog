@@ -8,7 +8,7 @@ import {Auth0Provider} from "./context/Auth0";
 import {AppProvider} from './context/App';
 import config from "./auth_config.json";
 import history from './history';
-import {Router, Route, Switch} from "react-router-dom";
+import {Route, Router, Switch} from "react-router-dom";
 import NoMatch from "./views/errors/NoMatch";
 
 // A function that routes the user to the right place
@@ -34,9 +34,9 @@ ReactDOM.render(
         >
             <Router history={history}>
                 <Switch>
-                    <Route path="/preview" component={AppPreview} />
-                    <Route path="/" component={App} />
-                    <Route component={NoMatch} />
+                    <Route path="/preview" component={AppPreview}/>
+                    <Route path="/" component={App}/>
+                    <Route component={NoMatch}/>
                 </Switch>
             </Router>
         </Auth0Provider>

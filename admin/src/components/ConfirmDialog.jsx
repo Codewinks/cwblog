@@ -15,8 +15,8 @@ const ConfirmDialog = (props) => {
     }
 
     return (
-        <>           
-           <Dialog
+        <>
+            <Dialog
                 open={Boolean(props.open)}
                 onClose={props.onClose}
                 aria-labelledby="alert-dialog-title"
@@ -24,17 +24,17 @@ const ConfirmDialog = (props) => {
             >
                 <DialogTitle id="alert-dialog-title">{props.title}</DialogTitle>
                 <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                    {props.content}
-                </DialogContentText>
+                    <DialogContentText id="alert-dialog-description">
+                        {props.content}
+                    </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={props.onClose} color="primary" autoFocus>
-                    Cancel
-                </Button>
-                <Button onClick={confirm} color="secondary">
-                    {props.action}
-                </Button>
+                    <Button onClick={props.onClose} color="primary" autoFocus>
+                        Cancel
+                    </Button>
+                    <Button onClick={confirm} color="secondary">
+                        {props.action}
+                    </Button>
                 </DialogActions>
             </Dialog>
         </>

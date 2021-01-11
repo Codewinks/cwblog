@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import {useApp, ALERT_ERROR} from "./App";
+import {ALERT_ERROR, useApp} from "./App";
 import createAuth0Client from "@auth0/auth0-spa-js";
 import config from "../api_config.json";
 
@@ -35,7 +35,10 @@ export const Auth0Provider = ({
             setAuth0(auth0FromHook);
 
             if (window.location.search.includes("code=")) {
-                const {appState} = await auth0FromHook.handleRedirectCallback();
+                const {appState} = await auth0FromHook.handleRedirectCallback().catch(e => {
+                    showAlert('error', 'Your session has expired.');
+                    return false;
+                });
                 onRedirectCallback(appState);
             }
 
@@ -50,7 +53,7 @@ export const Auth0Provider = ({
                 try {
                     const user = await request('post', '/v1/auth/login', {}, auth0FromHook);
                     setCurrentUser(user);
-                } catch (e){
+                } catch (e) {
                     setIsAuthenticated(false);
                     console.error(e);
                     showAlert(ALERT_ERROR, 'There was a problem logging you in, please try again later.');

@@ -98,6 +98,7 @@ const PostForm = ({match}) => {
     const [config, setConfig] = useState({
         tab: 0
     })
+    const [slug, setSlug] = React.useState('');
     const postId = match.params.postId;
 
     const [didMount, setDidMount] = useState(false);
@@ -122,7 +123,7 @@ const PostForm = ({match}) => {
         // eslint-disable-next-line
     }, [postId])
 
-    if(!didMount) {
+    if (!didMount) {
         return null;
     }
 
@@ -184,7 +185,8 @@ const PostForm = ({match}) => {
                     <SettingsIcon/>
                 </IconButton>
                 <Button variant="contained" className={classes.button}
-                        onClick={() => console.log(post)}>Preview</Button>
+                        href={window.location.origin + '/preview/' + slug} target="_blank">Preview
+                </Button>
                 <ButtonGroup variant="contained" color="primary" aria-label="Publish">
                     <Button onClick={() => savePost()}>
                         {postId ? 'Update' : 'Publish Now'}
@@ -225,7 +227,7 @@ const PostForm = ({match}) => {
             </Typography>
             <Grid container spacing={3} className={classes.wrapper}>
                 <Grid item className={classes.leftCol}>
-                    <Permalink/>
+                    <Permalink slug={slug} setSlug={setSlug}/>
                     <Paper className={classes.editor}>
                         <TextField
                             id="post-title"

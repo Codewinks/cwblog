@@ -99,3 +99,11 @@ type PostsCategories struct {
 	CategoryId string
 	Sort       int
 }
+
+type Setting struct {
+	Id          string `json:"id"`
+	Key         string `json:"key" binding:"required"`
+	Value       string `json:"value" binding:"required"`
+	Label       string `json:"label"`
+	Description string `json:"description"`
+}

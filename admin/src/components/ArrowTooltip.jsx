@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Fade from '@material-ui/core/Fade';
 
@@ -74,12 +74,12 @@ const useStylesArrow = makeStyles(theme => ({
 }));
 
 const ArrowTooltip = (props) => {
-    const { arrow, ...classes } = useStylesArrow();
+    const {arrow, ...classes} = useStylesArrow();
     const [arrowRef, setArrowRef] = React.useState(null);
 
     return (
         <Tooltip
-            TransitionComponent={Fade} TransitionProps={{ timeout: 200 }}
+            TransitionComponent={Fade} TransitionProps={{timeout: 200}}
             PopperProps={{
                 popperOptions: {
                     modifiers: {
@@ -95,7 +95,7 @@ const ArrowTooltip = (props) => {
             title={
                 <>
                     {props.title}
-                    <span className={arrow} ref={setArrowRef} />
+                    <span className={arrow} ref={setArrowRef}/>
                 </>
             }
         />

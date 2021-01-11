@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {usePost} from '../../../context/Post'
 
 import DateFnsUtils from "@date-io/date-fns";
-import { parseISO } from 'date-fns';
+import {parseISO} from 'date-fns';
 import {DateTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 
 import {makeStyles} from '@material-ui/core/styles';
@@ -119,17 +119,17 @@ const SettingsTab = props => {
         setPublishedAt(v);
         handleUpdate('published_at', v);
 
-        if(dropdown === 'publish_on'){
+        if (dropdown === 'publish_on') {
             props.savePost({status: 'published', published_at: v})
         }
     }
 
     const formatDate = (date) => {
         let v = date;
-        if(date instanceof Date){
+        if (date instanceof Date) {
             v = dateFns.format(date, 'MMM d, yyyy h:mma')
-        }else if(typeof date === 'string'){
-            v= dateFns.format(parseISO(post.published_at), 'MMM d, yyyy h:mma')
+        } else if (typeof date === 'string') {
+            v = dateFns.format(parseISO(post.published_at), 'MMM d, yyyy h:mma')
         }
 
         return v
