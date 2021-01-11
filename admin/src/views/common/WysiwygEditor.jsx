@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const WysiwygEditor = ({postId, html, css, handleUpdate}) => {
+const WysiwygEditor = ({setEditor, postId, html, css, handleUpdate}) => {
     const {listSettings} = useSetting();
     const classes = useStyles();
     const pageSettings = ['html_head_close', 'html_body_close'];
@@ -190,6 +190,8 @@ const WysiwygEditor = ({postId, html, css, handleUpdate}) => {
                 }
             ]
         )
+
+        setEditor(editor);
     }
 
     return (

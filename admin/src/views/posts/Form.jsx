@@ -100,8 +100,8 @@ const PostForm = ({match}) => {
     })
     const [slug, setSlug] = React.useState('');
     const postId = match.params.postId;
-
     const [didMount, setDidMount] = useState(false);
+    const [editor, setEditor] = useState(null);
 
     useEffect(() => {
         setDidMount(true);
@@ -150,12 +150,6 @@ const PostForm = ({match}) => {
         });
     }
 
-    const handleSaveDraft = () => {
-        // TODO: Implement versioning so that you can have "drafts" on a public post
-        handleUpdate('status', 'draft');
-        savePost();
-        setToggleDropdown(false);
-    }
 
     const handlePublishOn = () => {
         setSettingsDropdown('publish_on');
@@ -164,6 +158,24 @@ const PostForm = ({match}) => {
 
     const clearDropdown = () => {
         setSettingsDropdown(false);
+    }
+
+    const savePostData = () => {
+        if(editor) {
+            return savePost({
+                html: editor.getHtml().trim(),
+                css: editor.getCss().trim(),
+            });
+        }
+
+        savePost();
+    }
+
+    const handleSaveDraft = () => {
+        // TODO: Implement versioning so that you can have "drafts" on a public post
+        handleUpdate('status', 'draft');
+        savePostData();
+        setToggleDropdown(false);
     }
 
     if (loading) {
@@ -188,7 +200,7 @@ const PostForm = ({match}) => {
                         href={window.location.origin + '/preview/' + slug} target="_blank">Preview
                 </Button>
                 <ButtonGroup variant="contained" color="primary" aria-label="Publish">
-                    <Button onClick={() => savePost()}>
+                    <Button onClick={() => savePostData()}>
                         {postId ? 'Update' : 'Publish Now'}
                     </Button>
                     <Button
@@ -242,6 +254,8 @@ const PostForm = ({match}) => {
                         />
 
                         <WysiwygEditor
+                            editor={editor}
+                            setEditor={setEditor}
                             postId={post.id}
                             html={post.html}
                             css={post.css}
@@ -259,7 +273,7 @@ const PostForm = ({match}) => {
                             </Tabs>
                             {config.tab === 0 && <SettingsTab dropdown={settingsDropdown}
                                                               clearDropdown={clearDropdown}
-                                                              savePost={savePost}/>}
+                                                              savePost={savePostData}/>}
                             {config.tab === 1 && <div>Item Two</div>}
                             {config.tab === 2 && <div>Item Three</div>}
                         </Paper>
